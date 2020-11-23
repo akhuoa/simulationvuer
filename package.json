@@ -1,5 +1,5 @@
 {
-  "name": "simulationvuer",
+  "name": "@abi-software/simulationvuer",
   "version": "0.1.0",
   "private": true,
   "scripts": {
