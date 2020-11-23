@@ -1,16 +1,17 @@
 <template>
   <div class="simulation-container">
-    <h1>SimulationVuer</h1>
     <p>
-      This is the SimulationVuer.
+      Model URL:<br />
+      <a :href="modelUrl">{{ modelUrl }}</a>
     </p>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SimulationVuer'
-}
+  name: "SimulationVuer",
+  props: ["modelUrl"],
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
