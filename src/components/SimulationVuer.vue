@@ -1,12 +1,12 @@
 <template>
   <div class="simulation-container">
     <p>
-      <strong>Model URL:</strong><br />
-      <a :href="modelUrl">{{ modelUrl }}</a>
+      <strong>URL:</strong><br />
+      <a :href="url">{{ url }}</a>
     </p>
     <p>
-      <strong>Model information:</strong><br />
-      {{ modelInfo }}
+      <strong>Information:</strong><br />
+      {{ info }}
     </p>
   </div>
 </template>
@@ -16,19 +16,17 @@ import axios from "axios";
 
 export default {
   name: "SimulationVuer",
-  props: ["modelUrl"],
+  props: ["url"],
   data() {
     return {
-      modelInfo: "null",
+      info: "",
     };
   },
   created() {
-    console.log("About to use our Flask application...");
-    const path = "http://localhost:5000/info/test";
     axios
-      .get(path)
+      .get("http://localhost:5000/info?url=" + encodeURIComponent(this.url))
       .then((res) => {
-        this.modelInfo = res.data;
+        this.info = res.data;
       })
       .catch((error) => {
         // eslint-disable-next-line

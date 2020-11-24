@@ -5,7 +5,7 @@
       This vuer demonstrates the simulation of the <a :href="workspaceUrl">Fabbri <em>et al.</em> (2017)</a> model.
     </p>
     <hr />
-    <SimulationVuer :modelUrl="modelUrl()" />
+    <SimulationVuer :url="url()" />
   </div>
 </template>
 
@@ -24,7 +24,7 @@ export default {
     };
   },
   methods: {
-    modelUrl() {
+    url() {
       return this.workspaceUrl + "/" + this.cellmlFileName;
     },
   },

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 
@@ -9,7 +9,10 @@ app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 
-# Entry point to retrieve some information about a model.
-@app.route('/info/<modelUrl>')
-def info(modelUrl):
-    return jsonify(['Some information about \'' + modelUrl + '\'...'])
+@app.route('/info')
+def info():
+    """
+    Entry point to retrieve some information about a model, given its URL.
+    """
+
+    return jsonify('Some information about \'' + request.args.get('url') + '\'...')
