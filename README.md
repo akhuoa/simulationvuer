@@ -44,25 +44,45 @@ You can now use the SimulationVuer in your Vue template as follows:
 git clone https://github.com/ABI-Software/simulationvuer.git
 ```
 
-### Setup
+### Flask application
+
+SimulationVuer relies on [OpenCOR](https://opencor.ws/) to configure and run a model, which can be done using its [Python](https://www.python.org/) interface.
+However, a Vue component cannot run a Python script directly, so we do this through a [Flask](https://palletsprojects.com/p/flask/)-based [API](https://en.wikipedia.org/wiki/API).
+
+For this to work, OpenCOR must be installed on the server and Flask `pip` installed in OpenCOR's Python:
+
+```bash
+[OpenCOR_Python]/bin/pip install flask flask-cors
+```
+
+From there, we can start our Flask application:
+
+```bash
+export FLASK_APP=[SimulationVuer]/api/opencor.py
+[OpenCOR_Python]/bin/python -m flask run
+```
+
+### Vue component
+
+#### Setup
 
 ```bash
 yarn
 ```
 
-### Run the sample application
+#### Run the sample application
 
 ```bash
 yarn serve
 ```
 
-### Compile and minify for production
+#### Compile and minify for production
 
 ```bash
 yarn build
 ```
 
-### Lint and fix files
+#### Lint and fix files
 
 ```bash
 yarn lint
