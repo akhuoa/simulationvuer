@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import json
 import os
 import subprocess
 
 
-def run_python_script(python_script, url):
+def run_pythonscript(pythonscript, url):
     pythonshell = os.getenv('OPENCOR_PYTHONSHELL')
 
     if not pythonshell:
@@ -15,10 +16,16 @@ def run_python_script(python_script, url):
         return jsonify(error_message='No URL was provided.',
                        valid=False)
 
-    res = subprocess.run([pythonshell, python_script],
+    res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url],
                          capture_output=True, text=True)
 
-    return jsonify(output=res.stdout, valid=True)
+    if res.returncode != 0:
+        return jsonify(error_message=res.stderr,
+                       valid=False)
+
+    json_res = json.loads(res.stdout)
+
+    return json_res
 
 
 # Instantiate our Flask application.
@@ -34,8 +41,7 @@ def info():
     Entry point to retrieve some information about a model, given its URL (passed as an attribute).
     """
 
-    return run_python_script('/Users/Alan/OpenCOR/src/plugins/support/PythonSupport/tests/data/noble1962tests.py',
-                             request.args.get('url'))
+    return run_pythonscript('info.py', request.args.get('url'))
 
 
 app.run()

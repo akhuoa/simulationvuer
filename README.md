@@ -65,7 +65,7 @@ Now, we can start our Flask application:
 
 ```bash
 cd [SimulationVuer]
-python3 api/opencor.py
+python3 api/api.py
 ```
 
 ### Vue component
