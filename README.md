@@ -49,17 +49,23 @@ git clone https://github.com/ABI-Software/simulationvuer.git
 SimulationVuer relies on [OpenCOR](https://opencor.ws/) to configure and run a model, which can be done using its [Python](https://www.python.org/) interface.
 However, a Vue component cannot run a Python script directly, so we do this through a [Flask](https://palletsprojects.com/p/flask/)-based [API](https://en.wikipedia.org/wiki/API).
 
-For this to work, OpenCOR must be installed on the server and Flask `pip` installed in OpenCOR's Python:
+For this to work, OpenCOR must be installed on the server and Flask be available in your Python environment:
 
 ```bash
-[OpenCOR_Python]/bin/pip install flask flask-cors
+pip3 install flask flask-cors
 ```
 
-From there, we can start our Flask application:
+Next, you need to specify where our Flask application can find OpenCOR's Python shell:
 
 ```bash
-export FLASK_APP=[SimulationVuer]/api/opencor.py
-[OpenCOR_Python]/bin/python -m flask run
+export OPENCOR_PYTHONSHELL=[OpenCOR]/pythonshell
+```
+
+Now, we can start our Flask application:
+
+```bash
+cd [SimulationVuer]
+python3 api/opencor.py
 ```
 
 ### Vue component
