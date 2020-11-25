@@ -42,4 +42,13 @@ def info():
     return run_pythonscript('info.py', request.args.get('url'))
 
 
+@app.route('/run')
+def run():
+    """
+    Entry point to run a model, given its URL (passed as an attribute).
+    """
+
+    return run_pythonscript('run.py', request.args.get('url'))
+
+
 app.run()

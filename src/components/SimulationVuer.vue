@@ -5,44 +5,61 @@
         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
       </svg>
       <p>
-        Retrieving data for <a :href="url">{{ url }}</a>...
+        Retrieving some data about <a :href="url">{{ url }}</a>...
       </p>
     </div>
-    <form class="data" v-if="hasData()">
-      <table>
-        <thead>
-          <tr>
-            <th colspan="3">Simulation properties</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Starting point</td>
-            <td>
-              <input :value="data.simulation.starting_point" />
-            </td>
-            <td>{{ data.simulation.unit }}</td>
-          </tr>
-          <tr>
-            <td>Ending point</td>
-            <td>
-              <input :value="data.simulation.ending_point" />
-            </td>
-            <td>{{ data.simulation.unit }}</td>
-          </tr>
-          <tr>
-            <td>Point interval</td>
-            <td>
-              <input :value="data.simulation.point_interval" />
-            </td>
-            <td>{{ data.simulation.unit }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <br />
-      <button>Run model</button>
-    </form>
-    <div v-if="hasError()">
+    <div class="data" style="width: fit-content;">
+      <form v-if="hasData()">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="3">Simulation properties</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Starting point</td>
+              <td>
+                <input :value="data.simulation.starting_point" />
+              </td>
+              <td>{{ data.simulation.unit }}</td>
+            </tr>
+            <tr>
+              <td>Ending point</td>
+              <td>
+                <input :value="data.simulation.ending_point" />
+              </td>
+              <td>{{ data.simulation.unit }}</td>
+            </tr>
+            <tr>
+              <td>Point interval</td>
+              <td>
+                <input :value="data.simulation.point_interval" />
+              </td>
+              <td>{{ data.simulation.unit }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" @click="runModel">Run the model</button>
+      </form>
+    </div>
+    <div class="info" v-if="hasResults() && !isRetrievingResults()">
+      <svg>
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+      </svg>
+      <p>
+        {{ results }}
+      </p>
+    </div>
+    <div class="info" v-if="isRetrievingResults()">
+      <svg>
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+      </svg>
+      <p>
+        Running <a :href="url">{{ url }}</a>...
+      </p>
+    </div>
+    <div v-if="hasError() && !isRetrievingResults()">
       <div class="error" v-for="errorEntry in error" :key="errorEntry">
         <svg class="error">
           <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -64,6 +81,8 @@ export default {
   data: function () {
     return {
       data: null,
+      retrievingResults: false,
+      results: null,
       error: null,
     };
   },
@@ -71,8 +90,27 @@ export default {
     hasData: function () {
       return this.data != null;
     },
+    isRetrievingResults: function () {
+      return this.retrievingResults;
+    },
+    hasResults: function () {
+      return this.results != null;
+    },
     hasError: function () {
       return this.error != null;
+    },
+    runModel: function () {
+      this.retrievingResults = true;
+      axios
+        .get("http://localhost:5000/run?url=" + encodeURIComponent(this.url))
+        .then((res) => {
+          this.retrievingResults = false;
+          this.results = res.data.message
+        })
+        .catch((error) => {
+          this.retrievingResults = false;
+          this.error = [error.message];
+        });
     },
   },
   created() {
@@ -132,36 +170,37 @@ div.error p {
   margin: 0;
   margin-left: 0.5rem;
 }
-form.data {
-  position: absolute;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, 0%);
+div.data {
+  width: fit-content;
+  margin: auto;
 }
-form.data table {
+div.data table {
   border: 2px solid rgb(65, 184, 131);
   border-radius: 4px;
   background-color: white;
 }
-form.data th,
-form.data td {
+div.data th,
+div.data td {
   padding: 3px 9px;
   cursor: default;
 }
-form.data th {
+div.data th {
   background-color: rgb(65, 184, 131);
   color: white;
 }
-form.data td {
+div.data td {
   background-color: rgb(249, 249, 249);
 }
-form.data button {
+div.data button {
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   padding: 7px 16px;
-  background-color: rgb(65, 184, 131);
-  color: white;
   border: none;
   border-radius: 4px;
+  background-color: rgb(65, 184, 131);
+  color: white;
+  outline: none;
   cursor: pointer;
-  width: 100%;
 }
 </style>
