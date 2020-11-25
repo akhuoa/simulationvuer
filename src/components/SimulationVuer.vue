@@ -1,14 +1,14 @@
 <template>
   <div class="simulation-container">
     <div class="info" v-if="!hasData() && !hasError()">
-      <svg class="info">
+      <svg>
         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
       </svg>
       <p>
         Retrieving data for <a :href="url">{{ url }}</a>...
       </p>
     </div>
-    <form v-if="hasData()">
+    <form class="data" v-if="hasData()">
       <table>
         <thead>
           <tr>
@@ -42,13 +42,15 @@
       <br />
       <button>Run model</button>
     </form>
-    <div class="error" v-if="hasError()">
-      <svg class="error">
-        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-      </svg>
-      <p>
-        {{ error }}
-      </p>
+    <div v-if="hasError()">
+      <div class="error" v-for="errorEntry in error" :key="errorEntry">
+        <svg class="error">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        <p>
+          {{ errorEntry }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -62,7 +64,7 @@ export default {
   data: function () {
     return {
       data: null,
-      error: "",
+      error: null,
     };
   },
   methods: {
@@ -70,7 +72,7 @@ export default {
       return this.data != null;
     },
     hasError: function () {
-      return this.error != "";
+      return this.error != null;
     },
   },
   created() {
@@ -84,7 +86,7 @@ export default {
         }
       })
       .catch((error) => {
-        this.error = error;
+        this.error = [error.message];
       });
   },
 };
@@ -99,13 +101,9 @@ div.simulation-container {
 div.info,
 div.error {
   display: flex;
+  margin-bottom: 0.5rem;
   border-left: 4px solid;
   padding: 1rem;
-}
-div.info > p,
-div.error > p {
-  margin: 0;
-  margin-left: 0.5rem;
 }
 div.info {
   background-color: rgb(235, 248, 255);
@@ -117,44 +115,49 @@ div.error {
   border-left-color: rgb(246, 173, 85);
   color: rgba(192, 86, 33);
 }
-svg {
+div.info svg,
+div.error svg {
   width: 1.25rem;
   height: 1.25rem;
   fill: currentColor;
 }
-svg.info {
+div.info svg {
   color: rgb(99, 179, 237);
 }
-svg.error {
+div.error svg {
   color: rgb(246, 173, 85);
 }
-div > form {
+div.info p,
+div.error p {
+  margin: 0;
+  margin-left: 0.5rem;
+}
+form.data {
   position: absolute;
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, 0%);
 }
-table {
-  border: 2px solid #42b983;
+form.data table {
+  border: 2px solid rgb(65, 184, 131);
   border-radius: 4px;
   background-color: white;
 }
-th,
-td {
+form.data th,
+form.data td {
   padding: 3px 9px;
   cursor: default;
 }
-th {
-  background-color: #42b983;
+form.data th {
+  background-color: rgb(65, 184, 131);
   color: white;
-  font-weight: 700;
 }
-td {
-  background-color: #f9f9f9;
+form.data td {
+  background-color: rgb(249, 249, 249);
 }
-button {
+form.data button {
   padding: 7px 16px;
-  background-color: #42b983;
+  background-color: rgb(65, 184, 131);
   color: white;
   border: none;
   border-radius: 4px;

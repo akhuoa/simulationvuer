@@ -17,7 +17,7 @@ if valid:
                                'point_interval': data.point_interval(),
                                'unit': simulation_unit}})
 else:
-    res.update({'issues': simulation.issues()})
+    res.update({'error': simulation.issues()})
 
 oc.close_simulation(simulation)
 
