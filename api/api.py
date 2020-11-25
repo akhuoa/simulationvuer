@@ -23,9 +23,7 @@ def run_pythonscript(pythonscript, url):
         return jsonify(error=res.stderr,
                        valid=False)
 
-    json_res = json.loads(res.stdout)
-
-    return json_res
+    return json.loads(res.stdout)
 
 
 # Instantiate our Flask application.
