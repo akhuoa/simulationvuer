@@ -4,12 +4,10 @@
       <svg>
         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
       </svg>
-      <p>
-        Retrieving some data about <a :href="url">{{ url }}</a>...
-      </p>
+      <p>Retrieving some information about the simulation and the model...</p>
     </div>
-    <div class="data" style="width: fit-content;">
-      <form v-if="hasData()">
+    <div class="data" v-if="hasData()">
+      <form>
         <table>
           <thead>
             <tr>
@@ -20,27 +18,27 @@
             <tr>
               <td>Starting point</td>
               <td>
-                <input :value="data.simulation.starting_point" />
+                <input :value="data.simulation.starting_point" :disabled="isRetrievingResults()" />
               </td>
               <td>{{ data.simulation.unit }}</td>
             </tr>
             <tr>
               <td>Ending point</td>
               <td>
-                <input :value="data.simulation.ending_point" />
+                <input :value="data.simulation.ending_point" :disabled="isRetrievingResults()" />
               </td>
               <td>{{ data.simulation.unit }}</td>
             </tr>
             <tr>
               <td>Point interval</td>
               <td>
-                <input :value="data.simulation.point_interval" />
+                <input :value="data.simulation.point_interval" :disabled="isRetrievingResults()"/>
               </td>
               <td>{{ data.simulation.unit }}</td>
             </tr>
           </tbody>
         </table>
-        <button type="button" @click="runModel">Run the model</button>
+        <button type="button" @click="runModel" :disabled="isRetrievingResults()">Run the model</button>
       </form>
     </div>
     <div class="info" v-if="hasResults() && !isRetrievingResults()">
@@ -55,9 +53,7 @@
       <svg>
         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
       </svg>
-      <p>
-        Running <a :href="url">{{ url }}</a>...
-      </p>
+      <p>Running the model...</p>
     </div>
     <div v-if="hasError() && !isRetrievingResults()">
       <div class="error" v-for="errorEntry in error" :key="errorEntry">
@@ -105,7 +101,7 @@ export default {
         .get("http://localhost:5000/run?url=" + encodeURIComponent(this.url))
         .then((res) => {
           this.retrievingResults = false;
-          this.results = res.data.message
+          this.results = res.data.message;
         })
         .catch((error) => {
           this.retrievingResults = false;
@@ -202,5 +198,10 @@ div.data button {
   color: white;
   outline: none;
   cursor: pointer;
+}
+div.data button:disabled {
+  background-color: lightgray;
+  color: gray;
+  cursor: default;
 }
 </style>
