@@ -9,18 +9,18 @@ def run_pythonscript(pythonscript, url):
     pythonshell = os.getenv('OPENCOR_PYTHONSHELL')
 
     if not pythonshell:
-        return jsonify(error_message='\'OPENCOR_PYTHONSHELL\' has not been set.',
+        return jsonify(error='\'OPENCOR_PYTHONSHELL\' has not been set.',
                        valid=False)
 
     if not url:
-        return jsonify(error_message='No URL was provided.',
+        return jsonify(error='No URL was provided.',
                        valid=False)
 
     res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url],
                          capture_output=True, text=True)
 
     if res.returncode != 0:
-        return jsonify(error_message=res.stderr,
+        return jsonify(error=res.stderr,
                        valid=False)
 
     json_res = json.loads(res.stdout)

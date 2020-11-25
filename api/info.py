@@ -10,11 +10,12 @@ res = {'valid': valid}
 
 if valid:
     data = simulation.data()
-    ending_point = data.ending_point()
+    simulation_unit = simulation.results().voi().unit()
 
-    res.update({'data': {'starting_point': data.starting_point(),
-                         'ending_point': data.ending_point(),
-                         'point_interval': data.point_interval()}})
+    res.update({'simulation': {'starting_point': data.starting_point(),
+                               'ending_point': data.ending_point(),
+                               'point_interval': data.point_interval(),
+                               'unit': simulation_unit}})
 else:
     res.update({'issues': simulation.issues()})
 
