@@ -127,7 +127,7 @@ export default {
           if (res.data.error) {
             this.error = [res.data.error];
           } else {
-            this.results = res.data.message;
+            this.results = res.data.results;
           }
         })
         .catch((error) => {

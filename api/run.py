@@ -11,12 +11,6 @@ data.set_point_interval(float(sys.argv[4]))
 
 simulation.run()
 
-results = simulation.results()
-constants = results.constants()
-states = results.states()
-rates = results.rates()
-algebraic = results.algebraic()
-
-res = {'message': 'All good!'}
+res = {'results': simulation.results().states()['Membrane/V_ode'].values().tolist()}
 
 print(json.dumps(res))
