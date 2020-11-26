@@ -58,7 +58,7 @@
       </form>
     </div>
     <div v-if="hasResults() && !isRetrievingResults()">
-      <PlotVuer :dataInput="[[results[0].name + ' in ' + results[0].unit, results[1].name + ' in ' + results[1].unit], results[0].values, results[1].values]" :plotType="'scatter'" :helpMode="helpMode" />
+      <PlotVuer :url="results" :plotType="'scatter'" :helpMode="helpMode" />
     </div>
     <div class="info" v-if="isRetrievingResults()">
       <svg>

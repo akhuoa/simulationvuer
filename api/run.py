@@ -1,6 +1,9 @@
 import json
+import numpy as np
 import opencor as oc
+import pathlib
 import sys
+import tempfile
 
 simulation = oc.open_simulation(sys.argv[1])
 data = simulation.data()
@@ -21,12 +24,10 @@ simulation.run()
 results = simulation.results()
 voi = results.voi()
 V_ode = results.states()['Membrane/V_ode']
+csv_filename = tempfile.NamedTemporaryFile().name+'.csv'
 
-res = {'results': [{'name': voi.name(),
-                    'values': voi.values().tolist(),
-                    'unit': voi.unit()},
-                   {'name': V_ode.name(),
-                    'values': V_ode.values().tolist(),
-                    'unit': V_ode.unit()}]}
+np.savetxt(csv_filename, np.stack((voi.values(), V_ode.values()), axis=1), comments='', header=voi.name()+' ('+voi.unit()+'),'+V_ode.name()+' ('+V_ode.unit()+')', delimiter=",")
+
+res = {'results': pathlib.Path(csv_filename).as_uri()}
 
 print(json.dumps(res))
