@@ -58,7 +58,7 @@
       </form>
     </div>
     <div v-if="hasResults() && !isRetrievingResults()">
-      <PlotVuer :url="results" :plotType="'scatter'" :helpMode="helpMode" />
+      <PlotVuer :dataInput="results.json" :plotType="'scatter'" />
     </div>
     <div class="info" v-if="isRetrievingResults()">
       <svg>
@@ -128,6 +128,12 @@ export default {
             this.error = [res.data.error];
           } else {
             this.results = res.data.results;
+
+            this.results.json = [[this.results[0].name + " (" + this.results[0].unit + ")", this.results[1].name + " (" + this.results[1].unit + ")"]];
+
+            for (let i = 0; i < this.results[0].values.length; ++i) {
+              this.results.json.push([this.results[0].values[i], this.results[1].values[i]]);
+            }
           }
         })
         .catch((error) => {
