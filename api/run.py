@@ -18,6 +18,15 @@ data_constants['Rate_modulation_experiments/Iso_1_uM'] = float(sys.argv[7])
 
 simulation.run()
 
-res = {'results': simulation.results().states()['Membrane/V_ode'].values().tolist()}
+results = simulation.results()
+voi = results.voi()
+V_ode = results.states()['Membrane/V_ode']
+
+res = {'results': [{'name': voi.name(),
+                    'values': voi.values().tolist(),
+                    'unit': voi.unit()},
+                   {'name': V_ode.name(),
+                    'values': V_ode.values().tolist(),
+                    'unit': V_ode.unit()}]}
 
 print(json.dumps(res))
