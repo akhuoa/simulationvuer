@@ -86,9 +86,14 @@
 
 <script>
 import axios from "axios";
+import { PlotVuer } from "@abi-software/plotvuer";
+import "@abi-software/plotvuer/dist/plotvuer.css";
 
 export default {
   name: "SimulationVuer",
+  components: {
+    PlotVuer,
+  },
   props: ["url"],
   data: function () {
     return {
