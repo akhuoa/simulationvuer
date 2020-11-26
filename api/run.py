@@ -5,8 +5,9 @@ import sys
 simulation = oc.open_simulation(sys.argv[1])
 data = simulation.data()
 
-data.set_ending_point(1.0)
-data.set_point_interval(0.001)
+data.set_starting_point(float(sys.argv[2]))
+data.set_ending_point(float(sys.argv[3]))
+data.set_point_interval(float(sys.argv[4]))
 
 simulation.run()
 

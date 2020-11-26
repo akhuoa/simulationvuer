@@ -5,7 +5,7 @@ import os
 import subprocess
 
 
-def run_pythonscript(pythonscript, url):
+def run_pythonscript(pythonscript, url, *args):
     pythonshell = os.getenv('OPENCOR_PYTHONSHELL')
 
     if not pythonshell:
@@ -16,8 +16,12 @@ def run_pythonscript(pythonscript, url):
         return jsonify(error='No URL was provided.',
                        valid=False)
 
-    res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url],
-                         capture_output=True, text=True)
+    if len(args) == 0:
+        res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url],
+                             capture_output=True, text=True)
+    else:
+        res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url, args[0], args[1], args[2]],
+                             capture_output=True, text=True)
 
     if res.returncode != 0:
         return jsonify(error=res.stderr,
@@ -48,7 +52,10 @@ def run():
     Entry point to run a model, given its URL (passed as an attribute).
     """
 
-    return run_pythonscript('run.py', request.args.get('url'))
+    return run_pythonscript('run.py', request.args.get('url'),
+                            request.args.get('starting_point'),
+                            request.args.get('ending_point'),
+                            request.args.get('point_interval'))
 
 
 app.run()

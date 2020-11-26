@@ -116,11 +116,19 @@ export default {
     },
     runModel: function () {
       this.retrievingResults = true;
+      this.results = null;
+      this.error = null;
+
       axios
-        .get("http://localhost:5000/run?url=" + encodeURIComponent(this.url))
+        .get("http://localhost:5000/run?url=" + encodeURIComponent(this.url) + "&starting_point=" + this.data.simulation.starting_point + "&ending_point=" + this.data.simulation.ending_point + "&point_interval=" + this.data.simulation.point_interval)
         .then((res) => {
           this.retrievingResults = false;
-          this.results = res.data.message;
+
+          if (res.data.error) {
+            this.error = [res.data.error];
+          } else {
+            this.results = res.data.message;
+          }
         })
         .catch((error) => {
           this.retrievingResults = false;
