@@ -57,13 +57,8 @@
         <button type="button" @click="runModel" :disabled="isRetrievingResults()">Run the model</button>
       </form>
     </div>
-    <div class="info" v-if="hasResults() && !isRetrievingResults()">
-      <svg>
-        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-      </svg>
-      <p>
-        {{ results }}
-      </p>
+    <div v-if="hasResults() && !isRetrievingResults()">
+      <PlotVuer :dataInput="[[results[0].name + ' in ' + results[0].unit, results[1].name + ' in ' + results[1].unit], results[0].values, results[1].values]" :plotType="'scatter'" :helpMode="helpMode" />
     </div>
     <div class="info" v-if="isRetrievingResults()">
       <svg>
