@@ -8,7 +8,7 @@
     </div>
     <div class="data" v-if="hasData()">
       <form>
-        <table>
+        <table class="simulation">
           <thead>
             <tr>
               <th colspan="3">Simulation properties</th>
@@ -16,25 +16,41 @@
           </thead>
           <tbody>
             <tr>
-              <td>Starting point</td>
+              <td class="name">Starting point</td>
               <td>
                 <input :value="data.simulation.starting_point" :disabled="isRetrievingResults()" />
               </td>
-              <td>{{ data.simulation.unit }}</td>
+              <td class="unit">{{ data.simulation.unit }}</td>
             </tr>
             <tr>
-              <td>Ending point</td>
+              <td class="name">Ending point</td>
               <td>
                 <input :value="data.simulation.ending_point" :disabled="isRetrievingResults()" />
               </td>
-              <td>{{ data.simulation.unit }}</td>
+              <td class="unit">{{ data.simulation.unit }}</td>
             </tr>
             <tr>
-              <td>Point interval</td>
+              <td class="name">Point interval</td>
               <td>
                 <input :value="data.simulation.point_interval" :disabled="isRetrievingResults()" />
               </td>
-              <td>{{ data.simulation.unit }}</td>
+              <td class="unit">{{ data.simulation.unit }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="model">
+          <thead>
+            <tr>
+              <th colspan="3">Model properties</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="modelEntry in data.model" :key="modelEntry">
+              <td class="name">{{ variableName(modelEntry.name) }}</td>
+              <td>
+                <input :value="modelEntry.value" :disabled="isRetrievingResults()" />
+              </td>
+              <td class="unit">{{ modelEntry.unit }}</td>
             </tr>
           </tbody>
         </table>
@@ -95,6 +111,9 @@ export default {
     hasError: function () {
       return this.error != null;
     },
+    variableName: function (name) {
+      return name.split('/')[1];
+    },
     runModel: function () {
       this.retrievingResults = true;
       axios
@@ -140,14 +159,14 @@ div.error {
   padding: 1rem;
 }
 div.info {
-  background-color: rgb(235, 248, 255);
-  border-left-color: rgb(99, 179, 237);
-  color: rgba(43, 108, 176);
+  background-color: rgba(217, 226, 243, 0.3);
+  border-left-color: rgba(68, 114, 196, 0.7);
+  color: rgb(68, 114, 196);
 }
 div.error {
-  background-color: rgb(255, 250, 240);
-  border-left-color: rgb(246, 173, 85);
-  color: rgba(192, 86, 33);
+  background-color: rgba(251, 229, 213, 0.3);
+  border-left-color: rgba(237, 125, 49, 0.7);
+  color: rgb(237, 125, 49);
 }
 div.info svg,
 div.error svg {
@@ -156,10 +175,10 @@ div.error svg {
   fill: currentColor;
 }
 div.info svg {
-  color: rgb(99, 179, 237);
+  color: rgba(68, 114, 196, 0.6);
 }
 div.error svg {
-  color: rgb(246, 173, 85);
+  color: rgba(237, 125, 49, 0.6);
 }
 div.info p,
 div.error p {
@@ -171,37 +190,54 @@ div.data {
   margin: auto;
 }
 div.data table {
-  border: 2px solid rgb(65, 184, 131);
+  width: 100%;
+  margin-bottom: 0.5rem;
+  border: 2px solid;
   border-radius: 4px;
   background-color: white;
+}
+div.data table.simulation {
+  border-color: rgb(201, 201, 201);
+}
+div.data table.model {
+  border-color: rgb(156, 195, 229);
 }
 div.data th,
 div.data td {
   padding: 3px 9px;
   cursor: default;
 }
-div.data th {
-  background-color: rgb(65, 184, 131);
-  color: white;
+div.data table.simulation th {
+  background-color: rgb(201, 201, 201);
+  color: rgb(82, 82, 82);
+}
+div.data table.model th {
+  background-color: rgb(156, 195, 229);
+  color: rgb(30, 78, 121);
 }
 div.data td {
+  width: 35%;
   background-color: rgb(249, 249, 249);
+}
+div.data td.name {
+  font-weight: 700;
+}
+div.data td.unit {
+  font-style: italic;
 }
 div.data button {
   width: 100%;
-  margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   padding: 7px 16px;
   border: none;
   border-radius: 4px;
-  background-color: rgb(65, 184, 131);
-  color: white;
-  outline: none;
+  background-color: rgb(168, 208, 141);
+  color: rgb(55, 86, 35);
   cursor: pointer;
 }
 div.data button:disabled {
-  background-color: lightgray;
-  color: gray;
+  background-color: rgb(237, 237, 237);
+  color: rgb(165, 165, 165);
   cursor: default;
 }
 </style>
