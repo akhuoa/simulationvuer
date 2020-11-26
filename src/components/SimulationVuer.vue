@@ -45,7 +45,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="modelEntry in data.model" :key="modelEntry">
+            <tr v-for="modelEntry in data.model" :key="modelEntry.name">
               <td class="name">{{ variableName(modelEntry.name) }}</td>
               <td>
                 <input :value="modelEntry.value" :disabled="isRetrievingResults()" />
