@@ -112,7 +112,7 @@ export default {
       return this.error != null;
     },
     variableName: function (name) {
-      return name.split('/')[1];
+      return name.split("/")[1];
     },
     runModel: function () {
       this.retrievingResults = true;
