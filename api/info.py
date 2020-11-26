@@ -9,10 +9,8 @@ res = {'valid': valid}
 
 if valid:
     data = simulation.data()
-    data_states = data.states()
     data_constants = data.constants()
     results = simulation.results()
-    results_states = results.states()
     results_constants = results.constants()
 
     res.update({'simulation': {'starting_point': data.starting_point(),
@@ -20,8 +18,8 @@ if valid:
                                'point_interval': data.point_interval(),
                                'unit': results.voi().unit()}})
     res.update({'model': [{'name': 'Membrane/V_ode',
-                           'value': data_states['Membrane/V_ode'],
-                           'unit': results_states['Membrane/V_ode'].unit()},
+                           'value': data.states()['Membrane/V_ode'],
+                           'unit': results.states()['Membrane/V_ode'].unit()},
                           {'name': 'Rate_modulation_experiments/ACh',
                            'value': data_constants['Rate_modulation_experiments/ACh'],
                            'unit': results_constants['Rate_modulation_experiments/ACh'].unit()},
