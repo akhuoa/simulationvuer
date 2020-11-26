@@ -20,7 +20,7 @@ def run_pythonscript(pythonscript, url, *args):
         res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url],
                              capture_output=True, text=True)
     else:
-        res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url, args[0], args[1], args[2]],
+        res = subprocess.run([pythonshell, os.path.dirname(os.path.abspath(__file__)) + '/' + pythonscript, url, args[0], args[1], args[2], args[3], args[4], args[5]],
                              capture_output=True, text=True)
 
     if res.returncode != 0:
@@ -55,7 +55,10 @@ def run():
     return run_pythonscript('run.py', request.args.get('url'),
                             request.args.get('starting_point'),
                             request.args.get('ending_point'),
-                            request.args.get('point_interval'))
+                            request.args.get('point_interval'),
+                            request.args.get('V_ode'),
+                            request.args.get('ACh'),
+                            request.args.get('Iso_1_uM'))
 
 
 app.run()
