@@ -11,10 +11,10 @@
     orbit-camera-controller "^4.0.0"
     turntable-camera-controller "^3.0.0"
 
-"@abi-software/plotvuer@^0.2.27":
-  version "0.2.27"
-  resolved "https://registry.yarnpkg.com/@abi-software/plotvuer/-/plotvuer-0.2.27.tgz#b753d8b3a321590479ab6c2a3f22641e5e9fb404"
-  integrity sha512-oef1nxiojUCsDW/29p052yyt7Bx2vHO76skvM3O3RrBmflLd3IrUKDT6UZJjgUNxMvqTx+Q+fKDSiucoxgXrgQ==
+"@abi-software/plotvuer@^0.2.28":
+  version "0.2.28"
+  resolved "https://registry.yarnpkg.com/@abi-software/plotvuer/-/plotvuer-0.2.28.tgz#a13b07fd232cfb1f04e3beca67e5e39e256363dd"
+  integrity sha512-yi1DOQ5F9Y2FB9euF7a5NzyyGAme+8QPR1LvhFMDLVVU/V5nl2/8Ta4FEK/c2mCoENmDjP336nLU1NS8k7QMQA==
   dependencies:
     core-js "^3.7.0"
     css-element-queries "^1.2.3"
