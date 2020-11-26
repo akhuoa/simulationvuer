@@ -18,21 +18,21 @@
             <tr>
               <td class="name">Starting point</td>
               <td>
-                <input :value="data.simulation.starting_point" :disabled="isRetrievingResults()" />
+                <input v-model="data.simulation.starting_point" :disabled="isRetrievingResults()" />
               </td>
               <td class="unit">{{ data.simulation.unit }}</td>
             </tr>
             <tr>
               <td class="name">Ending point</td>
               <td>
-                <input :value="data.simulation.ending_point" :disabled="isRetrievingResults()" />
+                <input v-model="data.simulation.ending_point" :disabled="isRetrievingResults()" />
               </td>
               <td class="unit">{{ data.simulation.unit }}</td>
             </tr>
             <tr>
               <td class="name">Point interval</td>
               <td>
-                <input :value="data.simulation.point_interval" :disabled="isRetrievingResults()" />
+                <input v-model="data.simulation.point_interval" :disabled="isRetrievingResults()" />
               </td>
               <td class="unit">{{ data.simulation.unit }}</td>
             </tr>
@@ -48,7 +48,7 @@
             <tr v-for="modelEntry in data.model" :key="modelEntry.name">
               <td class="name">{{ variableName(modelEntry.name) }}</td>
               <td>
-                <input :value="modelEntry.value" :disabled="isRetrievingResults()" />
+                <input v-model="modelEntry.value" :disabled="isRetrievingResults()" />
               </td>
               <td class="unit">{{ modelEntry.unit }}</td>
             </tr>
