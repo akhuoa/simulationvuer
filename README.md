@@ -7,7 +7,7 @@ SimulationVuer is a [Vue](https://vuejs.org/) component to configure and run a [
 To install the package to your Vue application:
 
 ```bash
-yarn install @abi-software/simulationvuer
+npm install @abi-software/simulationvuer
 ```
 
 To include the package in your script:
@@ -73,23 +73,23 @@ python3 api/api.py
 #### Setup
 
 ```bash
-yarn
+npm install
 ```
 
 #### Run the sample application
 
 ```bash
-yarn serve
+npm run serve
 ```
 
 #### Compile and minify for production
 
 ```bash
-yarn build
+npm run build
 ```
 
 #### Lint and fix files
 
 ```bash
-yarn lint
+npm run lint
 ```
