@@ -5,7 +5,7 @@
       This vuer demonstrates the simulation of the <a :href="workspaceUrl">Fabbri <em>et al.</em> (2017)</a> model.
     </p>
     <hr />
-    <SimulationVuer :url="url()" />
+    <SimulationVuer :flaskUrl="flaskUrl()" :modelUrl="modelUrl()" />
   </div>
 </template>
 
@@ -24,7 +24,10 @@ export default {
     };
   },
   methods: {
-    url() {
+    flaskUrl() {
+      return "http://localhost:5000";
+    },
+    modelUrl() {
       return this.workspaceUrl + "/" + this.cellmlFileName;
     },
   },

@@ -89,7 +89,7 @@ export default {
   components: {
     PlotVuer,
   },
-  props: ["url"],
+  props: ["flaskUrl", "modelUrl"],
   data: function () {
     return {
       data: null,
@@ -120,7 +120,7 @@ export default {
       this.error = null;
 
       axios
-        .get("http://localhost:5000/run?url=" + encodeURIComponent(this.url) + "&starting_point=" + this.data.simulation.starting_point + "&ending_point=" + this.data.simulation.ending_point + "&point_interval=" + this.data.simulation.point_interval + "&V_ode=" + this.data.model[0].value + "&ACh=" + this.data.model[1].value + "&Iso_1_uM=" + this.data.model[2].value)
+        .get(this.flaskUrl + "/run?url=" + encodeURIComponent(this.modelUrl) + "&starting_point=" + this.data.simulation.starting_point + "&ending_point=" + this.data.simulation.ending_point + "&point_interval=" + this.data.simulation.point_interval + "&V_ode=" + this.data.model[0].value + "&ACh=" + this.data.model[1].value + "&Iso_1_uM=" + this.data.model[2].value)
         .then((res) => {
           this.retrievingResults = false;
 
@@ -144,7 +144,7 @@ export default {
   },
   created() {
     axios
-      .get("http://localhost:5000/info?url=" + encodeURIComponent(this.url))
+      .get(this.flaskUrl + "/info?url=" + encodeURIComponent(this.modelUrl))
       .then((res) => {
         if (res.data.valid) {
           this.data = res.data;
