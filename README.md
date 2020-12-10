@@ -63,7 +63,7 @@ npm run serve
 #### Compile and minify for production
 
 ```bash
-npm run build
+npm run build-bundle
 ```
 
 #### Lint and fix files
