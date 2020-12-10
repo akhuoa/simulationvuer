@@ -23,7 +23,9 @@ To register in a Vue component:
 export default {
   ...
   components: {
-    SimulationVuer
+    ...,
+    SimulationVuer,
+    ...
   }
   ...
 }
@@ -33,7 +35,7 @@ The above registers the SimulationVuer component into the global scope.
 You can now use the SimulationVuer in your Vue template as follows:
 
 ```html
-<SimulationVuer/>
+<SimulationVuer />
 ```
 
 ## Project setup
