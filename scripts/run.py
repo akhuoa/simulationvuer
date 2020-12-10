@@ -32,7 +32,7 @@ def run(mode, level):
     print(json.dumps([{
         'x': results.voi().values().tolist(),
         'y': results.states()['Membrane/V_ode'].values().tolist(),
-    }]))
+    }], indent=4))
 
     oc.close_simulation(simulation)
 
