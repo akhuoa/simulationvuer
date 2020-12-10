@@ -2,29 +2,16 @@
   <div class="simulation-container">
     <el-container class="el-container">
       <el-aside width="220px">
-        <p class="title">
-          Input parameters
-        </p>
-        <p>
-          Simulation mode
-        </p>
+        <p class="title">Input parameters</p>
+        <p>Simulation mode</p>
         <el-select v-model="mode" @change="modeChanged()">
-          <el-option v-for="mode in modes"
-            :key="mode.value"
-            :label="mode.label"
-            :value="mode.value" />
+          <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
-        <p>
-          Stimulation level
-        </p>
+        <p>Stimulation level</p>
         <el-container>
           <el-main>
             <div class="block">
-              <el-slider class="el-slider" v-model="level"
-                :max="10"
-                :show-tooltip="false" :show-input="false"
-                :format-tooltip="formatTooltip"
-                :disabled="mode == 0" />
+              <el-slider class="el-slider" v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
               <span class="level-string">{{ levelString }}</span>
             </div>
           </el-main>
@@ -37,8 +24,7 @@
         </div>
       </el-aside>
       <el-container class="plot-vuer-container">
-        <PlotVuer ref="plotVuer" class="plot-vuer"
-          :dataInput="data" :plotType="'plotly-only'" />
+        <PlotVuer ref="plotVuer" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
       </el-container>
     </el-container>
   </div>
@@ -57,32 +43,32 @@ import {
   Select,
   Slider,
 } from "element-ui";
-import SinusData from '../../data/sinus.json';
-import Stellate_0_0_Data from '../../data/stellate_0.0.json';
-import Stellate_0_1_Data from '../../data/stellate_0.1.json';
-import Stellate_0_2_Data from '../../data/stellate_0.2.json';
-import Stellate_0_3_Data from '../../data/stellate_0.3.json';
-import Stellate_0_4_Data from '../../data/stellate_0.4.json';
-import Stellate_0_5_Data from '../../data/stellate_0.5.json';
-import Stellate_0_6_Data from '../../data/stellate_0.6.json';
-import Stellate_0_7_Data from '../../data/stellate_0.7.json';
-import Stellate_0_8_Data from '../../data/stellate_0.8.json';
-import Stellate_0_9_Data from '../../data/stellate_0.9.json';
-import Stellate_1_0_Data from '../../data/stellate_1.0.json';
-import Vagal_0_0_Data from '../../data/vagal_0.0.json';
-import Vagal_0_1_Data from '../../data/vagal_0.1.json';
-import Vagal_0_2_Data from '../../data/vagal_0.2.json';
-import Vagal_0_3_Data from '../../data/vagal_0.3.json';
-import Vagal_0_4_Data from '../../data/vagal_0.4.json';
-import Vagal_0_5_Data from '../../data/vagal_0.5.json';
-import Vagal_0_6_Data from '../../data/vagal_0.6.json';
-import Vagal_0_7_Data from '../../data/vagal_0.7.json';
-import Vagal_0_8_Data from '../../data/vagal_0.8.json';
-import Vagal_0_9_Data from '../../data/vagal_0.9.json';
-import Vagal_1_0_Data from '../../data/vagal_1.0.json';
+import SinusData from "../../data/sinus.json";
+import Stellate_0_0_Data from "../../data/stellate_0.0.json";
+import Stellate_0_1_Data from "../../data/stellate_0.1.json";
+import Stellate_0_2_Data from "../../data/stellate_0.2.json";
+import Stellate_0_3_Data from "../../data/stellate_0.3.json";
+import Stellate_0_4_Data from "../../data/stellate_0.4.json";
+import Stellate_0_5_Data from "../../data/stellate_0.5.json";
+import Stellate_0_6_Data from "../../data/stellate_0.6.json";
+import Stellate_0_7_Data from "../../data/stellate_0.7.json";
+import Stellate_0_8_Data from "../../data/stellate_0.8.json";
+import Stellate_0_9_Data from "../../data/stellate_0.9.json";
+import Stellate_1_0_Data from "../../data/stellate_1.0.json";
+import Vagal_0_0_Data from "../../data/vagal_0.0.json";
+import Vagal_0_1_Data from "../../data/vagal_0.1.json";
+import Vagal_0_2_Data from "../../data/vagal_0.2.json";
+import Vagal_0_3_Data from "../../data/vagal_0.3.json";
+import Vagal_0_4_Data from "../../data/vagal_0.4.json";
+import Vagal_0_5_Data from "../../data/vagal_0.5.json";
+import Vagal_0_6_Data from "../../data/vagal_0.6.json";
+import Vagal_0_7_Data from "../../data/vagal_0.7.json";
+import Vagal_0_8_Data from "../../data/vagal_0.8.json";
+import Vagal_0_9_Data from "../../data/vagal_0.9.json";
+import Vagal_1_0_Data from "../../data/vagal_1.0.json";
 
-var StellateData = [Stellate_0_0_Data, Stellate_0_1_Data, Stellate_0_2_Data, Stellate_0_3_Data, Stellate_0_4_Data, Stellate_0_5_Data, Stellate_0_6_Data, Stellate_0_7_Data, Stellate_0_8_Data, Stellate_0_9_Data, Stellate_1_0_Data]
-var VagalData = [Vagal_0_0_Data, Vagal_0_1_Data, Vagal_0_2_Data, Vagal_0_3_Data, Vagal_0_4_Data, Vagal_0_5_Data, Vagal_0_6_Data, Vagal_0_7_Data, Vagal_0_8_Data, Vagal_0_9_Data, Vagal_1_0_Data]
+var StellateData = [Stellate_0_0_Data, Stellate_0_1_Data, Stellate_0_2_Data, Stellate_0_3_Data, Stellate_0_4_Data, Stellate_0_5_Data, Stellate_0_6_Data, Stellate_0_7_Data, Stellate_0_8_Data, Stellate_0_9_Data, Stellate_1_0_Data];
+var VagalData = [Vagal_0_0_Data, Vagal_0_1_Data, Vagal_0_2_Data, Vagal_0_3_Data, Vagal_0_4_Data, Vagal_0_5_Data, Vagal_0_6_Data, Vagal_0_7_Data, Vagal_0_8_Data, Vagal_0_9_Data, Vagal_1_0_Data];
 var NoData = [{}];
 
 Vue.use(Aside);
@@ -103,16 +89,20 @@ export default {
       level: 0,
       levelString: "0%",
       mode: 0,
-      modes: [{
-        label: "Normal sinus rhythm",
-        value: 0
-      }, {
-        label: "Stellate stimulation",
-        value: 1,
-      }, {
-        label: "Vagal stimulation",
-        value: 2
-      }],
+      modes: [
+        {
+          label: "Normal sinus rhythm",
+          value: 0,
+        },
+        {
+          label: "Stellate stimulation",
+          value: 1,
+        },
+        {
+          label: "Vagal stimulation",
+          value: 2,
+        },
+      ],
       data: NoData,
     };
   },
@@ -128,15 +118,16 @@ export default {
     },
     runSimulation() {
       switch (this.mode) {
-        case 1:  // Stellate stimulation.
+        case 1: // Stellate stimulation.
           this.data = StellateData[this.level];
 
           break;
-        case 2:  // Vagal stimulation.
+        case 2: // Vagal stimulation.
           this.data = VagalData[this.level];
 
           break;
-        default:  // Normal sinus rhythm.
+        default:
+          // Normal sinus rhythm.
           this.data = SinusData;
       }
     },

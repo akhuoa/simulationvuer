@@ -7,7 +7,7 @@
       </p>
     </div>
     <hr />
-    <SimulationVuer/>
+    <SimulationVuer />
   </div>
 </template>
 
