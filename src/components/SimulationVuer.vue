@@ -34,15 +34,7 @@
 import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import {
-  Aside,
-  Button,
-  Container,
-  Main,
-  Option,
-  Select,
-  Slider,
-} from "element-ui";
+import { Aside, Button, Container, Main, Option, Select, Slider } from "element-ui";
 import SinusData from "../../data/sinus.json";
 import Stellate_0_0_Data from "../../data/stellate_0.0.json";
 import Stellate_0_1_Data from "../../data/stellate_0.1.json";
