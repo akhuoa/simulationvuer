@@ -39,5 +39,17 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "description": "SimulationVuer is a [Vue](https://vuejs.org/) component to configure and run a [CellML](https://cellml.org/)-based model of some biological process, and to visualise the results of that simulation.",
+  "main": "src/main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ABI-Software/simulationvuer.git"
+  },
+  "author": "Alan Garny",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ABI-Software/simulationvuer/issues"
+  },
+  "homepage": "https://github.com/ABI-Software/simulationvuer#readme"
 }
