@@ -33,10 +33,8 @@ The above registers the SimulationVuer component into the global scope.
 You can now use the SimulationVuer in your Vue template as follows:
 
 ```html
-<SimulationVuer :flaskUrl="..." :modelUrl="..." />
+<SimulationVuer/>
 ```
-
-with `flaskUrl` the URL of the [Flask](https://palletsprojects.com/p/flask/) application (see below) and `modelUrl` the URL of a CellML/[SED-ML](https://sed-ml.github.io/) file.
 
 ## Project setup
 
@@ -44,30 +42,6 @@ with `flaskUrl` the URL of the [Flask](https://palletsprojects.com/p/flask/) app
 
 ```bash
 git clone https://github.com/ABI-Software/simulationvuer.git
-```
-
-### Flask application
-
-SimulationVuer relies on [OpenCOR](https://opencor.ws/) to configure and run a model, which can be done using its [Python](https://www.python.org/) interface.
-However, a Vue component cannot run a Python script directly, so we do this through a Flask-based [API](https://en.wikipedia.org/wiki/API).
-
-For this to work, OpenCOR must be installed on the server and Flask be available in your Python environment:
-
-```bash
-pip3 install flask flask-cors
-```
-
-Next, you need to specify where our Flask application can find OpenCOR's Python shell:
-
-```bash
-export OPENCOR_PYTHONSHELL=[OpenCOR]/pythonshell
-```
-
-Now, we can start our Flask application:
-
-```bash
-cd [SimulationVuer]
-python3 api/api.py
 ```
 
 ### Vue component

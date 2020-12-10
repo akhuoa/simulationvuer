@@ -1,11 +1,13 @@
 <template>
   <div id="app">
-    <h1>SimulationVuer</h1>
-    <p>
-      This vuer demonstrates the simulation of the <a :href="workspaceUrl">Fabbri <em>et al.</em> (2017)</a> model.
-    </p>
+    <div class="app">
+      <h1>SimulationVuer</h1>
+      <p>
+        This vuer demonstrates the simulation of the <a href="https://models.physiomeproject.org/e/568">Fabbri <em>et al.</em> (2017)</a> model.
+      </p>
+    </div>
     <hr />
-    <SimulationVuer :flaskUrl="flaskUrl()" :modelUrl="modelUrl()" />
+    <SimulationVuer/>
   </div>
 </template>
 
@@ -17,20 +19,6 @@ export default {
   components: {
     SimulationVuer,
   },
-  data: function () {
-    return {
-      workspaceUrl: "https://models.physiomeproject.org/e/568",
-      cellmlFileName: "HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml",
-    };
-  },
-  methods: {
-    flaskUrl() {
-      return "http://localhost:5000";
-    },
-    modelUrl() {
-      return this.workspaceUrl + "/" + this.cellmlFileName;
-    },
-  },
 };
 </script>
 
@@ -40,5 +28,8 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+div.app {
+  text-align: center;
 }
 </style>
