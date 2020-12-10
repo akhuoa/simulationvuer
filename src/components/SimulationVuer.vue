@@ -54,7 +54,6 @@ import {
   Container,
   Main,
   Option,
-  Popover,  // Needed by PlotVuer (!?).
   Select,
   Slider,
 } from "element-ui";
@@ -91,7 +90,6 @@ Vue.use(Button);
 Vue.use(Container);
 Vue.use(Main);
 Vue.use(Option);
-Vue.use(Popover);
 Vue.use(Select);
 Vue.use(Slider);
 
