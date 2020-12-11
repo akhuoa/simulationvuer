@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --mode static",
     "build": "vue-cli-service build",
     "build-bundle": "vue-cli-service build --target lib --name simulationvuer ./src/components/index.js",
     "lint": "vue-cli-service lint"
@@ -20,7 +20,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-node-externals": "^2.5.2"
   },
   "eslintConfig": {
     "root": true,
