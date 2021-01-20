@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve --mode static",
@@ -43,7 +43,16 @@
     "not dead"
   ],
   "description": "SimulationVuer is a [Vue](https://vuejs.org/) component to configure and run a [CellML](https://cellml.org/)-based model of some biological process, and to visualise the results of that simulation.",
-  "main": "src/main.js",
+  "main": "./dist/simulationvuer.common.js",
+  "files": [
+    "data/*",
+    "dist/*",
+    "public/*",
+    "scripts/*",
+    "src/*",
+    "*.json",
+    "*.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ABI-Software/simulationvuer.git"
