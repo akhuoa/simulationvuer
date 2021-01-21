@@ -1,6 +1,6 @@
 <template>
-  <div class="simulation-container">
-    <el-container class="el-container">
+  <div>
+    <el-container>
       <el-aside width="220px">
         <p class="title">Input parameters</p>
         <p>Simulation mode</p>
@@ -11,7 +11,7 @@
         <el-container>
           <el-main>
             <div class="block">
-              <el-slider class="el-slider" v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
+              <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
               <span class="level-string">{{ levelString }}</span>
             </div>
           </el-main>
@@ -20,7 +20,7 @@
           <el-button type="primary" @click="runSimulation()">Run simulation</el-button>
         </div>
         <div class="button">
-          <el-button class="el-button" @click="goToOsparc()">Run on oSPARC</el-button>
+          <el-button @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
       <el-container class="plot-vuer-container">
@@ -139,9 +139,6 @@ export default {
 .el-aside {
   padding: 12px 20px 12px 12px;
 }
-.el-container {
-  text-align: start;
-}
 .el-main {
   margin: -16px 0 8px 0px;
 }
@@ -179,11 +176,6 @@ div.button {
 }
 div.button .el-button {
   width: 146px;
-}
-div.simulation-container {
-  width: 100%;
-  height: 100%;
-  text-align: center;
 }
 p.title {
   font-weight: bold;
