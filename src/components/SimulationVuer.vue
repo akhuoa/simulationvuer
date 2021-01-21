@@ -24,7 +24,7 @@
         </div>
       </el-aside>
       <el-container class="plot-vuer-container">
-        <PlotVuer ref="plotVuer" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
+        <PlotVuer class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
       </el-container>
     </el-container>
   </div>
