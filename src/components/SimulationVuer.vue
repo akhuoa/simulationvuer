@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-container>
+  <div class="simulation-container">
+    <el-container class="main-el-container">
       <el-aside width="220px">
         <p class="title">Input parameters</p>
         <p>Simulation mode</p>
@@ -157,6 +157,9 @@ export default {
   left: 8px;
   margin-bottom: 32px;
 }
+.main-el-container {
+  height: 100%;
+}
 .plot-vuer {
   width: 100%;
 }
@@ -176,6 +179,9 @@ div.button {
 }
 div.button .el-button {
   width: 146px;
+}
+div.simulation-container {
+  height: 100%;
 }
 p.title {
   font-weight: bold;
