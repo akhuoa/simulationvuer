@@ -138,7 +138,6 @@ export default {
 }
 .el-aside {
   padding: 12px 20px 12px 12px;
-  border: 1px solid #dcdfe6;
 }
 .el-container {
   text-align: start;
@@ -166,7 +165,7 @@ export default {
 }
 .plot-vuer-container {
   border: solid #dcdfe6;
-  border-width: 1px 1px 1px 0px;
+  border-width: 0 0 0 1px;
 }
 div.block {
   position: absolute;
