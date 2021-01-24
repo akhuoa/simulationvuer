@@ -4,7 +4,7 @@
       <el-aside width="220px">
         <p class="title">Input parameters</p>
         <p>Simulation mode</p>
-        <el-select v-model="mode" @change="modeChanged()">
+        <el-select v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
         <p>Stimulation level</p>
@@ -17,10 +17,10 @@
           </el-main>
         </el-container>
         <div class="button">
-          <el-button type="primary" @click="runSimulation()">Run simulation</el-button>
+          <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
         <div class="button">
-          <el-button @click="goToOsparc()">Run on oSPARC</el-button>
+          <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
       <el-container class="plot-vuer-container">
@@ -178,7 +178,7 @@ div.button {
   justify-content: flex-end;
 }
 div.button .el-button {
-  width: 146px;
+  width: 121px;
 }
 div.simulation-container {
   height: 100%;
