@@ -24,6 +24,7 @@
         </div>
       </el-aside>
       <el-container class="plot-vuer-container">
+        <Running :active.sync="runningActive" :is-full-page="runningFullPage" :color="runningColor" />
         <PlotVuer class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
       </el-container>
     </el-container>
@@ -32,6 +33,8 @@
 
 <script>
 import Vue from "vue";
+import Running from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Main, Option, Select, Slider } from "element-ui";
@@ -75,11 +78,16 @@ export default {
   name: "SimulationVuer",
   components: {
     PlotVuer,
+    Running,
   },
   data: function () {
     return {
       level: 0,
       levelString: "0%",
+      runningActive: false,
+      runningColor: "#8300bf",
+      runningFullPage: false,
+      runningTimeout: 789,
       mode: 0,
       modes: [
         {
@@ -109,19 +117,25 @@ export default {
       this.data = NoData;
     },
     runSimulation() {
-      switch (this.mode) {
-        case 1: // Stellate stimulation.
-          this.data = StellateData[this.level];
+      this.runningActive = true;
 
-          break;
-        case 2: // Vagal stimulation.
-          this.data = VagalData[this.level];
+      setTimeout(() => {
+        this.runningActive = false
 
-          break;
-        default:
-          // Normal sinus rhythm.
-          this.data = SinusData;
-      }
+        switch (this.mode) {
+          case 1: // Stellate stimulation.
+            this.data = StellateData[this.level];
+
+            break;
+          case 2: // Vagal stimulation.
+            this.data = VagalData[this.level];
+
+            break;
+          default:
+            // Normal sinus rhythm.
+            this.data = SinusData;
+        }
+      }, this.runningTimeout);
     },
   },
 };

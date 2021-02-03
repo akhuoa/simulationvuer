@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve --mode static",
@@ -11,7 +11,8 @@
   "dependencies": {
     "@abi-software/plotvuer": "^0.2.33",
     "element-ui": "^2.14.1",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-loading-overlay": "^3.4.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
