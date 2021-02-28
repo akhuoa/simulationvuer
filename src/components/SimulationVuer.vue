@@ -2,7 +2,7 @@
   <div class="simulation-container">
     <el-container class="main-el-container">
       <el-aside width="220px">
-        <p class="title">Input parameters</p>
+        <p class="input-parameters">Input parameters</p>
         <p>Simulation mode</p>
         <el-select v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
@@ -197,8 +197,8 @@ div.button .el-button {
 div.simulation-container {
   height: 100%;
 }
-p.title {
-  font-weight: bold;
+p.input-parameters {
+  font-weight: medium;
 }
 span.level-string {
   position: absolute;
