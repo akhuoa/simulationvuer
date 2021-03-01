@@ -144,6 +144,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
+>>> .el-aside {
+  padding: 12px 20px 12px 12px;
+}
+>>> .el-main {
+  margin: -16px 0 8px 0px;
+}
+>>> .el-select {
+  margin-left: 8px;
+}
 >>> .el-select .el-input__inner:focus,
 >>> .el-select .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
@@ -153,15 +162,6 @@ export default {
 }
 >>> .el-slider__button {
   border-color: #8300bf;
-}
-.el-aside {
-  padding: 12px 20px 12px 12px;
-}
-.el-main {
-  margin: -16px 0 8px 0px;
-}
-.el-select {
-  margin-left: 8px;
 }
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
