@@ -157,6 +157,13 @@ export default {
 >>> .el-select .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
 }
+>>> .el-slider {
+  position: absolute;
+  width: 106px;
+  top: -18px;
+  left: 8px;
+  margin-bottom: 32px;
+}
 >>> .el-slider__bar {
   background-color: #8300bf;
 }
@@ -165,13 +172,6 @@ export default {
 }
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-}
-.el-slider {
-  position: absolute;
-  width: 106px;
-  top: -18px;
-  left: 8px;
-  margin-bottom: 32px;
 }
 .main-el-container {
   height: 100%;
