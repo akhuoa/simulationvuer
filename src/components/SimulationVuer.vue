@@ -186,10 +186,8 @@ export default {
   margin-bottom: 8px;
 }
 div.slider {
-  margin-top: 4px;
   position: absolute;
-  left: 32px;
-  width: 160px;
+  margin-top: 4px;
 }
 div.run-simulation,
 div.run-on-osparc {
