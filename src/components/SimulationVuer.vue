@@ -1,7 +1,7 @@
 <template>
   <div class="simulation-container">
     <el-container class="main-el-container">
-      <el-aside width="220px">
+      <el-aside width="212px">
         <p class="input-parameters">Input parameters</p>
         <p class="simulation-mode">Simulation mode</p>
         <el-select v-model="mode" size="mini" @change="modeChanged()">
@@ -10,7 +10,7 @@
         <p class="simulation-level">Stimulation level</p>
         <div class="slider">
           <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
-          <span class="level-string">{{ levelString }}</span>
+          <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" @change="handleChange" />
         </div>
         <div class="run-simulation">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
@@ -33,7 +33,7 @@ import Running from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import { Aside, Button, Container, Main, Option, Select, Slider } from "element-ui";
+import { Aside, Button, Container, InputNumber, Main, Option, Select, Slider } from "element-ui";
 import SinusData from "@/../data/sinus.json";
 import Stellate_0_0_Data from "@/../data/stellate_0.0.json";
 import Stellate_0_1_Data from "@/../data/stellate_0.1.json";
@@ -65,6 +65,7 @@ var NoData = [{}];
 Vue.use(Aside);
 Vue.use(Button);
 Vue.use(Container);
+Vue.use(InputNumber);
 Vue.use(Main);
 Vue.use(Option);
 Vue.use(Select);
@@ -143,6 +144,16 @@ export default {
 >>> .el-aside {
   padding: 12px 20px 12px 12px;
 }
+>>> .el-input-number {
+  top: -12px;
+  padding-left: 132px;
+}
+>>> .el-input-number .el-input {
+  width: 48px;
+}
+>>> .el-input-number .el-input__inner:focus {
+  border-color: #8300bf;
+}
 >>> .el-main {
   margin: -16px 0 8px 0px;
 }
@@ -155,8 +166,8 @@ export default {
 }
 >>> .el-slider {
   position: absolute;
-  width: 106px;
-  top: -18px;
+  width: 110px;
+  top: -16px;
   left: 8px;
   margin-bottom: 32px;
 }
@@ -210,18 +221,14 @@ div.simulation-container {
 p.input-parameters {
   font-weight: medium;
 }
-span.level-string {
-  position: absolute;
-  width: 25px;
-  top: -9px;
-  right: 0px;
-}
 </style>
 <style scoped src="../styles/purple/aside.css">
 </style>
 <style scoped src="../styles/purple/button.css">
 </style>
 <style scoped src="../styles/purple/container.css">
+</style>
+<style scoped src="../styles/purple/input-number.css">
 </style>
 <style scoped src="../styles/purple/option.css">
 </style>
