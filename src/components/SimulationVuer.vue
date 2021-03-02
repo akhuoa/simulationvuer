@@ -9,7 +9,7 @@
         </el-select>
         <p class="simulation-level">Stimulation level</p>
         <div class="slider">
-          <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
+          <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
           <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" @change="handleChange" />
         </div>
         <div class="run-simulation">
@@ -80,7 +80,6 @@ export default {
   data: function () {
     return {
       level: 0,
-      levelString: "0%",
       runningActive: false,
       runningColor: "#8300bf",
       runningFullPage: false,
@@ -104,9 +103,6 @@ export default {
     };
   },
   methods: {
-    formatTooltip(value) {
-      this.levelString = 10 * value + "%";
-    },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
@@ -166,7 +162,7 @@ export default {
 }
 >>> .el-slider {
   position: absolute;
-  width: 110px;
+  width: 108px;
   top: -16px;
   left: 8px;
   margin-bottom: 32px;
