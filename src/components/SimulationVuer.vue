@@ -3,11 +3,11 @@
     <el-container class="main-el-container">
       <el-aside width="220px">
         <p class="input-parameters">Input parameters</p>
-        <p>Simulation mode</p>
+        <p class="simulation-mode">Simulation mode</p>
         <el-select v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
-        <p>Stimulation level</p>
+        <p class="simulation-level">Stimulation level</p>
         <el-container>
           <el-main>
             <div class="block">
@@ -182,6 +182,12 @@ export default {
 .plot-vuer-container {
   border: solid #dcdfe6;
   border-width: 0 0 0 1px;
+}
+.simulation-mode {
+  margin-bottom: 4px;
+}
+.simulation-level {
+  margin-bottom: 8px;
 }
 div.block {
   position: absolute;
