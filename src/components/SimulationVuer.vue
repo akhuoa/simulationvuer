@@ -10,7 +10,7 @@
         <p class="simulation-level">Stimulation level</p>
         <div class="slider">
           <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
-          <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" @change="handleChange" />
+          <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" :disabled="mode == 0" />
         </div>
         <div class="run-simulation">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
