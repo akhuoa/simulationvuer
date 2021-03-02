@@ -173,6 +173,9 @@ export default {
 >>> .el-slider__button {
   border-color: #8300bf;
 }
+.el-button:hover {
+    box-shadow: -3px 2px 4px #00000040;
+}
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
 }
@@ -210,6 +213,15 @@ div.run-on-osparc {
 div.run-simulation .el-button,
 div.run-on-osparc .el-button {
   width: 121px;
+}
+div.run-simulation .el-button {
+  background-color: #8300bf;
+  border-color: #8300bf;
+}
+div.run-on-osparc .el-button {
+  background-color: #f9f2fc;
+  color: #8300bf;
+  border-color: #8300bf;
 }
 div.simulation-container {
   height: 100%;
