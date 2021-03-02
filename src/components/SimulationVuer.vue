@@ -8,18 +8,14 @@
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
         <p class="simulation-level">Stimulation level</p>
-        <el-container>
-          <el-main>
-            <div class="block">
-              <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
-              <span class="level-string">{{ levelString }}</span>
-            </div>
-          </el-main>
-        </el-container>
-        <div class="button">
+        <div class="slider">
+          <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
+          <span class="level-string">{{ levelString }}</span>
+        </div>
+        <div class="run-simulation">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
-        <div class="button">
+        <div class="run-on-osparc">
           <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
@@ -189,17 +185,25 @@ export default {
 .simulation-level {
   margin-bottom: 8px;
 }
-div.block {
+div.slider {
+  margin-top: 4px;
   position: absolute;
-  width: 160px;
   left: 32px;
+  width: 160px;
 }
-div.button {
-  margin-top: 8px;
+div.run-simulation,
+div.run-on-osparc {
   display: flex;
   justify-content: flex-end;
 }
-div.button .el-button {
+div.run-simulation {
+  margin-top: 48px;
+}
+div.run-on-osparc {
+  margin-top: 8px;
+}
+div.run-simulation .el-button,
+div.run-on-osparc .el-button {
   width: 121px;
 }
 div.simulation-container {
