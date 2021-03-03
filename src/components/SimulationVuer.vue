@@ -2,12 +2,12 @@
   <div class="simulation-container">
     <el-container class="main-el-container">
       <el-aside width="212px">
-        <p class="input-parameters">Input parameters</p>
-        <p class="simulation-mode">Simulation mode</p>
+        <p class="header input-parameters">Input parameters</p>
+        <p class="header simulation-mode">Simulation mode</p>
         <el-select v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
-        <p class="simulation-level">Stimulation level</p>
+        <p class="header simulation-level">Stimulation level</p>
         <div class="slider">
           <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
           <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" :disabled="mode == 0" />
@@ -178,6 +178,10 @@ export default {
 }
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+.header {
+  letter-spacing: 0;
+  text-align: start;
 }
 .input-parameters {
   font-weight: medium;
