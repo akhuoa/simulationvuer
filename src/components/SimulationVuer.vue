@@ -174,10 +174,13 @@ export default {
   border-color: #8300bf;
 }
 .el-button:hover {
-    box-shadow: -3px 2px 4px #00000040;
+  box-shadow: -3px 2px 4px #00000040;
 }
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+.input-parameters {
+  font-weight: medium;
 }
 .main-el-container {
   height: 100%;
@@ -189,45 +192,41 @@ export default {
   border: solid #dcdfe6;
   border-width: 0 0 0 1px;
 }
+.run-simulation,
+.run-on-osparc {
+  display: flex;
+  justify-content: flex-end;
+}
+.run-simulation {
+  margin-top: 48px;
+}
+.run-on-osparc {
+  margin-top: 8px;
+}
+.run-simulation .el-button,
+.run-on-osparc .el-button {
+  width: 121px;
+  border-color: #8300bf;
+}
+.run-simulation .el-button {
+  background-color: #8300bf;
+}
+.run-on-osparc .el-button {
+  background-color: #f9f2fc;
+  color: #8300bf;
+}
+.simulation-container {
+  height: 100%;
+}
 .simulation-mode {
   margin-bottom: 4px;
 }
 .simulation-level {
   margin-bottom: 8px;
 }
-div.slider {
+.slider {
   position: absolute;
   margin-top: 4px;
-}
-div.run-simulation,
-div.run-on-osparc {
-  display: flex;
-  justify-content: flex-end;
-}
-div.run-simulation {
-  margin-top: 48px;
-}
-div.run-on-osparc {
-  margin-top: 8px;
-}
-div.run-simulation .el-button,
-div.run-on-osparc .el-button {
-  width: 121px;
-}
-div.run-simulation .el-button {
-  background-color: #8300bf;
-  border-color: #8300bf;
-}
-div.run-on-osparc .el-button {
-  background-color: #f9f2fc;
-  color: #8300bf;
-  border-color: #8300bf;
-}
-div.simulation-container {
-  height: 100%;
-}
-p.input-parameters {
-  font-weight: medium;
 }
 </style>
 <style scoped src="../styles/purple/aside.css">
