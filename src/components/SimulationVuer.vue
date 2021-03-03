@@ -1,25 +1,21 @@
 <template>
   <div class="simulation-container">
     <el-container class="main-el-container">
-      <el-aside width="220px">
-        <p class="title">Input parameters</p>
-        <p>Simulation mode</p>
+      <el-aside width="212px">
+        <p class="input-parameters">Input parameters</p>
+        <p class="simulation-mode">Simulation mode</p>
         <el-select v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
-        <p>Stimulation level</p>
-        <el-container>
-          <el-main>
-            <div class="block">
-              <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :format-tooltip="formatTooltip" :disabled="mode == 0" />
-              <span class="level-string">{{ levelString }}</span>
-            </div>
-          </el-main>
-        </el-container>
-        <div class="button">
+        <p class="simulation-level">Stimulation level</p>
+        <div class="slider">
+          <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
+          <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" :disabled="mode == 0" />
+        </div>
+        <div class="run-simulation">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
-        <div class="button">
+        <div class="run-on-osparc">
           <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
@@ -33,11 +29,11 @@
 
 <script>
 import Vue from "vue";
-import Running from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/vue-loading.css';
+import Running from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import { Aside, Button, Container, Main, Option, Select, Slider } from "element-ui";
+import { Aside, Button, Container, InputNumber, Main, Option, Select, Slider } from "element-ui";
 import SinusData from "@/../data/sinus.json";
 import Stellate_0_0_Data from "@/../data/stellate_0.0.json";
 import Stellate_0_1_Data from "@/../data/stellate_0.1.json";
@@ -69,6 +65,7 @@ var NoData = [{}];
 Vue.use(Aside);
 Vue.use(Button);
 Vue.use(Container);
+Vue.use(InputNumber);
 Vue.use(Main);
 Vue.use(Option);
 Vue.use(Select);
@@ -83,7 +80,6 @@ export default {
   data: function () {
     return {
       level: 0,
-      levelString: "0%",
       runningActive: false,
       runningColor: "#8300bf",
       runningFullPage: false,
@@ -107,9 +103,6 @@ export default {
     };
   },
   methods: {
-    formatTooltip(value) {
-      this.levelString = 10 * value + "%";
-    },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
@@ -120,7 +113,7 @@ export default {
       this.runningActive = true;
 
       setTimeout(() => {
-        this.runningActive = false
+        this.runningActive = false;
 
         switch (this.mode) {
           case 1: // Stellate stimulation.
@@ -144,32 +137,47 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
+>>> .el-aside {
+  padding: 12px 20px 12px 12px;
+}
+>>> .el-input-number {
+  top: -12px;
+  padding-left: 132px;
+}
+>>> .el-input-number .el-input {
+  width: 48px;
+}
+>>> .el-input-number .el-input__inner:focus {
+  border-color: #8300bf;
+}
+>>> .el-main {
+  margin: -16px 0 8px 0px;
+}
+>>> .el-select {
+  margin-left: 8px;
+}
+>>> .el-select .el-input__inner:focus,
+>>> .el-select .el-input.is-focus .el-input__inner {
+  border-color: #8300bf;
+}
+>>> .el-slider {
+  position: absolute;
+  width: 108px;
+  top: -16px;
+  left: 8px;
+  margin-bottom: 32px;
+}
 >>> .el-slider__bar {
   background-color: #8300bf;
 }
 >>> .el-slider__button {
   border-color: #8300bf;
 }
-.el-aside {
-  padding: 12px 20px 12px 12px;
-}
-.el-main {
-  margin: -16px 0 8px 0px;
-}
-.el-select {
-  border-radius: 4px;
-  border: 1px solid #8300bf;
-  margin-left: 8px;
+.el-button:hover {
+    box-shadow: -3px 2px 4px #00000040;
 }
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-}
-.el-slider {
-  position: absolute;
-  width: 106px;
-  top: -18px;
-  left: 8px;
-  margin-bottom: 32px;
 }
 .main-el-container {
   height: 100%;
@@ -181,30 +189,45 @@ export default {
   border: solid #dcdfe6;
   border-width: 0 0 0 1px;
 }
-div.block {
-  position: absolute;
-  width: 160px;
-  left: 32px;
+.simulation-mode {
+  margin-bottom: 4px;
 }
-div.button {
-  margin-top: 8px;
+.simulation-level {
+  margin-bottom: 8px;
+}
+div.slider {
+  position: absolute;
+  margin-top: 4px;
+}
+div.run-simulation,
+div.run-on-osparc {
   display: flex;
   justify-content: flex-end;
 }
-div.button .el-button {
+div.run-simulation {
+  margin-top: 48px;
+}
+div.run-on-osparc {
+  margin-top: 8px;
+}
+div.run-simulation .el-button,
+div.run-on-osparc .el-button {
   width: 121px;
+}
+div.run-simulation .el-button {
+  background-color: #8300bf;
+  border-color: #8300bf;
+}
+div.run-on-osparc .el-button {
+  background-color: #f9f2fc;
+  color: #8300bf;
+  border-color: #8300bf;
 }
 div.simulation-container {
   height: 100%;
 }
-p.title {
-  font-weight: bold;
-}
-span.level-string {
-  position: absolute;
-  width: 25px;
-  top: -9px;
-  right: 0px;
+p.input-parameters {
+  font-weight: medium;
 }
 </style>
 <style scoped src="../styles/purple/aside.css">
@@ -212,6 +235,8 @@ span.level-string {
 <style scoped src="../styles/purple/button.css">
 </style>
 <style scoped src="../styles/purple/container.css">
+</style>
+<style scoped src="../styles/purple/input-number.css">
 </style>
 <style scoped src="../styles/purple/option.css">
 </style>
