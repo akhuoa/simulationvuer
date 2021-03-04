@@ -208,14 +208,18 @@ export default {
   margin-top: 8px;
 }
 .run-simulation .el-button,
-.run-on-osparc .el-button {
+.run-on-osparc .el-button,
+.run-simulation .el-button:hover,
+.run-on-osparc .el-button:hover {
   width: 121px;
   border-color: #8300bf;
 }
-.run-simulation .el-button {
+.run-simulation .el-button,
+.run-simulation .el-button:hover {
   background-color: #8300bf;
 }
-.run-on-osparc .el-button {
+.run-on-osparc .el-button,
+.run-on-osparc .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
