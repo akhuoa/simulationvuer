@@ -179,6 +179,9 @@ export default {
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
 }
+li.el-select-dropdown__item.selected {
+  color: #8300bf;
+}
 .header {
   letter-spacing: 0;
   text-align: start;
