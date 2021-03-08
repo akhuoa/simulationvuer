@@ -254,5 +254,3 @@ p.simulation-level {
 </style>
 <style scoped src="../styles/purple/slider.css">
 </style>
-<style>
-</style>
