@@ -1,6 +1,6 @@
 <template>
-  <div class="simulation-container">
-    <el-container class="main-el-container">
+  <div class="simulation-vuer">
+    <el-container class="main">
       <el-aside width="212px">
         <p class="header input-parameters">Input parameters</p>
         <p class="header simulation-mode">Simulation mode</p>
@@ -19,7 +19,7 @@
           <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
-      <el-container class="plot-vuer-container">
+      <el-container class="plot-vuer">
         <Running :active.sync="runningActive" :is-full-page="runningFullPage" :color="runningColor" />
         <PlotVuer class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
       </el-container>
@@ -140,6 +140,9 @@ export default {
 >>> .el-aside {
   padding: 12px 20px 12px 12px;
 }
+>>> .el-button:hover {
+  box-shadow: -3px 2px 4px #00000040;
+}
 >>> .el-input-number {
   top: -12px;
   padding-left: 132px;
@@ -173,64 +176,68 @@ export default {
 >>> .el-slider__button {
   border-color: #8300bf;
 }
-.el-button:hover {
-  box-shadow: -3px 2px 4px #00000040;
-}
-.el-select-dropdown__item {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-}
-.header {
-  letter-spacing: 0;
-  text-align: start;
-}
-.input-parameters {
-  font-weight: medium;
-}
-.main-el-container {
+.el-container.main {
   height: 100%;
 }
-.plot-vuer {
-  width: 100%;
-}
-.plot-vuer-container {
+.el-container.plot-vuer {
   border: solid #dcdfe6;
   border-width: 0 0 0 1px;
 }
-.run-simulation,
-.run-on-osparc {
+div.plot-vuer {
+  width: 100%;
+}
+div.run-simulation,
+div.run-on-osparc {
   display: flex;
   justify-content: flex-end;
 }
-.run-simulation {
+div.run-simulation {
   margin-top: 48px;
 }
-.run-on-osparc {
+div.run-on-osparc {
   margin-top: 8px;
 }
-.run-simulation .el-button,
-.run-on-osparc .el-button {
+div.run-simulation .el-button,
+div.run-on-osparc .el-button,
+div.run-simulation .el-button:hover,
+div.run-on-osparc .el-button:hover {
   width: 121px;
   border-color: #8300bf;
 }
-.run-simulation .el-button {
+div.run-simulation .el-button,
+div.run-simulation .el-button:hover {
   background-color: #8300bf;
 }
-.run-on-osparc .el-button {
+div.run-on-osparc .el-button,
+div.run-on-osparc .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
-.simulation-container {
+div.simulation-vuer {
   height: 100%;
 }
-.simulation-mode {
-  margin-bottom: 4px;
-}
-.simulation-level {
-  margin-bottom: 8px;
-}
-.slider {
+div.slider {
   position: absolute;
   margin-top: 4px;
+}
+li.el-select-dropdown__item {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+li.el-select-dropdown__item.selected {
+  color: #8300bf;
+}
+p.header {
+  letter-spacing: 0;
+  text-align: start;
+}
+p.input-parameters {
+  font-weight: medium;
+}
+p.simulation-mode {
+  margin-bottom: 4px;
+}
+p.simulation-level {
+  margin-bottom: 8px;
 }
 </style>
 <style scoped src="../styles/purple/aside.css">
@@ -246,4 +253,6 @@ export default {
 <style scoped src="../styles/purple/select.css">
 </style>
 <style scoped src="../styles/purple/slider.css">
+</style>
+<style>
 </style>
