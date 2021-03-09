@@ -4,7 +4,7 @@
       <el-aside width="212px">
         <p class="header input-parameters">Input parameters</p>
         <p class="header simulation-mode">Simulation mode</p>
-        <el-select class="mode" popper-class="mode-popper" v-model="mode" size="mini" @change="modeChanged()">
+        <el-select class="mode" popper-class="mode-popper" :popper-append-to-body="false" v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
         <p class="header simulation-level">Stimulation level</p>
