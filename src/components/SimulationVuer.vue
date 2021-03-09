@@ -179,6 +179,9 @@ export default {
 .mode {
   margin-left: 8px;
 }
+.mode >>> .el-input__inner {
+  font-family: Asap, sans-serif;
+}
 .mode >>> .el-input__inner:focus,
 .mode >>> .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
