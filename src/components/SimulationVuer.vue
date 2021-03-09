@@ -236,6 +236,7 @@ p.header {
   text-align: start;
 }
 p.input-parameters {
+  margin-top: 0;
   font-weight: 500 /* Medium */;
 }
 p.simulation-mode {
