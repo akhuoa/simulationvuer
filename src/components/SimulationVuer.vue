@@ -233,6 +233,7 @@ div.slider {
 p.header {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
+  margin: 16px 0;
   text-align: start;
 }
 p.input-parameters {
