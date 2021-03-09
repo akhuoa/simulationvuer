@@ -143,6 +143,13 @@ export default {
 >>> .el-button:hover {
   box-shadow: -3px 2px 4px #00000040;
 }
+>>> .el-container.main {
+  height: 100%;
+}
+>>> .el-container.plot-vuer {
+  border: solid #dcdfe6;
+  border-width: 0 0 0 1px;
+}
 >>> .el-input-number {
   top: -12px;
   padding-left: 132px;
@@ -175,13 +182,6 @@ export default {
 }
 >>> .el-slider__button {
   border-color: #8300bf;
-}
-.el-container.main {
-  height: 100%;
-}
-.el-container.plot-vuer {
-  border: solid #dcdfe6;
-  border-width: 0 0 0 1px;
 }
 div.plot-vuer {
   width: 100%;
