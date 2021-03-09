@@ -4,7 +4,7 @@
       <el-aside width="212px">
         <p class="header input-parameters">Input parameters</p>
         <p class="header simulation-mode">Simulation mode</p>
-        <el-select v-model="mode" size="mini" @change="modeChanged()">
+        <el-select class="mode" popper-class="mode-popper" v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
         <p class="header simulation-level">Stimulation level</p>
@@ -163,13 +163,6 @@ export default {
 >>> .el-main {
   margin: -16px 0 8px 0px;
 }
->>> .el-select {
-  margin-left: 8px;
-}
->>> .el-select .el-input__inner:focus,
->>> .el-select .el-input.is-focus .el-input__inner {
-  border-color: #8300bf;
-}
 >>> .el-slider {
   position: absolute;
   width: 108px;
@@ -182,6 +175,20 @@ export default {
 }
 >>> .el-slider__button {
   border-color: #8300bf;
+}
+.mode {
+  margin-left: 8px;
+}
+.mode >>> .el-input__inner:focus,
+.mode >>> .el-input.is-focus .el-input__inner {
+  border-color: #8300bf;
+}
+.mode-popper .el-select-dropdown__item {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+.mode-popper .el-select-dropdown__item.selected {
+  font-weight: normal;
+  color: #8300bf;
 }
 div.plot-vuer {
   width: 100%;
@@ -219,12 +226,6 @@ div.simulation-vuer {
 div.slider {
   position: absolute;
   margin-top: 4px;
-}
-li.el-select-dropdown__item {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-}
-li.el-select-dropdown__item.selected {
-  color: #8300bf;
 }
 p.header {
   letter-spacing: 0;
