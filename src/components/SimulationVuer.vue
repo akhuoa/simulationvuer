@@ -179,12 +179,15 @@ export default {
 .mode {
   margin-left: 8px;
 }
+.mode >>> .el-input__inner {
+  font-family: Asap, sans-serif;
+}
 .mode >>> .el-input__inner:focus,
 .mode >>> .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
 }
 .mode-popper .el-select-dropdown__item {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Asap, sans-serif;
 }
 .mode-popper .el-select-dropdown__item.selected {
   font-weight: normal;
@@ -228,11 +231,14 @@ div.slider {
   margin-top: 4px;
 }
 p.header {
+  font-family: Asap, sans-serif;
   letter-spacing: 0;
+  margin: 16px 0;
   text-align: start;
 }
 p.input-parameters {
-  font-weight: medium;
+  margin-top: 0;
+  font-weight: 500 /* Medium */;
 }
 p.simulation-mode {
   margin-bottom: 4px;
