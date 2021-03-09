@@ -232,7 +232,7 @@ p.header {
   text-align: start;
 }
 p.input-parameters {
-  font-weight: medium;
+  font-weight: 500 /* Medium */;
 }
 p.simulation-mode {
   margin-bottom: 4px;
