@@ -228,6 +228,7 @@ div.slider {
   margin-top: 4px;
 }
 p.header {
+  font-family: Asap, sans-serif;
   letter-spacing: 0;
   text-align: start;
 }
