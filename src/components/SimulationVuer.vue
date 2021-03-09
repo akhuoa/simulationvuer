@@ -184,7 +184,7 @@ export default {
   border-color: #8300bf;
 }
 .mode-popper .el-select-dropdown__item {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Asap, sans-serif;
 }
 .mode-popper .el-select-dropdown__item.selected {
   font-weight: normal;
