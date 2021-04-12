@@ -6,7 +6,7 @@ import sys
 
 def run(mode, level):
     simulation = oc.open_simulation(
-        'https://models.physiomeproject.org/e/568/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml')
+        'https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml')
 
     data = simulation.data()
 
