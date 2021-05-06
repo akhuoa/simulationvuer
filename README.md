@@ -35,8 +35,10 @@ The above registers the SimulationVuer component into the global scope.
 You can now use the SimulationVuer in your Vue template as follows:
 
 ```html
-<SimulationVuer />
+<SimulationVuer :apiLocation="apiLocation" />
 ```
+
+where `apiLocation` is the URL to the API location.
 
 ## Project setup
 

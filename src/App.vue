@@ -7,7 +7,7 @@
       </p>
     </div>
     <hr />
-    <SimulationVuer />
+    <SimulationVuer :apiLocation="apiLocation" />
   </div>
 </template>
 
@@ -18,6 +18,11 @@ export default {
   name: "App",
   components: {
     SimulationVuer,
+  },
+  data: function () {
+    return {
+      apiLocation: process.env.VUE_APP_API_LOCATION,
+    };
   },
 };
 </script>

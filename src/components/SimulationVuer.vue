@@ -77,6 +77,12 @@ export default {
     PlotVuer,
     Running,
   },
+  props: {
+    apiLocation: {
+      type: String,
+      default: "",
+    },
+  },
   data: function () {
     return {
       level: 0,
