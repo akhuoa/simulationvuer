@@ -105,9 +105,9 @@ export default {
           if (this.simulationValid) {
             this.data = [
               {
-                "x": data.results["environment/time"],
-                "y": data.results["Membrane/V"],
-              }
+                x: data.results["environment/time"],
+                y: data.results["Membrane/V"],
+              },
             ];
           } else {
             this.errorMessage = data.description;
