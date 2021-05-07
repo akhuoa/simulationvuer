@@ -21,7 +21,8 @@
       </el-aside>
       <el-container class="plot-vuer">
         <Running :active.sync="runningActive" :is-full-page="runningFullPage" :color="runningColor" />
-        <PlotVuer class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
+        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
+        <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
       </el-container>
     </el-container>
   </div>
@@ -85,6 +86,7 @@ export default {
   },
   data: function () {
     return {
+      errorMessage: "",
       level: 0,
       mode: 0,
       modes: [
@@ -114,27 +116,28 @@ export default {
     },
     modeChanged() {
       this.data = NoData;
+      this.simulationValid = true;
     },
     runSimulation() {
       this.runningActive = true;
 
-      setTimeout(() => {
-        this.runningActive = false;
+      fetch(this.apiLocation + "/simulation")
+        .then((response) => response.json())
+        .then((data) => {
+          this.runningActive = false;
+          this.simulationValid = data.status == "ok";
 
-        switch (this.mode) {
-          case 1: // Stellate stimulation.
-            this.data = StellateData[this.level];
-
-            break;
-          case 2: // Vagal stimulation.
-            this.data = VagalData[this.level];
-
-            break;
-          default:
-            // Normal sinus rhythm.
-            this.data = SinusData;
-        }
-      }, this.runningTimeout);
+          if (this.simulationValid) {
+            this.data = [
+              {
+                "x": data.results["environment/time"],
+                "y": data.results["Membrane/V"],
+              }
+            ];
+          } else {
+            this.errorMessage = data.description;
+          }
+        });
     },
   },
 };
@@ -242,6 +245,9 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
+p.error {
+  margin-left: 16px;
+}
 p.input-parameters {
   margin-top: 0;
   font-weight: 500 /* Medium */;
@@ -251,6 +257,9 @@ p.simulation-mode {
 }
 p.simulation-level {
   margin-bottom: 8px;
+}
+span.error {
+  font-weight: 500 /* Medium */;
 }
 </style>
 <style scoped src="../styles/purple/aside.css">
