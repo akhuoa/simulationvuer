@@ -96,7 +96,16 @@ export default {
     runSimulation() {
       this.runningActive = true;
 
-      fetch(this.apiLocation + "/simulation")
+      var model_url = "https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml";
+      var json_config = {
+        simulation: {
+          "Ending point": 3,
+          "Point interval": 0.001,
+        },
+        output: ["Membrane/V"],
+      };
+
+      fetch(this.apiLocation + "/simulation?model_url=" + model_url + "&json_config=" + JSON.stringify(json_config))
         .then((response) => response.json())
         .then((data) => {
           this.runningActive = false;
