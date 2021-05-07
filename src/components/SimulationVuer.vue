@@ -2,12 +2,12 @@
   <div class="simulation-vuer">
     <el-container class="main">
       <el-aside width="212px">
-        <p class="header input-parameters">Input parameters</p>
-        <p class="header simulation-mode">Simulation mode</p>
+        <p class="default input-parameters">Input parameters</p>
+        <p class="default simulation-mode">Simulation mode</p>
         <el-select class="mode" popper-class="mode-popper" :popper-append-to-body="false" v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
-        <p class="header simulation-level">Stimulation level</p>
+        <p class="default simulation-level">Stimulation level</p>
         <div class="slider">
           <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
           <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" :disabled="mode == 0" />
@@ -86,10 +86,6 @@ export default {
   data: function () {
     return {
       level: 0,
-      runningActive: false,
-      runningColor: "#8300bf",
-      runningFullPage: false,
-      runningTimeout: 789,
       mode: 0,
       modes: [
         {
@@ -106,6 +102,10 @@ export default {
         },
       ],
       data: NoData,
+      runningActive: false,
+      runningColor: "#8300bf",
+      runningFullPage: false,
+      simulationValid: true,
     };
   },
   methods: {
@@ -236,7 +236,7 @@ div.slider {
   position: absolute;
   margin-top: 4px;
 }
-p.header {
+p.default {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
   margin: 16px 0;
