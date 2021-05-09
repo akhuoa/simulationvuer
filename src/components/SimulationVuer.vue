@@ -106,7 +106,17 @@ export default {
       };
 
       fetch(this.apiLocation + "/simulation?model_url=" + model_url + "&json_config=" + JSON.stringify(json_config))
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            this.runningActive = false;
+            this.simulationValid = false;
+            this.errorMessage = response.statusText.toLowerCase() + " (" + response.status + ")";
+
+            return;
+          }
+
+          return response.json();
+        })
         .then((data) => {
           this.runningActive = false;
           this.simulationValid = data.status == "ok";
