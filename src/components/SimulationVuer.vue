@@ -2,12 +2,12 @@
   <div class="simulation-vuer">
     <el-container class="main">
       <el-aside width="212px">
-        <p class="header input-parameters">Input parameters</p>
-        <p class="header simulation-mode">Simulation mode</p>
+        <p class="default input-parameters">Input parameters</p>
+        <p class="default simulation-mode">Simulation mode</p>
         <el-select class="mode" popper-class="mode-popper" :popper-append-to-body="false" v-model="mode" size="mini" @change="modeChanged()">
           <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
         </el-select>
-        <p class="header simulation-level">Stimulation level</p>
+        <p class="default simulation-level">Stimulation level</p>
         <div class="slider">
           <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
           <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" :disabled="mode == 0" />
@@ -21,7 +21,8 @@
       </el-aside>
       <el-container class="plot-vuer">
         <Running :active.sync="runningActive" :is-full-page="runningFullPage" :color="runningColor" />
-        <PlotVuer class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
+        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
+        <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
       </el-container>
     </el-container>
   </div>
@@ -34,32 +35,7 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, InputNumber, Main, Option, Select, Slider } from "element-ui";
-import SinusData from "@/../data/sinus.json";
-import Stellate_00_Data from "@/../data/stellate_00.json";
-import Stellate_01_Data from "@/../data/stellate_01.json";
-import Stellate_02_Data from "@/../data/stellate_02.json";
-import Stellate_03_Data from "@/../data/stellate_03.json";
-import Stellate_04_Data from "@/../data/stellate_04.json";
-import Stellate_05_Data from "@/../data/stellate_05.json";
-import Stellate_06_Data from "@/../data/stellate_06.json";
-import Stellate_07_Data from "@/../data/stellate_07.json";
-import Stellate_08_Data from "@/../data/stellate_08.json";
-import Stellate_09_Data from "@/../data/stellate_09.json";
-import Stellate_10_Data from "@/../data/stellate_10.json";
-import Vagal_00_Data from "@/../data/vagal_00.json";
-import Vagal_01_Data from "@/../data/vagal_01.json";
-import Vagal_02_Data from "@/../data/vagal_02.json";
-import Vagal_03_Data from "@/../data/vagal_03.json";
-import Vagal_04_Data from "@/../data/vagal_04.json";
-import Vagal_05_Data from "@/../data/vagal_05.json";
-import Vagal_06_Data from "@/../data/vagal_06.json";
-import Vagal_07_Data from "@/../data/vagal_07.json";
-import Vagal_08_Data from "@/../data/vagal_08.json";
-import Vagal_09_Data from "@/../data/vagal_09.json";
-import Vagal_10_Data from "@/../data/vagal_10.json";
 
-var StellateData = [Stellate_00_Data, Stellate_01_Data, Stellate_02_Data, Stellate_03_Data, Stellate_04_Data, Stellate_05_Data, Stellate_06_Data, Stellate_07_Data, Stellate_08_Data, Stellate_09_Data, Stellate_10_Data];
-var VagalData = [Vagal_00_Data, Vagal_01_Data, Vagal_02_Data, Vagal_03_Data, Vagal_04_Data, Vagal_05_Data, Vagal_06_Data, Vagal_07_Data, Vagal_08_Data, Vagal_09_Data, Vagal_10_Data];
 var NoData = [{}];
 
 Vue.use(Aside);
@@ -77,13 +53,16 @@ export default {
     PlotVuer,
     Running,
   },
+  props: {
+    apiLocation: {
+      type: String,
+      default: "",
+    },
+  },
   data: function () {
     return {
+      errorMessage: "",
       level: 0,
-      runningActive: false,
-      runningColor: "#8300bf",
-      runningFullPage: false,
-      runningTimeout: 789,
       mode: 0,
       modes: [
         {
@@ -100,6 +79,10 @@ export default {
         },
       ],
       data: NoData,
+      runningActive: false,
+      runningColor: "#8300bf",
+      runningFullPage: false,
+      simulationValid: true,
     };
   },
   methods: {
@@ -108,27 +91,57 @@ export default {
     },
     modeChanged() {
       this.data = NoData;
+      this.simulationValid = true;
     },
     runSimulation() {
       this.runningActive = true;
 
-      setTimeout(() => {
-        this.runningActive = false;
+      var model_url = "https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml";
+      var json_config = {
+        simulation: {
+          "Ending point": 3,
+          "Point interval": 0.001,
+        },
+        output: ["Membrane/V"],
+      };
 
-        switch (this.mode) {
-          case 1: // Stellate stimulation.
-            this.data = StellateData[this.level];
+      if (this.mode !== 0) {
+        // Mode 1: stellate stimulation.
+        // Mode 2: vagal stimulation.
 
-            break;
-          case 2: // Vagal stimulation.
-            this.data = VagalData[this.level];
+        json_config["parameters"] = {
+          "Rate_modulation_experiments/Iso_1_uM": 1.0,
+          "Rate_modulation_experiments/ACh": this.mode === 1 ? (1.0 - 0.1 * this.level) * 22.0e-6 : 22.0e-6 + 0.1 * this.level * (38.0e-6 - 22.0e-6),
+        };
+      }
 
-            break;
-          default:
-            // Normal sinus rhythm.
-            this.data = SinusData;
-        }
-      }, this.runningTimeout);
+      fetch(this.apiLocation + "/simulation?model_url=" + encodeURIComponent(model_url) + "&json_config=" + encodeURIComponent(JSON.stringify(json_config)))
+        .then((response) => {
+          if (!response.ok) {
+            this.runningActive = false;
+            this.simulationValid = false;
+            this.errorMessage = response.statusText.toLowerCase() + " (" + response.status + ")";
+
+            return;
+          }
+
+          return response.json();
+        })
+        .then((data) => {
+          this.runningActive = false;
+          this.simulationValid = data.status == "ok";
+
+          if (this.simulationValid) {
+            this.data = [
+              {
+                x: data.results["environment/time"],
+                y: data.results["Membrane/V"],
+              },
+            ];
+          } else {
+            this.errorMessage = data.description;
+          }
+        });
     },
   },
 };
@@ -230,11 +243,14 @@ div.slider {
   position: absolute;
   margin-top: 4px;
 }
-p.header {
+p.default {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
   margin: 16px 0;
   text-align: start;
+}
+p.error {
+  margin-left: 16px;
 }
 p.input-parameters {
   margin-top: 0;
@@ -245,6 +261,9 @@ p.simulation-mode {
 }
 p.simulation-level {
   margin-bottom: 8px;
+}
+span.error {
+  font-weight: 500 /* Medium */;
 }
 </style>
 <style scoped src="../styles/purple/aside.css">
