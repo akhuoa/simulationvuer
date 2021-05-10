@@ -111,7 +111,7 @@ export default {
 
         json_config["parameters"] = {
           "Rate_modulation_experiments/Iso_1_uM": 1.0,
-          "Rate_modulation_experiments/ACh": this.mode === 1 ? (1.0 - this.level) * 22.0e-6 : 22.0e-6 + this.level * (38.0e-6 - 22.0e-6),
+          "Rate_modulation_experiments/ACh": this.mode === 1 ? (1.0 - 0.1 * this.level) * 22.0e-6 : 22.0e-6 + 0.1 * this.level * (38.0e-6 - 22.0e-6),
         };
       }
 
