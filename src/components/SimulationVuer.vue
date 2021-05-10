@@ -105,6 +105,16 @@ export default {
         output: ["Membrane/V"],
       };
 
+      if (this.mode !== 0) {
+        // Mode 1: stellate stimulation.
+        // Mode 2: vagal stimulation.
+
+        json_config["parameters"] = {
+          "Rate_modulation_experiments/Iso_1_uM": 1.0,
+          "Rate_modulation_experiments/ACh": this.mode === 1 ? (1.0 - this.level) * 22.0e-6 : 22.0e-6 + this.level * (38.0e-6 - 22.0e-6),
+        };
+      }
+
       fetch(this.apiLocation + "/simulation?model_url=" + model_url + "&json_config=" + JSON.stringify(json_config))
         .then((response) => {
           if (!response.ok) {
