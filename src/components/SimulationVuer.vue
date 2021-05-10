@@ -115,7 +115,7 @@ export default {
         };
       }
 
-      fetch(this.apiLocation + "/simulation?model_url=" + model_url + "&json_config=" + JSON.stringify(json_config))
+      fetch(this.apiLocation + "/simulation?model_url=" + encodeURIComponent(model_url) + "&json_config=" + encodeURIComponent(JSON.stringify(json_config)))
         .then((response) => {
           if (!response.ok) {
             this.runningActive = false;
