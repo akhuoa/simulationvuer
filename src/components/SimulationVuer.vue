@@ -120,7 +120,7 @@ export default {
           if (!response.ok) {
             this.runningActive = false;
             this.simulationValid = false;
-            this.errorMessage = response.statusText.toLowerCase() + " (<a href=\"https://httpstatuses.com/" + response.status + "/\" target=\"_blank\">" + response.status + "</a>)";
+            this.errorMessage = response.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + response.status + "/' target='_blank'>" + response.status + "</a>)";
 
             return;
           }
