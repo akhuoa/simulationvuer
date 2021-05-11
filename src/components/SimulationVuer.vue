@@ -96,52 +96,63 @@ export default {
     runSimulation() {
       this.runningActive = true;
 
-      var model_url = "https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml";
-      var json_config = {
-        simulation: {
-          "Ending point": 3,
-          "Point interval": 0.001,
+      var data = {
+        model_url: "https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml",
+        json_config: {
+          simulation: {
+            "Ending point": 3,
+            "Point interval": 0.001,
+          },
+          output: ["Membrane/V"],
         },
-        output: ["Membrane/V"],
       };
 
-      if (this.mode !== 0) {
-        // Mode 1: stellate stimulation.
-        // Mode 2: vagal stimulation.
+      // Notes:
+      //  - this.mode:
+      //     - 0: normal sinus rhythm;
+      //     - 1: stellate stimulation; and
+      //     - 2: vagal stimulation.
+      //  - this.level has a value in [0; 10], but to compute ACh, we need a
+      //    value in [0; 1].
 
-        json_config["parameters"] = {
+      if (this.mode !== 0) {
+        data.json_config["parameters"] = {
           "Rate_modulation_experiments/Iso_1_uM": 1.0,
           "Rate_modulation_experiments/ACh": this.mode === 1 ? (1.0 - 0.1 * this.level) * 22.0e-6 : 22.0e-6 + 0.1 * this.level * (38.0e-6 - 22.0e-6),
         };
       }
 
-      fetch(this.apiLocation + "/simulation?model_url=" + encodeURIComponent(model_url) + "&json_config=" + encodeURIComponent(JSON.stringify(json_config)))
-        .then((response) => {
-          if (!response.ok) {
-            this.runningActive = false;
-            this.simulationValid = false;
-            this.errorMessage = response.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + response.status + "/' target='_blank'>" + response.status + "</a>)";
+      var xmlhttp = new XMLHttpRequest();
 
-            return;
-          }
-
-          return response.json();
-        })
-        .then((data) => {
+      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
+      xmlhttp.setRequestHeader("Content-type", "application/json");
+      xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4) {
           this.runningActive = false;
-          this.simulationValid = data.status == "ok";
 
-          if (this.simulationValid) {
-            this.data = [
-              {
-                x: data.results["environment/time"],
-                y: data.results["Membrane/V"],
-              },
-            ];
+          if (xmlhttp.status === 200) {
+            var data = JSON.parse(xmlhttp.responseText);
+
+            this.simulationValid = data.status === "ok";
+
+            if (this.simulationValid) {
+              this.data = [
+                {
+                  x: data.results["environment/time"],
+                  y: data.results["Membrane/V"],
+                },
+              ];
+            } else {
+              this.errorMessage = data.description;
+            }
           } else {
-            this.errorMessage = data.description;
+            this.simulationValid = false;
+
+            this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
           }
-        });
+        }
+      };
+      xmlhttp.send(JSON.stringify(data));
     },
   },
 };
