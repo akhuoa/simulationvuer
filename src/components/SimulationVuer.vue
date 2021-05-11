@@ -22,7 +22,7 @@
       <el-container class="plot-vuer">
         <Running :active.sync="runningActive" :is-full-page="runningFullPage" :color="runningColor" />
         <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
-        <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
+        <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
       </el-container>
     </el-container>
   </div>
@@ -120,7 +120,7 @@ export default {
           if (!response.ok) {
             this.runningActive = false;
             this.simulationValid = false;
-            this.errorMessage = response.statusText.toLowerCase() + " (" + response.status + ")";
+            this.errorMessage = response.statusText.toLowerCase() + " (<a href=\"https://httpstatuses.com/" + response.status + "/\" target=\"_blank\">" + response.status + "</a>)";
 
             return;
           }
