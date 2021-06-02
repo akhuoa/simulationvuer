@@ -7,7 +7,7 @@
       </p>
     </div>
     <hr />
-    <SimulationVuer :apiLocation="apiLocation" />
+    <SimulationVuer :apiLocation="apiLocation" :resource="resource" />
   </div>
 </template>
 
@@ -22,6 +22,7 @@ export default {
   data: function () {
     return {
       apiLocation: process.env.VUE_APP_API_LOCATION,
+      resource: "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml",
     };
   },
 };
