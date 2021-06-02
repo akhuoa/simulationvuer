@@ -58,6 +58,10 @@ export default {
       type: String,
       default: "",
     },
+    resource: {
+      type: String,
+      default: "",
+    },
   },
   data: function () {
     return {
@@ -97,7 +101,7 @@ export default {
       this.runningActive = true;
 
       var data = {
-        model_url: "https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml",
+        model_url: this.resource,
         json_config: {
           simulation: {
             "Ending point": 3,
