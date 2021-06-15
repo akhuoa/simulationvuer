@@ -1,5 +1,5 @@
 <template>
-  <div class="simulation-vuer" v-loading="runningActive">
+  <div class="simulation-vuer" v-loading="simulationBeingComputed">
     <el-container class="main">
       <el-aside width="212px">
         <p class="default input-parameters">Input parameters</p>
@@ -80,7 +80,7 @@ export default {
         },
       ],
       simulationData: NoSimulationData,
-      runningActive: false,
+      simulationBeingComputed: false,
       simulationValid: true,
     };
   },
@@ -93,7 +93,7 @@ export default {
       this.simulationValid = true;
     },
     runSimulation() {
-      this.runningActive = true;
+      this.simulationBeingComputed = true;
 
       var request = {
         model_url: this.resource,
@@ -127,7 +127,7 @@ export default {
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
-          this.runningActive = false;
+          this.simulationBeingComputed = false;
 
           if (xmlhttp.status === 200) {
             var response = JSON.parse(xmlhttp.responseText);
