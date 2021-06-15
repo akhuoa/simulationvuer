@@ -3,14 +3,16 @@
     <el-container class="main">
       <el-aside width="212px">
         <p class="default input-parameters">Input parameters</p>
-        <p class="default simulation-mode">Simulation mode</p>
-        <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="modeChanged()">
-          <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
-        </el-select>
-        <p class="default stimulation-level">Stimulation level</p>
-        <div class="slider">
-          <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
-          <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
+        <div v-show="mode === 0">
+          <p class="default simulation-mode">Simulation mode</p>
+          <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="modeChanged()">
+            <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
+          </el-select>
+          <p class="default stimulation-level">Stimulation level</p>
+          <div class="slider">
+            <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
+            <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
+          </div>
         </div>
         <div class="run-simulation">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
