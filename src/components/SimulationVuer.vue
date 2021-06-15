@@ -6,7 +6,7 @@
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
           <p class="default simulation-mode">Simulation mode</p>
-          <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="modeChanged()">
+          <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
           </el-select>
           <p class="default stimulation-level">Stimulation level</p>
@@ -22,9 +22,9 @@
           <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
-      <div class="plot-vuer" style="display: grid;">
-        <div v-show="simulationValid && (mode === 1)">
-          <PlotVuer v-show="simulationValid && (mode === 1)" class="plot-vuer" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+      <div class="plot-vuer" style="display: grid">
+        <div v-show="simulationValid && mode === 1">
+          <PlotVuer v-show="simulationValid && mode === 1" class="plot-vuer" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         </div>
         <div v-show="simulationValid">
           <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
@@ -100,7 +100,7 @@ export default {
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
-    modeChanged() {
+    simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
     },
