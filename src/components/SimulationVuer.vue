@@ -216,9 +216,6 @@ export default {
   font-weight: normal;
   color: #8300bf;
 }
-div.plot-vuer {
-  width: 100%;
-}
 div.run-simulation,
 div.run-on-osparc {
   display: flex;
