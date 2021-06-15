@@ -4,13 +4,13 @@
       <el-aside width="212px">
         <p class="default input-parameters">Input parameters</p>
         <p class="default simulation-mode">Simulation mode</p>
-        <el-select class="mode" popper-class="mode-popper" :popper-append-to-body="false" v-model="mode" size="mini" @change="modeChanged()">
-          <el-option v-for="mode in modes" :key="mode.value" :label="mode.label" :value="mode.value" />
+        <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="modeChanged()">
+          <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
         </el-select>
-        <p class="default simulation-level">Stimulation level</p>
+        <p class="default stimulation-level">Stimulation level</p>
         <div class="slider">
-          <el-slider v-model="level" :max="10" :show-tooltip="false" :show-input="false" :disabled="mode == 0" />
-          <el-input-number v-model="level" size="mini" :controls="false" :min="0" :max="10" :disabled="mode == 0" />
+          <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
+          <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
         </div>
         <div class="run-simulation">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
@@ -20,7 +20,7 @@
         </div>
       </el-aside>
       <el-container class="plot-vuer">
-        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
+        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationData" :plotType="'plotly-only'" />
         <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
       </el-container>
     </el-container>
@@ -33,7 +33,7 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 
-var NoData = [{}];
+var NoSimulationData = [{}];
 
 Vue.use(Aside);
 Vue.use(Button);
@@ -63,9 +63,9 @@ export default {
   data: function () {
     return {
       errorMessage: "",
-      level: 0,
-      mode: 0,
-      modes: [
+      stimulationLevel: 0,
+      simulationMode: 0,
+      simulationModes: [
         {
           label: "Normal sinus rhythm",
           value: 0,
@@ -79,7 +79,7 @@ export default {
           value: 2,
         },
       ],
-      data: NoData,
+      simulationData: NoSimulationData,
       runningActive: false,
       simulationValid: true,
     };
@@ -89,13 +89,13 @@ export default {
       window.open("https://osparc.io/", "_blank");
     },
     modeChanged() {
-      this.data = NoData;
+      this.simulationData = NoSimulationData;
       this.simulationValid = true;
     },
     runSimulation() {
       this.runningActive = true;
 
-      var data = {
+      var request = {
         model_url: this.resource,
         json_config: {
           simulation: {
@@ -107,17 +107,17 @@ export default {
       };
 
       // Notes:
-      //  - this.mode:
+      //  - this.simulationMode:
       //     - 0: normal sinus rhythm;
       //     - 1: stellate stimulation; and
       //     - 2: vagal stimulation.
-      //  - this.level has a value in [0; 10], but to compute ACh, we need a
-      //    value in [0; 1].
+      //  - this.stimulationLevel has a value in [0; 10], but to compute ACh, we
+      //    need a value in [0; 1].
 
-      if (this.mode !== 0) {
-        data.json_config["parameters"] = {
+      if (this.simulationMode !== 0) {
+        request.json_config["parameters"] = {
           "Rate_modulation_experiments/Iso_1_uM": 1.0,
-          "Rate_modulation_experiments/ACh": this.mode === 1 ? (1.0 - 0.1 * this.level) * 22.0e-6 : 22.0e-6 + 0.1 * this.level * (38.0e-6 - 22.0e-6),
+          "Rate_modulation_experiments/ACh": this.simulationMode === 1 ? (1.0 - 0.1 * this.stimulationLevel) * 22.0e-6 : 22.0e-6 + 0.1 * this.stimulationLevel * (38.0e-6 - 22.0e-6),
         };
       }
 
@@ -130,19 +130,19 @@ export default {
           this.runningActive = false;
 
           if (xmlhttp.status === 200) {
-            var data = JSON.parse(xmlhttp.responseText);
+            var response = JSON.parse(xmlhttp.responseText);
 
-            this.simulationValid = data.status === "ok";
+            this.simulationValid = response.status === "ok";
 
             if (this.simulationValid) {
-              this.data = [
+              this.simulationData = [
                 {
-                  x: data.results["environment/time"],
-                  y: data.results["Membrane/V"],
+                  x: response.results["environment/time"],
+                  y: response.results["Membrane/V"],
                 },
               ];
             } else {
-              this.errorMessage = data.description;
+              this.errorMessage = response.description;
             }
           } else {
             this.simulationValid = false;
@@ -151,7 +151,7 @@ export default {
           }
         }
       };
-      xmlhttp.send(JSON.stringify(data));
+      xmlhttp.send(JSON.stringify(request));
     },
   },
 };
@@ -199,20 +199,20 @@ export default {
 >>> .el-slider__button {
   border-color: #8300bf;
 }
-.mode {
+.simulation-mode {
   margin-left: 8px;
 }
-.mode >>> .el-input__inner {
+.simulation-mode >>> .el-input__inner {
   font-family: Asap, sans-serif;
 }
-.mode >>> .el-input__inner:focus,
-.mode >>> .el-input.is-focus .el-input__inner {
+.simulation-mode >>> .el-input__inner:focus,
+.simulation-mode >>> .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
 }
-.mode-popper .el-select-dropdown__item {
+.simulation-mode-popper .el-select-dropdown__item {
   font-family: Asap, sans-serif;
 }
-.mode-popper .el-select-dropdown__item.selected {
+.simulation-mode-popper .el-select-dropdown__item.selected {
   font-weight: normal;
   color: #8300bf;
 }
@@ -269,7 +269,7 @@ p.input-parameters {
 p.simulation-mode {
   margin-bottom: 4px;
 }
-p.simulation-level {
+p.stimulation-level {
   margin-bottom: 8px;
 }
 span.error {
