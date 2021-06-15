@@ -62,6 +62,7 @@ export default {
   },
   data: function () {
     return {
+      mode: 0,
       errorMessage: "",
       stimulationLevel: 0,
       simulationMode: 0,
@@ -153,6 +154,20 @@ export default {
       };
       xmlhttp.send(JSON.stringify(request));
     },
+  },
+  mounted: function () {
+    // Determine the mode in which we should run:
+    //  - -1: unknown mode;
+    //  -  0: normal mode; and
+    //  -  1: composite mode.
+
+    if (this.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
+      this.mode = 0;
+    } else if (this.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
+      this.mode = 1;
+    } else {
+      this.mode = -1;
+    }
   },
 };
 </script>
