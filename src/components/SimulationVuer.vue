@@ -22,10 +22,17 @@
           <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
-      <el-container class="plot-vuer">
-        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-        <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
-      </el-container>
+      <div class="plot-vuer" style="display: grid;">
+        <div v-show="simulationValid && (mode === 1)">
+          <PlotVuer v-show="simulationValid && (mode === 1)" class="plot-vuer" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+        </div>
+        <div v-show="simulationValid">
+          <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+        </div>
+        <div sv-show="!simulationValid">
+          <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
+        </div>
+      </div>
     </el-container>
   </div>
 </template>
@@ -83,6 +90,7 @@ export default {
           value: 2,
         },
       ],
+      simulationSpikeData: NoSimulationData,
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
       simulationValid: true,
@@ -233,6 +241,9 @@ export default {
 .simulation-mode-popper .el-select-dropdown__item.selected {
   font-weight: normal;
   color: #8300bf;
+}
+div.plot-vuer {
+  width: 100%;
 }
 div.run-simulation,
 div.run-on-osparc {
