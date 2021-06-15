@@ -1,5 +1,5 @@
 <template>
-  <div class="simulation-vuer">
+  <div class="simulation-vuer" v-loading="runningActive">
     <el-container class="main">
       <el-aside width="212px">
         <p class="default input-parameters">Input parameters</p>
@@ -20,7 +20,6 @@
         </div>
       </el-aside>
       <el-container class="plot-vuer">
-        <Running :active.sync="runningActive" :is-full-page="runningFullPage" :color="runningColor" />
         <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="data" :plotType="'plotly-only'" />
         <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
       </el-container>
@@ -30,11 +29,9 @@
 
 <script>
 import Vue from "vue";
-import Running from "vue-loading-overlay";
-import "vue-loading-overlay/dist/vue-loading.css";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import { Aside, Button, Container, InputNumber, Main, Option, Select, Slider } from "element-ui";
+import { Aside, Button, Container, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 
 var NoData = [{}];
 
@@ -42,6 +39,7 @@ Vue.use(Aside);
 Vue.use(Button);
 Vue.use(Container);
 Vue.use(InputNumber);
+Vue.use(Loading);
 Vue.use(Main);
 Vue.use(Option);
 Vue.use(Select);
@@ -51,7 +49,6 @@ export default {
   name: "SimulationVuer",
   components: {
     PlotVuer,
-    Running,
   },
   props: {
     apiLocation: {
@@ -84,8 +81,6 @@ export default {
       ],
       data: NoData,
       runningActive: false,
-      runningColor: "#8300bf",
-      runningFullPage: false,
       simulationValid: true,
     };
   },
