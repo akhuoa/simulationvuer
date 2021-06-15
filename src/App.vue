@@ -5,12 +5,12 @@
     </div>
     <hr />
     <p>
-      This vuer demonstrates the simulation of the <a href="https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml/view">Fabbri <em>et al.</em> (2017)</a> model.
+      Instance showing the simulation of the <a href="https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml/view">Fabbri <em>et al.</em> (2017)</a> model:
     </p>
     <SimulationVuer :apiLocation="apiLocation" :resource="resource" />
     <hr />
     <p>
-      This vuer demonstrates the simulation of the <a href="https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml/view">Fabbri <em>et al.</em> (2017)</a> + <a href="https://models.physiomeproject.org/workspace/694">Gerstner & Kistler (2002)</a> composite model.
+      Instance showing the simulation of the <a href="https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml/view">Fabbri <em>et al.</em> (2017)</a> + <a href="https://models.physiomeproject.org/workspace/694">Gerstner & Kistler (2002)</a> composite model:
     </p>
     <SimulationVuer :apiLocation="apiLocation" :resource="compositeResource" />
     <hr />
