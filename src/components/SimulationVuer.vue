@@ -20,7 +20,7 @@
         </div>
       </el-aside>
       <el-container class="plot-vuer">
-        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationData" :plotType="'plotly-only'" />
+        <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
         <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
       </el-container>
     </el-container>
@@ -79,7 +79,7 @@ export default {
           value: 2,
         },
       ],
-      simulationData: NoSimulationData,
+      simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
       simulationValid: true,
     };
@@ -89,7 +89,7 @@ export default {
       window.open("https://osparc.io/", "_blank");
     },
     modeChanged() {
-      this.simulationData = NoSimulationData;
+      this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
     },
     runSimulation() {
@@ -135,7 +135,7 @@ export default {
             this.simulationValid = response.status === "ok";
 
             if (this.simulationValid) {
-              this.simulationData = [
+              this.simulationPotentialData = [
                 {
                   x: response.results["environment/time"],
                   y: response.results["Membrane/V"],
