@@ -1,6 +1,7 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed">
-    <el-container class="main">
+    <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
+    <el-container class="main" v-show="mode !== -1">
       <el-aside width="212px">
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
