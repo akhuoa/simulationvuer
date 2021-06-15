@@ -110,14 +110,21 @@ export default {
       var request = {
         model_url: this.resource,
         json_config: {
-          simulation: {
-            "Ending point": 3,
-            "Point interval": 0.001,
-          },
           output: ["Membrane/V"],
         },
       };
 
+      // Specify the ending point and point interval for the normal mode (since
+      // our resource is a CellML file).
+
+      if (this.mode === 0) {
+        request.json_config["simulation"] = {
+          "Ending point": 3,
+          "Point interval": 0.001,
+        };
+      }
+
+      // Apply a stellate/vagal stimulation, if needed.
       // Notes:
       //  - this.simulationMode:
       //     - 0: normal sinus rhythm;
@@ -133,6 +140,14 @@ export default {
         };
       }
 
+      // Request the spikes if we are in composite mode.
+
+      if (this.mode === 1) {
+        request.json_config["output"].push("Brain_stem/w");
+      }
+
+      // Run the simulation.
+
       var xmlhttp = new XMLHttpRequest();
 
       xmlhttp.open("POST", this.apiLocation + "/simulation", true);
@@ -147,6 +162,19 @@ export default {
             this.simulationValid = response.status === "ok";
 
             if (this.simulationValid) {
+              // Retrieve the spike data, if needed.
+
+              if (this.mode === 1) {
+                this.simulationSpikeData = [
+                  {
+                    x: response.results["environment/time"],
+                    y: response.results["Brain_stem/w"],
+                  },
+                ];
+              }
+
+              // Retrieve the potential data.
+
               this.simulationPotentialData = [
                 {
                   x: response.results["environment/time"],
