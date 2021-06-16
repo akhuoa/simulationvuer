@@ -10,9 +10,26 @@
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
           </el-select>
           <p class="default stimulation-level">Stimulation level</p>
-          <div class="slider">
+          <div class="stimulation-level">
             <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
             <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
+          </div>
+        </div>
+        <div v-show="mode === 1">
+          <p class="default spike-frequency">Spike frequency</p>
+          <div class="spike-frequency">
+            <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
+            <el-input-number v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
+          </div>
+          <p class="default spike-number">Spike number</p>
+          <div class="spike-number">
+            <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
+            <el-input-number v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
+          </div>
+          <p class="default spike-amplitude">Spike amplitude</p>
+          <div class="spike-amplitude">
+            <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
+            <el-input-number v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
           </div>
         </div>
         <div class="run-simulation">
@@ -22,16 +39,16 @@
           <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
         </div>
       </el-aside>
-      <div class="plot-vuer" style="display: grid">
-        <div v-show="simulationValid && mode === 1">
-          <PlotVuer v-show="simulationValid && mode === 1" class="plot-vuer" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+      <div class="plot-vuer" v-show="simulationValid" style="display: grid">
+        <div v-show="mode === 1">
+          <PlotVuer class="plot-vuer" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         </div>
-        <div v-show="simulationValid">
-          <PlotVuer v-show="simulationValid" class="plot-vuer" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+        <div>
+          <PlotVuer class="plot-vuer" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
         </div>
-        <div sv-show="!simulationValid">
-          <p v-show="!simulationValid" class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
-        </div>
+      </div>
+      <div v-show="!simulationValid">
+        <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
       </div>
     </el-container>
   </div>
@@ -90,6 +107,9 @@ export default {
           value: 2,
         },
       ],
+      simulationSpikeFrequency: 300,
+      simulationSpikeNumber: 10,
+      simulationSpikeAmplitude: 10, // The real value is 100 times smaller.
       simulationSpikeData: NoSimulationData,
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
@@ -140,6 +160,16 @@ export default {
         };
       }
 
+      // Apply the spike settings, if needed.
+
+      if (this.mode === 1) {
+        request.json_config["parameters"] = {
+          "Brain_stem/t_period": this.simulationSpikeFrequency,
+          "Brain_stem/w_n": this.simulationSpikeNumber,
+          "Brain_stem/w_value": 0.01 * this.simulationSpikeAmplitude,
+        };
+      }
+
       // Request the spikes if we are in composite mode.
 
       if (this.mode === 1) {
@@ -162,13 +192,16 @@ export default {
             this.simulationValid = response.status === "ok";
 
             if (this.simulationValid) {
-              // Retrieve the spike data, if needed.
+              // Retrieve the spike data, if needed. (Our default spike
+              // amplitude is 0.1, but we normalise it to 10.)
 
               if (this.mode === 1) {
                 this.simulationSpikeData = [
                   {
                     x: response.results["environment/time"],
-                    y: response.results["Brain_stem/w"],
+                    y: response.results["Brain_stem/w"].map(function (element) {
+                      return 100 * element;
+                    }),
                   },
                 ];
               }
@@ -232,7 +265,7 @@ export default {
   padding-left: 132px;
 }
 >>> .el-input-number .el-input {
-  width: 48px;
+  width: 60px;
 }
 >>> .el-input-number .el-input__inner:focus {
   border-color: #8300bf;
@@ -300,6 +333,18 @@ div.run-on-osparc .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
+div.spike-frequency {
+  position: absolute;
+  margin-top: 4px;
+}
+div.spike-number {
+  position: absolute;
+  margin-top: 4px;
+}
+div.spike-amplitude {
+  position: absolute;
+  margin-top: 4px;
+}
 div.stimulation-level {
   position: absolute;
   margin-top: 4px;
@@ -322,6 +367,17 @@ p.input-parameters {
 }
 p.simulation-mode {
   margin-bottom: 4px;
+}
+p.spike-frequency {
+  margin-bottom: 8px;
+}
+p.spike-number {
+  margin-top: 40px;
+  margin-bottom: 8px;
+}
+p.spike-amplitude {
+  margin-top: 40px;
+  margin-bottom: 8px;
 }
 p.stimulation-level {
   margin-bottom: 8px;
