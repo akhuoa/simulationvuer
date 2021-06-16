@@ -300,12 +300,12 @@ div.run-on-osparc .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
-div.simulation-vuer {
-  height: 100%;
-}
-div.slider {
+div.stimulation-level {
   position: absolute;
   margin-top: 4px;
+}
+div.simulation-vuer {
+  height: 100%;
 }
 p.default {
   font-family: Asap, sans-serif;
