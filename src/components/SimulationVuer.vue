@@ -36,7 +36,7 @@
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
         <div class="run-on-osparc">
-          <el-button size="mini" @click="goToOsparc()">Run on oSPARC</el-button>
+          <el-button size="mini" @click="goToOsparc()">Go to oSPARC</el-button>
         </div>
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid" style="display: grid">
