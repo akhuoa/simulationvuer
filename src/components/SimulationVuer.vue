@@ -1,5 +1,5 @@
 <template>
-  <div class="simulation-vuer" v-loading="simulationBeingComputed">
+  <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
     <el-container class="main" v-show="mode !== -1">
       <el-aside width="212px">
@@ -115,6 +115,7 @@ export default {
       simulationPotentialTitle: "Membrane potential",
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
+      simulationBeingComputedLabel: "Loading simulation...",
       simulationValid: true,
     };
   },
