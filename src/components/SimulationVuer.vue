@@ -1,5 +1,5 @@
 <template>
-  <div class="simulation-vuer" v-loading="simulationBeingComputed">
+  <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
     <el-container class="main" v-show="mode !== -1">
       <el-aside width="212px">
@@ -41,10 +41,10 @@
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid" style="display: grid">
         <div v-show="mode === 1">
-          <PlotVuer class="plot-vuer" :title="simulationSpikeTitle" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+          <PlotVuer :title="simulationSpikeTitle" :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         </div>
         <div>
-          <PlotVuer class="plot-vuer" :title="simulationPotentialTitle" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+          <PlotVuer :title="simulationPotentialTitle" :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
         </div>
       </div>
       <div v-show="!simulationValid">
@@ -108,13 +108,50 @@ export default {
         },
       ],
       simulationSpikeTitle: "Spike activity",
+      simulationSpikeLayout: {
+        xaxis: {
+          title: {
+            text: "Time (s)",
+            font: {
+              size: 10,
+            },
+          },
+        },
+        yaxis: {
+          title: {
+            text: "Spike amplitude",
+            font: {
+              size: 10,
+            },
+          }
+        },
+      },
       simulationSpikeFrequency: 300,
       simulationSpikeNumber: 10,
       simulationSpikeAmplitude: 10, // The real value is 100 times smaller.
       simulationSpikeData: NoSimulationData,
       simulationPotentialTitle: "Membrane potential",
+      simulationPotentialLayout: {
+        xaxis: {
+          title: {
+            text: "Time (s)",
+            font: {
+              size: 10,
+            },
+          },
+        },
+        yaxis: {
+          title: {
+            text: "Membrane potential (mV)",
+            font: {
+              size: 10,
+            },
+          }
+        },
+      },
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
+      simulationBeingComputedLabel: "Loading simulation...",
       simulationValid: true,
     };
   },
@@ -257,10 +294,6 @@ export default {
 }
 >>> .el-container.main {
   height: 100%;
-}
->>> .el-container.plot-vuer {
-  border: solid #dcdfe6;
-  border-width: 0 0 0 1px;
 }
 >>> .el-input-number {
   top: -12px;
