@@ -41,10 +41,10 @@
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid" style="display: grid">
         <div v-show="mode === 1">
-          <PlotVuer class="plot-vuer" :title="simulationSpikeTitle" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+          <PlotVuer :title="simulationSpikeTitle" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         </div>
         <div>
-          <PlotVuer class="plot-vuer" :title="simulationPotentialTitle" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+          <PlotVuer :title="simulationPotentialTitle" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
         </div>
       </div>
       <div v-show="!simulationValid">
@@ -258,10 +258,6 @@ export default {
 }
 >>> .el-container.main {
   height: 100%;
-}
->>> .el-container.plot-vuer {
-  border: solid #dcdfe6;
-  border-width: 0 0 0 1px;
 }
 >>> .el-input-number {
   top: -12px;
