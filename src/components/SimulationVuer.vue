@@ -32,10 +32,10 @@
             <el-input-number v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
           </div>
         </div>
-        <div class="run-simulation">
+        <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
-        <div class="run-on-osparc">
+        <div class="secondary-button">
           <el-button size="mini" @click="goToOsparc()">Go to oSPARC</el-button>
         </div>
       </el-aside>
@@ -339,30 +339,30 @@ export default {
 div.plot-vuer {
   width: 100%;
 }
-div.run-simulation,
-div.run-on-osparc {
+div.primary-button,
+div.secondary-button {
   display: flex;
   justify-content: flex-end;
 }
-div.run-simulation {
+div.primary-button {
   margin-top: 48px;
 }
-div.run-on-osparc {
+div.secondary-button {
   margin-top: 8px;
 }
-div.run-simulation .el-button,
-div.run-on-osparc .el-button,
-div.run-simulation .el-button:hover,
-div.run-on-osparc .el-button:hover {
+div.primary-button .el-button,
+div.secondary-button .el-button,
+div.primary-button .el-button:hover,
+div.secondary-button .el-button:hover {
   width: 121px;
   border-color: #8300bf;
 }
-div.run-simulation .el-button,
-div.run-simulation .el-button:hover {
+div.primary-button .el-button,
+div.primary-button .el-button:hover {
   background-color: #8300bf;
 }
-div.run-on-osparc .el-button,
-div.run-on-osparc .el-button:hover {
+div.secondary-button .el-button,
+div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
