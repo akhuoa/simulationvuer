@@ -89,6 +89,10 @@ export default {
       type: String,
       default: "",
     },
+    dataset: {
+      type: String,
+      default: "",
+    },
   },
   data: function () {
     return {
@@ -161,7 +165,7 @@ export default {
       window.open("https://osparc.io/", "_blank");
     },
     viewDataset() {
-      alert('This button will eventually allow you to view the dataset.');
+      window.open(this.dataset, "_blank");
     },
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
