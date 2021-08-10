@@ -38,6 +38,9 @@
         <div class="secondary-button">
           <el-button size="mini" @click="goToOsparc()">Go to oSPARC</el-button>
         </div>
+        <div class="secondary-button">
+          <el-button size="mini" @click="viewDataset()">View dataset</el-button>
+        </div>
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid" style="display: grid">
         <div v-show="mode === 1">
@@ -156,6 +159,9 @@ export default {
   methods: {
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
+    },
+    viewDataset() {
+      alert('This button will eventually allow you to view the dataset.');
     },
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
