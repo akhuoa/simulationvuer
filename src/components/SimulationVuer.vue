@@ -41,10 +41,10 @@
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid" style="display: grid">
         <div v-show="mode === 1">
-          <PlotVuer :title="simulationSpikeTitle" :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+          <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         </div>
         <div>
-          <PlotVuer :title="simulationPotentialTitle" :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+          <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
         </div>
       </div>
       <div v-show="!simulationValid">
@@ -107,7 +107,6 @@ export default {
           value: 2,
         },
       ],
-      simulationSpikeTitle: "Spike activity",
       simulationSpikeLayout: {
         xaxis: {
           title: {
@@ -130,7 +129,6 @@ export default {
       simulationSpikeNumber: 10,
       simulationSpikeAmplitude: 10, // The real value is 100 times smaller.
       simulationSpikeData: NoSimulationData,
-      simulationPotentialTitle: "Membrane potential",
       simulationPotentialLayout: {
         xaxis: {
           title: {
