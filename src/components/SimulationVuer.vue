@@ -85,13 +85,11 @@ export default {
       type: String,
       default: "",
     },
-    resource: {
-      type: String,
-      default: "",
-    },
-    dataset: {
-      type: String,
-      default: "",
+    entry: {
+      /**
+       * Object containing information for the current simulation.
+       */
+      entry: Object,
     },
   },
   data: function () {
@@ -165,7 +163,7 @@ export default {
       window.open("https://osparc.io/", "_blank");
     },
     viewDataset() {
-      window.open(this.dataset, "_blank");
+      window.open(this.entry.dataset, "_blank");
     },
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
@@ -175,7 +173,7 @@ export default {
       this.simulationBeingComputed = true;
 
       var request = {
-        model_url: this.resource,
+        model_url: this.entry.resource,
         json_config: {
           output: ["Membrane/V"],
         },
@@ -280,9 +278,9 @@ export default {
     //  -  0: normal mode; and
     //  -  1: composite mode.
 
-    if (this.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
+    if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
       this.mode = 0;
-    } else if (this.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
+    } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
       this.mode = 1;
     } else {
       this.mode = -1;
