@@ -3,6 +3,8 @@
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
     <el-container class="main" v-show="mode !== -1">
       <el-aside width="212px">
+        <p class="default name">{{entry.name}}</p>
+        <p class="default description">{{entry.description}}</p>
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
           <p class="default simulation-mode">Simulation mode</p>
@@ -399,12 +401,21 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
+p.description {
+  margin-top: -8px;
+  font-size: 12px;
+  line-height: 16px;
+}
 p.error {
   margin-left: 16px;
 }
+p.name,
 p.input-parameters {
   margin-top: 0;
   font-weight: 500 /* Medium */;
+}
+p.name {
+  line-height: 20px;
 }
 p.simulation-mode {
   margin-bottom: 4px;
