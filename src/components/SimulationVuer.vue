@@ -297,6 +297,7 @@ export default {
 <style scoped>
 @import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
 >>> .el-aside {
+  border-right: 1px solid #dcdfe6;
   padding: 12px 20px 12px 12px;
 }
 >>> .el-button:hover {
