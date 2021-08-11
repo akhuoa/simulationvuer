@@ -154,7 +154,7 @@ export default {
       },
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
-      simulationBeingComputedLabel: "Loading simulation...",
+      simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
     };
   },
