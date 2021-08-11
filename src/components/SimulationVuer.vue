@@ -5,6 +5,7 @@
       <el-aside width="212px">
         <p class="default name">{{entry.name}}</p>
         <p class="default description">{{entry.description}}</p>
+        <el-divider class="horizontal"></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
           <p class="default simulation-mode">Simulation mode</p>
@@ -63,13 +64,14 @@
 import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import { Aside, Button, Container, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
+import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 
 var NoSimulationData = [{}];
 
 Vue.use(Aside);
 Vue.use(Button);
 Vue.use(Container);
+Vue.use(Divider);
 Vue.use(InputNumber);
 Vue.use(Loading);
 Vue.use(Main);
@@ -303,6 +305,9 @@ export default {
 >>> .el-container.main {
   height: 100%;
 }
+>>> .el-divider.horizontal {
+  margin: 8px 0;
+}
 >>> .el-input-number {
   top: -12px;
   padding-left: 132px;
@@ -403,6 +408,7 @@ p.default {
 }
 p.description {
   margin-top: -8px;
+  margin-bottom: 8px;
   font-size: 12px;
   line-height: 16px;
 }
