@@ -44,6 +44,7 @@
         <div class="secondary-button">
           <el-button size="mini" @click="viewDataset()">View dataset</el-button>
         </div>
+        <p class="default note">{{note}}</p>
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid" style="display: grid">
         <div v-show="mode === 1">
@@ -100,6 +101,7 @@ export default {
     return {
       mode: 0,
       errorMessage: "",
+      note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
       simulationMode: 0,
       simulationModes: [
@@ -407,11 +409,14 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
+p.description,
+p.note {
+  font-size: 12px;
+  line-height: 16px;
+}
 p.description {
   margin-top: -8px;
   margin-bottom: 8px;
-  font-size: 12px;
-  line-height: 16px;
 }
 p.error {
   margin-left: 16px;
