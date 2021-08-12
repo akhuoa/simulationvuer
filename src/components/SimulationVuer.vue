@@ -1,36 +1,36 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-    <el-container class="main" v-show="mode !== -1">
       <el-aside width="212px">
+    <el-container v-show="mode !== -1">
         <p class="default name">{{title}}</p>
         <p class="default description">{{subtitle}}</p>
-        <el-divider class="horizontal"></el-divider>
+        <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
           <p class="default simulation-mode">Simulation mode</p>
           <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
           </el-select>
-          <p class="default stimulation-level">Stimulation level</p>
-          <div class="stimulation-level">
+          <p class="default first-slider-and-field">Stimulation level</p>
+          <div class="slider-and-field">
             <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
             <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
           </div>
         </div>
         <div v-show="mode === 1">
-          <p class="default spike-frequency">Spike frequency</p>
-          <div class="spike-frequency">
+          <p class="default first-slider-and-field">Spike frequency</p>
+          <div class="slider-and-field">
             <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
             <el-input-number v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
           </div>
-          <p class="default spike-number">Spike number</p>
-          <div class="spike-number">
+          <p class="default slider-and-field">Spike number</p>
+          <div class="slider-and-field">
             <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
             <el-input-number v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
           </div>
-          <p class="default spike-amplitude">Spike amplitude</p>
-          <div class="spike-amplitude">
+          <p class="default slider-and-field">Spike amplitude</p>
+          <div class="slider-and-field">
             <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
             <el-input-number v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
           </div>
@@ -46,7 +46,7 @@
         </div>
         <p class="default note">{{note}}</p>
       </el-aside>
-      <div class="plot-vuer" v-show="simulationValid" style="display: grid">
+      <div class="plot-vuer" v-show="simulationValid">
         <div v-show="mode === 1">
           <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         </div>
@@ -312,10 +312,10 @@ export default {
 >>> .el-button:hover {
   box-shadow: -3px 2px 4px #00000040;
 }
->>> .el-container.main {
+>>> .el-container {
   height: 100%;
 }
->>> .el-divider.horizontal {
+>>> .el-divider {
   margin: 8px 0;
 }
 >>> .el-input-number {
@@ -327,9 +327,6 @@ export default {
 }
 >>> .el-input-number .el-input__inner:focus {
   border-color: #8300bf;
-}
->>> .el-main {
-  margin: -16px 0 8px 0px;
 }
 >>> .el-slider {
   position: absolute;
@@ -362,6 +359,7 @@ export default {
   color: #8300bf;
 }
 div.plot-vuer {
+  display: grid;
   width: 100%;
 }
 div.primary-button,
@@ -391,19 +389,7 @@ div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
-div.spike-frequency {
-  position: absolute;
-  margin-top: 4px;
-}
-div.spike-number {
-  position: absolute;
-  margin-top: 4px;
-}
-div.spike-amplitude {
-  position: absolute;
-  margin-top: 4px;
-}
-div.stimulation-level {
+div.slider-and-field {
   position: absolute;
   margin-top: 4px;
 }
@@ -439,19 +425,12 @@ p.name {
 p.simulation-mode {
   margin-bottom: 4px;
 }
-p.spike-frequency {
+p.first-slider-and-field,
+p.slider-and-field {
   margin-bottom: 8px;
 }
-p.spike-number {
+p.slider-and-field {
   margin-top: 40px;
-  margin-bottom: 8px;
-}
-p.spike-amplitude {
-  margin-top: 40px;
-  margin-bottom: 8px;
-}
-p.stimulation-level {
-  margin-bottom: 8px;
 }
 span.error {
   font-weight: 500 /* Medium */;
