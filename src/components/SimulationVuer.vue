@@ -1,8 +1,8 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-      <el-aside width="212px">
     <el-container v-show="mode !== -1">
+      <el-aside width="216px">
         <p class="default name">{{title}}</p>
         <p class="default description">{{subtitle}}</p>
         <el-divider></el-divider>
