@@ -2,7 +2,7 @@
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
     <el-container v-show="mode !== -1">
-      <el-aside width="216px">
+      <el-aside width="224px">
         <p class="default name">{{title}}</p>
         <p class="default description">{{subtitle}}</p>
         <el-divider></el-divider>
@@ -12,27 +12,23 @@
           <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
           </el-select>
-          <p class="default first-slider-and-field">Stimulation level</p>
-          <div class="slider-and-field">
+          <div class="sliders-and-fields">
+            <p class="default first-slider-and-field">Stimulation level</p>
             <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
-            <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
+            <el-input-number class="slider-and-field" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
           </div>
         </div>
         <div v-show="mode === 1">
-          <p class="default first-slider-and-field">Spike frequency</p>
-          <div class="slider-and-field">
+          <div class="sliders-and-fields">
+            <p class="default first-slider-and-field">Spike frequency</p>
             <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
-            <el-input-number v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
-          </div>
-          <p class="default slider-and-field">Spike number</p>
-          <div class="slider-and-field">
+            <el-input-number class="slider-and-field" v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
+            <p class="default slider-and-field">Spike number</p>
             <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
-          </div>
-          <p class="default slider-and-field">Spike amplitude</p>
-          <div class="slider-and-field">
+            <el-input-number class="slider-and-field" v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
+            <p class="default slider-and-field">Spike amplitude</p>
             <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
+            <el-input-number class="slider-and-field" v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
           </div>
         </div>
         <div class="primary-button">
@@ -317,23 +313,26 @@ export default {
 }
 >>> .el-divider {
   margin: 8px 0;
+  width: 191px;
 }
->>> .el-input-number {
-  top: -12px;
-  padding-left: 132px;
+>>> .el-input-number.slider-and-field {
+  margin-top: -8px;
+  width: 0;
+  height: 0;
 }
->>> .el-input-number .el-input {
+>>> .el-input-number.slider-and-field .el-input {
   width: 60px;
 }
->>> .el-input-number .el-input__inner:focus {
+>>> .el-input-number.slider-and-field .el-input__inner:focus {
   border-color: #8300bf;
 }
+>>> .el-select.simulation-mode {
+  margin-bottom: 16px;
+}
 >>> .el-slider {
-  position: absolute;
   width: 108px;
-  top: -16px;
-  left: 8px;
-  margin-bottom: 32px;
+  margin-top: -12px;
+  margin-left: 8px;
 }
 >>> .el-slider__bar {
   background-color: #8300bf;
@@ -366,9 +365,10 @@ div.primary-button,
 div.secondary-button {
   display: flex;
   justify-content: flex-end;
+  width: 191px;
 }
 div.primary-button {
-  margin-top: 48px;
+  margin-top: 14px;
 }
 div.secondary-button {
   margin-top: 8px;
@@ -389,12 +389,13 @@ div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
-div.slider-and-field {
-  position: absolute;
-  margin-top: 4px;
-}
 div.simulation-vuer {
   height: 100%;
+}
+div.sliders-and-fields {
+  display: grid;
+  grid-template-columns: 132px auto;
+  width: 191px;
 }
 p.default {
   font-family: Asap, sans-serif;
@@ -427,10 +428,15 @@ p.simulation-mode {
 }
 p.first-slider-and-field,
 p.slider-and-field {
+  grid-column-start: 1;
+  grid-column-end: 3;
   margin-bottom: 8px;
 }
+p.first-slider-and-field {
+  margin-top: 0;
+}
 p.slider-and-field {
-  margin-top: 40px;
+  margin-top: 6px;
 }
 span.error {
   font-weight: 500 /* Medium */;
