@@ -42,13 +42,16 @@
         </div>
         <p class="default note">{{note}}</p>
       </el-aside>
-      <div class="plot-vuer" v-show="simulationValid">
-        <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" v-show="mode === 1" />
+      <el-main v-show="simulationValid && (mode === 0)">
         <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-      </div>
-      <div v-show="!simulationValid">
+      </el-main>
+      <el-main v-show="simulationValid && (mode === 1)">
+        <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+      </el-main>
+      <el-main v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
-      </div>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -321,6 +324,12 @@ export default {
 }
 >>> .el-input-number.slider-and-field .el-input__inner:focus {
   border-color: #8300bf;
+}
+>>> .el-main {
+  padding: 0;
+}
+>>> .el-main div.controls {
+  height: 0;
 }
 >>> .el-select.simulation-mode {
   margin-bottom: 16px;
