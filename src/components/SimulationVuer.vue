@@ -415,6 +415,12 @@ p.description {
 p.error {
   margin-left: 16px;
 }
+p.first-slider-and-field,
+p.slider-and-field {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin-bottom: 8px;
+}
 p.name,
 p.input-parameters {
   margin-top: 0;
@@ -425,12 +431,6 @@ p.name {
 }
 p.simulation-mode {
   margin-bottom: 4px;
-}
-p.first-slider-and-field,
-p.slider-and-field {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  margin-bottom: 8px;
 }
 p.first-slider-and-field {
   margin-top: 0;
