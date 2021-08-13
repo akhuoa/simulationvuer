@@ -43,12 +43,8 @@
         <p class="default note">{{note}}</p>
       </el-aside>
       <div class="plot-vuer" v-show="simulationValid">
-        <div v-show="mode === 1">
-          <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
-        </div>
-        <div>
-          <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-        </div>
+        <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" v-show="mode === 1" />
+        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
       </div>
       <div v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
