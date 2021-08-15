@@ -45,7 +45,7 @@
       <div class="main-right" v-if="mode === 0" v-show="simulationValid">
         <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
       </div>
-      <div class="main-right" v-if="mode === 1" v-show="simulationValid">
+      <div class="main-right composite" v-if="mode === 1" v-show="simulationValid">
         <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
       </div>
@@ -360,8 +360,8 @@ div.main-left {
   height: 100%;
   overflow: auto;
 }
-div.main-right {
-  overflow: auto;
+div.main-right.composite {
+  height: 50%;
 }
 >>> div.main-right div.controls {
   height: 0;
