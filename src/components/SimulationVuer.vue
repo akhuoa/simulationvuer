@@ -1,8 +1,8 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-    <el-container v-show="mode !== -1">
-      <el-aside width="224px">
+    <div class="main" v-show="mode !== -1">
+      <div class="main-left">
         <p class="default name">{{title}}</p>
         <p class="default description">{{subtitle}}</p>
         <el-divider></el-divider>
@@ -41,18 +41,18 @@
           <el-button size="mini" @click="viewDataset()">View dataset</el-button>
         </div>
         <p class="default note">{{note}}</p>
-      </el-aside>
-      <el-main v-show="simulationValid && (mode === 0)">
+      </div>
+      <div class="main-right" v-if="mode === 0" v-show="simulationValid">
         <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-      </el-main>
-      <el-main v-show="simulationValid && (mode === 1)">
+      </div>
+      <div class="main-right" v-if="mode === 1" v-show="simulationValid">
         <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
         <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-      </el-main>
-      <el-main v-show="!simulationValid">
+      </div>
+      <div class="main-right" v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
-      </el-main>
-    </el-container>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -300,15 +300,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
->>> .el-aside {
-  border-right: 1px solid #dcdfe6;
-  padding: 12px 20px 12px 12px;
-}
 >>> .el-button:hover {
   box-shadow: -3px 2px 4px #00000040;
-}
->>> .el-container {
-  height: 100%;
 }
 >>> .el-divider {
   margin: 8px 0;
@@ -324,12 +317,6 @@ export default {
 }
 >>> .el-input-number.slider-and-field .el-input__inner:focus {
   border-color: #8300bf;
-}
->>> .el-main {
-  padding: 0;
-}
->>> .el-main div.controls {
-  height: 0;
 }
 >>> .el-select.simulation-mode {
   margin-bottom: 16px;
@@ -361,6 +348,23 @@ export default {
 .simulation-mode-popper .el-select-dropdown__item.selected {
   font-weight: normal;
   color: #8300bf;
+}
+div.main {
+  display: grid;
+  grid-template-columns: 224px auto;
+  height: 100%;
+}
+div.main-left {
+  border-right: 1px solid #dcdfe6;
+  padding: 12px 20px 12px 12px;
+  height: 100%;
+  overflow: auto;
+}
+div.main-right {
+  overflow: auto;
+}
+>>> div.main-right div.controls {
+  height: 0;
 }
 div.plot-vuer {
   display: grid;
