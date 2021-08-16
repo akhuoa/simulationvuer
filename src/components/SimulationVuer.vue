@@ -1,56 +1,58 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-    <el-container class="main" v-show="mode !== -1">
-      <el-aside width="212px">
+    <div class="main" v-show="mode !== -1">
+      <div class="main-left">
+        <p class="default name">{{title}}</p>
+        <p class="default description">{{subtitle}}</p>
+        <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
           <p class="default simulation-mode">Simulation mode</p>
           <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
           </el-select>
-          <p class="default stimulation-level">Stimulation level</p>
-          <div class="stimulation-level">
+          <div class="sliders-and-fields">
+            <p class="default first-slider-and-field">Stimulation level</p>
             <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
-            <el-input-number v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
+            <el-input-number class="slider-and-field" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
           </div>
         </div>
         <div v-show="mode === 1">
-          <p class="default spike-frequency">Spike frequency</p>
-          <div class="spike-frequency">
+          <div class="sliders-and-fields">
+            <p class="default first-slider-and-field">Spike frequency</p>
             <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
-            <el-input-number v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
-          </div>
-          <p class="default spike-number">Spike number</p>
-          <div class="spike-number">
+            <el-input-number class="slider-and-field" v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
+            <p class="default slider-and-field">Spike number</p>
             <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
-          </div>
-          <p class="default spike-amplitude">Spike amplitude</p>
-          <div class="spike-amplitude">
+            <el-input-number class="slider-and-field" v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
+            <p class="default slider-and-field">Spike amplitude</p>
             <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
+            <el-input-number class="slider-and-field" v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
           </div>
         </div>
-        <div class="run-simulation">
+        <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
-        <div class="run-on-osparc">
+        <div class="secondary-button">
           <el-button size="mini" @click="goToOsparc()">Go to oSPARC</el-button>
         </div>
-      </el-aside>
-      <div class="plot-vuer" v-show="simulationValid" style="display: grid">
-        <div v-show="mode === 1">
-          <PlotVuer :title="simulationSpikeTitle" :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+        <div class="secondary-button">
+          <el-button size="mini" @click="viewDataset()">View dataset</el-button>
         </div>
-        <div>
-          <PlotVuer :title="simulationPotentialTitle" :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-        </div>
+        <p class="default note">{{note}}</p>
       </div>
-      <div v-show="!simulationValid">
+      <div class="main-right" v-if="mode === 0" v-show="simulationValid">
+        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+      </div>
+      <div class="main-right composite" v-if="mode === 1" v-show="simulationValid">
+        <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
+        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+      </div>
+      <div class="main-right" v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
       </div>
-    </el-container>
+    </div>
   </div>
 </template>
 
@@ -58,13 +60,14 @@
 import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import { Aside, Button, Container, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
+import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 
 var NoSimulationData = [{}];
 
 Vue.use(Aside);
 Vue.use(Button);
 Vue.use(Container);
+Vue.use(Divider);
 Vue.use(InputNumber);
 Vue.use(Loading);
 Vue.use(Main);
@@ -82,15 +85,21 @@ export default {
       type: String,
       default: "",
     },
-    resource: {
-      type: String,
-      default: "",
+    entry: {
+      /**
+       * Object containing information for the current simulation.
+       */
+      entry: Object,
     },
   },
   data: function () {
+    let title = this.entry?this.entry.name:"";
+    let subtitle = this.entry?this.entry.description:"";
+
     return {
       mode: 0,
       errorMessage: "",
+      note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
       simulationMode: 0,
       simulationModes: [
@@ -107,7 +116,6 @@ export default {
           value: 2,
         },
       ],
-      simulationSpikeTitle: "Spike activity",
       simulationSpikeLayout: {
         xaxis: {
           title: {
@@ -130,7 +138,6 @@ export default {
       simulationSpikeNumber: 10,
       simulationSpikeAmplitude: 10, // The real value is 100 times smaller.
       simulationSpikeData: NoSimulationData,
-      simulationPotentialTitle: "Membrane potential",
       simulationPotentialLayout: {
         xaxis: {
           title: {
@@ -151,13 +158,18 @@ export default {
       },
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
-      simulationBeingComputedLabel: "Loading simulation...",
+      simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
+      subtitle: subtitle,
+      title: title,
     };
   },
   methods: {
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
+    },
+    viewDataset() {
+      window.open(this.entry.dataset, "_blank");
     },
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
@@ -167,7 +179,7 @@ export default {
       this.simulationBeingComputed = true;
 
       var request = {
-        model_url: this.resource,
+        model_url: this.entry.resource,
         json_config: {
           output: ["Membrane/V"],
         },
@@ -272,12 +284,14 @@ export default {
     //  -  0: normal mode; and
     //  -  1: composite mode.
 
-    if (this.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
-      this.mode = 0;
-    } else if (this.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
-      this.mode = 1;
-    } else {
-      this.mode = -1;
+    this.mode = -1;
+
+    if (this.entry) {
+      if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
+        this.mode = 0;
+      } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
+        this.mode = 1;
+      }
     }
   },
 };
@@ -286,34 +300,31 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 @import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
->>> .el-aside {
-  padding: 12px 20px 12px 12px;
-}
 >>> .el-button:hover {
   box-shadow: -3px 2px 4px #00000040;
 }
->>> .el-container.main {
-  height: 100%;
+>>> .el-divider {
+  margin: 8px 0;
+  width: 191px;
 }
->>> .el-input-number {
-  top: -12px;
-  padding-left: 132px;
+>>> .el-input-number.slider-and-field {
+  margin-top: -8px;
+  width: 0;
+  height: 0;
 }
->>> .el-input-number .el-input {
+>>> .el-input-number.slider-and-field .el-input {
   width: 60px;
 }
->>> .el-input-number .el-input__inner:focus {
+>>> .el-input-number.slider-and-field .el-input__inner:focus {
   border-color: #8300bf;
 }
->>> .el-main {
-  margin: -16px 0 8px 0px;
+>>> .el-select.simulation-mode {
+  margin-bottom: 16px;
 }
 >>> .el-slider {
-  position: absolute;
   width: 108px;
-  top: -16px;
-  left: 8px;
-  margin-bottom: 32px;
+  margin-top: -12px;
+  margin-left: 8px;
 }
 >>> .el-slider__bar {
   background-color: #8300bf;
@@ -338,54 +349,63 @@ export default {
   font-weight: normal;
   color: #8300bf;
 }
+div.main {
+  display: grid;
+  --mainLeftWidth: 224px;
+  grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
+  height: 100%;
+}
+div.main-left {
+  border-right: 1px solid #dcdfe6;
+  padding: 12px 20px 12px 12px;
+  height: 100%;
+  overflow: auto;
+}
+div.main-right.composite {
+  height: 50%;
+}
+>>> div.main-right div.controls {
+  height: 0;
+}
 div.plot-vuer {
+  display: grid;
   width: 100%;
 }
-div.run-simulation,
-div.run-on-osparc {
+div.primary-button,
+div.secondary-button {
   display: flex;
   justify-content: flex-end;
+  width: 191px;
 }
-div.run-simulation {
-  margin-top: 48px;
+div.primary-button {
+  margin-top: 14px;
 }
-div.run-on-osparc {
+div.secondary-button {
   margin-top: 8px;
 }
-div.run-simulation .el-button,
-div.run-on-osparc .el-button,
-div.run-simulation .el-button:hover,
-div.run-on-osparc .el-button:hover {
+div.primary-button .el-button,
+div.secondary-button .el-button,
+div.primary-button .el-button:hover,
+div.secondary-button .el-button:hover {
   width: 121px;
   border-color: #8300bf;
 }
-div.run-simulation .el-button,
-div.run-simulation .el-button:hover {
+div.primary-button .el-button,
+div.primary-button .el-button:hover {
   background-color: #8300bf;
 }
-div.run-on-osparc .el-button,
-div.run-on-osparc .el-button:hover {
+div.secondary-button .el-button,
+div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
-div.spike-frequency {
-  position: absolute;
-  margin-top: 4px;
-}
-div.spike-number {
-  position: absolute;
-  margin-top: 4px;
-}
-div.spike-amplitude {
-  position: absolute;
-  margin-top: 4px;
-}
-div.stimulation-level {
-  position: absolute;
-  margin-top: 4px;
-}
 div.simulation-vuer {
   height: 100%;
+}
+div.sliders-and-fields {
+  display: grid;
+  grid-template-columns: 132px auto;
+  width: 191px;
 }
 p.default {
   font-family: Asap, sans-serif;
@@ -393,29 +413,40 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
+p.description,
+p.note {
+  font-size: 12px;
+  line-height: 16px;
+}
+p.description {
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
 p.error {
   margin-left: 16px;
 }
+p.first-slider-and-field,
+p.slider-and-field {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin-bottom: 8px;
+}
+p.name,
 p.input-parameters {
   margin-top: 0;
   font-weight: 500 /* Medium */;
 }
+p.name {
+  line-height: 20px;
+}
 p.simulation-mode {
   margin-bottom: 4px;
 }
-p.spike-frequency {
-  margin-bottom: 8px;
+p.first-slider-and-field {
+  margin-top: 0;
 }
-p.spike-number {
-  margin-top: 40px;
-  margin-bottom: 8px;
-}
-p.spike-amplitude {
-  margin-top: 40px;
-  margin-bottom: 8px;
-}
-p.stimulation-level {
-  margin-bottom: 8px;
+p.slider-and-field {
+  margin-top: 6px;
 }
 span.error {
   font-weight: 500 /* Medium */;
