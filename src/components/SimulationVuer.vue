@@ -351,7 +351,8 @@ export default {
 }
 div.main {
   display: grid;
-  grid-template-columns: 224px auto;
+  --mainLeftWidth: 224px;
+  grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
   height: 100%;
 }
 div.main-left {
