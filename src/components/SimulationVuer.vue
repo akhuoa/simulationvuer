@@ -4,7 +4,6 @@
     <div class="main" v-show="mode !== -1">
       <div class="main-left">
         <p class="default title">{{title}}</p>
-        <p class="default subtitle">{{subtitle}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
@@ -94,7 +93,6 @@ export default {
   },
   data: function () {
     let title = this.entry?this.entry.name:"";
-    let subtitle = this.entry?this.entry.description:"";
 
     return {
       mode: 0,
@@ -160,7 +158,6 @@ export default {
       simulationBeingComputed: false,
       simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
-      subtitle: subtitle,
       title: title,
     };
   },
@@ -304,7 +301,7 @@ export default {
   box-shadow: -3px 2px 4px #00000040;
 }
 >>> .el-divider {
-  margin: 8px 0;
+  margin: -8px 0 8px 0;
   width: 191px;
 }
 >>> .el-input-number.slider-and-field {
@@ -422,14 +419,9 @@ p.slider-and-field {
   grid-column-end: 3;
   margin-bottom: 8px;
 }
-p.note,
-p.subtitle {
+p.note {
   font-size: 12px;
   line-height: 16px;
-}
-p.subtitle {
-  margin-top: -8px;
-  margin-bottom: 8px;
 }
 p.title,
 p.input-parameters {
