@@ -3,8 +3,8 @@
     <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
     <div class="main" v-show="mode !== -1">
       <div class="main-left">
-        <p class="default name">{{title}}</p>
-        <p class="default description">{{subtitle}}</p>
+        <p class="default title">{{title}}</p>
+        <p class="default subtitle">{{subtitle}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div v-show="mode === 0">
@@ -413,12 +413,12 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
-p.description,
+p.subtitle,
 p.note {
   font-size: 12px;
   line-height: 16px;
 }
-p.description {
+p.subtitle {
   margin-top: -8px;
   margin-bottom: 8px;
 }
@@ -431,12 +431,12 @@ p.slider-and-field {
   grid-column-end: 3;
   margin-bottom: 8px;
 }
-p.name,
+p.title,
 p.input-parameters {
   margin-top: 0;
   font-weight: 500 /* Medium */;
 }
-p.name {
+p.title {
   line-height: 20px;
 }
 p.simulation-mode {
