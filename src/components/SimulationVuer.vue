@@ -413,15 +413,6 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
-p.subtitle,
-p.note {
-  font-size: 12px;
-  line-height: 16px;
-}
-p.subtitle {
-  margin-top: -8px;
-  margin-bottom: 8px;
-}
 p.error {
   margin-left: 16px;
 }
@@ -429,6 +420,15 @@ p.first-slider-and-field,
 p.slider-and-field {
   grid-column-start: 1;
   grid-column-end: 3;
+  margin-bottom: 8px;
+}
+p.note,
+p.subtitle {
+  font-size: 12px;
+  line-height: 16px;
+}
+p.subtitle {
+  margin-top: -8px;
   margin-bottom: 8px;
 }
 p.title,
