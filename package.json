@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^0.2.43",
+    "@abi-software/plotvuer": "^0.2.44",
     "element-ui": "^2.14.1",
     "vue": "^2.6.11"
   },
