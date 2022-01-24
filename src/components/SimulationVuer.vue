@@ -202,7 +202,7 @@ export default {
       //    need a value in [0; 1].
 
       if (this.simulationMode !== 0) {
-        request.json_config["parameters"] = {
+        request.json_config.parameters = {
           "Rate_modulation_experiments/Iso_1_uM": 1.0,
           "Rate_modulation_experiments/ACh": this.simulationMode === 1 ? (1.0 - 0.1 * this.stimulationLevel) * 22.0e-6 : 22.0e-6 + 0.1 * this.stimulationLevel * (38.0e-6 - 22.0e-6),
         };
@@ -211,7 +211,7 @@ export default {
       // Apply the spike settings, if needed.
 
       if (this.mode === 1) {
-        request.json_config["parameters"] = {
+        request.json_config.parameters = {
           "Brain_stem/t_period": this.simulationSpikeFrequency,
           "Brain_stem/w_n": this.simulationSpikeNumber,
           "Brain_stem/w_value": 0.01 * this.simulationSpikeAmplitude,
@@ -221,7 +221,7 @@ export default {
       // Request the spikes if we are in composite mode.
 
       if (this.mode === 1) {
-        request.json_config["output"].push("Brain_stem/w");
+        request.json_config.output.push("Brain_stem/w");
       }
 
       // Run the simulation.
