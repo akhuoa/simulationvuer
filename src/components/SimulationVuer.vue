@@ -178,9 +178,7 @@ export default {
 
       var request = {
         model_url: this.entry.resource,
-        json_config: {
-          output: ["Membrane/V"],
-        },
+        json_config: {},
       };
 
       // Specify the ending point and point interval for the normal mode (since
@@ -224,10 +222,10 @@ export default {
         };
       }
 
-      // Request the spikes if we are in composite mode.
+      // Specify what we want to retrieve.
 
-      if (this.mode === 1) {
-        request.json_config.output.push("Brain_stem/w");
+      if (this.json.output !== undefined)  {
+        request.json_config.output = this.json.output;
       }
 
       // Run the simulation.
@@ -294,10 +292,19 @@ export default {
           simulation: {
             endingPoint: 3.0,
             pointInterval: 0.001,
-          }
+          },
+          output: [
+            "Membrane/V",
+          ],
         };
       } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
         this.mode = 1;
+        this.json = {
+          output: [
+            "Membrane/V",
+            "Brain_stem/w",
+          ],
+        };
       }
     }
   },
