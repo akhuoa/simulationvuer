@@ -1,12 +1,12 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
-    <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-    <div class="main" v-show="mode !== -1">
+    <p v-if="!hasJson()" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
+    <div class="main" v-if="hasJson()">
       <div class="main-left">
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div v-show="mode === 0">
+        <div v-if="mode === 0">
           <p class="default simulation-mode">Simulation mode</p>
           <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
@@ -17,7 +17,7 @@
             <el-input-number class="slider-and-field" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
           </div>
         </div>
-        <div v-show="mode === 1">
+        <div v-if="mode === 1">
           <div class="sliders-and-fields">
             <p class="default first-slider-and-field">Spike frequency</p>
             <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
@@ -163,6 +163,9 @@ export default {
     };
   },
   methods: {
+    hasJson() {
+      return Object.keys(this.json).length !== 0;
+    },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
