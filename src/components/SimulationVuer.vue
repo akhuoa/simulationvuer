@@ -95,7 +95,8 @@ export default {
     let title = this.entry?this.entry.name:"";
 
     return {
-      mode: 0,
+      mode: 0, //---GRY--- TO BE DELETED!
+      json: {},
       errorMessage: "",
       note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
@@ -185,11 +186,16 @@ export default {
       // Specify the ending point and point interval for the normal mode (since
       // our resource is a CellML file).
 
-      if (this.mode === 0) {
-        request.json_config["simulation"] = {
-          "Ending point": 3,
-          "Point interval": 0.001,
-        };
+      if (this.json.simulation !== undefined) {
+        request.json_config.simulation = {};
+
+        if (this.json.simulation.endingPoint !== undefined) {
+          request.json_config.simulation["Ending point"] = this.json.simulation.endingPoint;
+        }
+
+        if (this.json.simulation.pointInterval !== undefined) {
+          request.json_config.simulation["Point interval"] = this.json.simulation.pointInterval;
+        }
       }
 
       // Apply a stellate/vagal stimulation, if needed.
@@ -276,16 +282,20 @@ export default {
     },
   },
   mounted: function () {
-    // Determine the mode in which we should run:
-    //  - -1: unknown mode;
-    //  -  0: normal mode; and
-    //  -  1: composite mode.
+    // Manually (for now) specify the JSON configuration to be used by either
+    // the normal model or the composite model.
 
     this.mode = -1;
 
     if (this.entry) {
       if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
         this.mode = 0;
+        this.json = {
+          simulation: {
+            endingPoint: 3.0,
+            pointInterval: 0.001,
+          }
+        };
       } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
         this.mode = 1;
       }
