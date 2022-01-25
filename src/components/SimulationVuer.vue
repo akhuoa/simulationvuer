@@ -1,11 +1,13 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
-    <p v-if="!hasJson()" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-    <div class="main" v-if="hasJson()">
+    <p v-if="!validJson()" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <div class="main" v-if="validJson()">
       <div class="main-left">
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
+        <div ref="input">
+        </div>
         <div v-if="mode === 0">
           <p class="default discrete">Simulation mode</p>
           <el-select class="discrete" popper-class="discrete-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
@@ -163,8 +165,24 @@ export default {
     };
   },
   methods: {
-    hasJson() {
-      return Object.keys(this.json).length !== 0;
+    validJson() {
+      // Make sure that we have some JSON data.
+
+      if (Object.keys(this.json).length === 0) {
+        return false;
+      }
+
+      // Check each input.
+
+      return this.json.input.every(input => {
+        // Check that the input has a valid name.
+
+        if ((typeof input.name !== "string") || (input.name === "")) {
+          return false;
+        }
+
+        return true;
+      });
     },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
@@ -296,6 +314,14 @@ export default {
             endingPoint: 3.0,
             pointInterval: 0.001,
           },
+          input: [
+            {
+              name: "Simulation mode",
+            },
+            {
+              name: "Simulation level",
+            },
+          ],
           output: [
             "Membrane/V",
           ],
@@ -303,6 +329,17 @@ export default {
       } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
         this.mode = 1;
         this.json = {
+          input: [
+            {
+              name: "Spike frequency",
+            },
+            {
+              name: "Spike number",
+            },
+            {
+              name: "Spike amplitude",
+            },
+          ],
           output: [
             "Membrane/V",
             "Brain_stem/w",
@@ -310,6 +347,35 @@ export default {
         };
       }
     }
+
+    // Add input components, i.e. a label plus either a drop-down list (for a
+    // discrete input) or a slider and a text box (for a scalar input).
+    // Note: we do this using $nextTick() to guarantee that all child components
+    //       have been mounted.
+
+    const Label = {
+      props: ["label"],
+      template: "<p class=\"default\">{{ label }}</p>",
+    };
+    const VueLabel = Vue.extend(Label);
+
+    this.$nextTick(function () {
+      if (this.json.input !== undefined) {
+        this.json.input.forEach(input => {
+          // Add the Label.
+
+          let label = new VueLabel({
+            propsData: {
+              label: input.name,
+            }
+          });
+
+          label.$mount();
+
+          this.$refs.input.appendChild(label.$el);
+        });
+      }
+    });
   },
 };
 </script>

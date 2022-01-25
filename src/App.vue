@@ -5,7 +5,7 @@
     </div>
     <hr />
     <p>
-      Instance for an unknown model:
+      Instance for an unknown or invalid model:
     </p>
     <SimulationVuer :apiLocation="apiLocation" />
     <hr />
