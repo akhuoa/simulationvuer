@@ -7,27 +7,27 @@
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div v-if="mode === 0">
-          <p class="default simulation-mode">Simulation mode</p>
-          <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
+          <p class="default discrete">Simulation mode</p>
+          <el-select class="discrete" popper-class="discrete-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
             <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
           </el-select>
           <div class="sliders-and-fields">
-            <p class="default first-slider-and-field">Stimulation level</p>
+            <p class="default first-scalar">Stimulation level</p>
             <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
-            <el-input-number class="slider-and-field" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
+            <el-input-number class="scalar" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
           </div>
         </div>
         <div v-if="mode === 1">
           <div class="sliders-and-fields">
-            <p class="default first-slider-and-field">Spike frequency</p>
+            <p class="default first-scalar">Spike frequency</p>
             <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="slider-and-field" v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
-            <p class="default slider-and-field">Spike number</p>
+            <el-input-number class="scalar" v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
+            <p class="default scalar">Spike number</p>
             <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="slider-and-field" v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
-            <p class="default slider-and-field">Spike amplitude</p>
+            <el-input-number class="scalar" v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
+            <p class="default scalar">Spike amplitude</p>
             <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="slider-and-field" v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
+            <el-input-number class="scalar" v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
           </div>
         </div>
         <div class="primary-button">
@@ -61,7 +61,7 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 
-var NoSimulationData = [{}];
+let NoSimulationData = [{}];
 
 Vue.use(Aside);
 Vue.use(Button);
@@ -92,7 +92,7 @@ export default {
     },
   },
   data: function () {
-    let title = this.entry?this.entry.name:"";
+    let title = (this.entry !== undefined)?this.entry.name:"";
 
     return {
       mode: 0, //---GRY--- TO BE DELETED!
@@ -179,7 +179,7 @@ export default {
     runSimulation() {
       this.simulationBeingComputed = true;
 
-      var request = {
+      let request = {
         model_url: this.entry.resource,
         json_config: {},
       };
@@ -233,7 +233,7 @@ export default {
 
       // Run the simulation.
 
-      var xmlhttp = new XMLHttpRequest();
+      let xmlhttp = new XMLHttpRequest();
 
       xmlhttp.open("POST", this.apiLocation + "/simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
@@ -242,7 +242,7 @@ export default {
           this.simulationBeingComputed = false;
 
           if (xmlhttp.status === 200) {
-            var response = JSON.parse(xmlhttp.responseText);
+            let response = JSON.parse(xmlhttp.responseText);
 
             this.simulationValid = response.status === "ok";
 
@@ -288,7 +288,7 @@ export default {
 
     this.mode = -1;
 
-    if (this.entry) {
+    if (this.entry !== undefined) {
       if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
         this.mode = 0;
         this.json = {
@@ -324,18 +324,18 @@ export default {
   margin: -8px 0 8px 0;
   width: 191px;
 }
->>> .el-input-number.slider-and-field {
+>>> .el-input-number.scalar {
   margin-top: -8px;
   width: 0;
   height: 0;
 }
->>> .el-input-number.slider-and-field .el-input {
+>>> .el-input-number.scalar .el-input {
   width: 60px;
 }
->>> .el-input-number.slider-and-field .el-input__inner:focus {
+>>> .el-input-number.scalar .el-input__inner:focus {
   border-color: #8300bf;
 }
->>> .el-select.simulation-mode {
+>>> .el-select.discrete {
   margin-bottom: 16px;
 }
 >>> .el-slider {
@@ -349,20 +349,20 @@ export default {
 >>> .el-slider__button {
   border-color: #8300bf;
 }
-.simulation-mode {
+.discrete {
   margin-left: 8px;
 }
-.simulation-mode >>> .el-input__inner {
+.discrete >>> .el-input__inner {
   font-family: Asap, sans-serif;
 }
-.simulation-mode >>> .el-input__inner:focus,
-.simulation-mode >>> .el-input.is-focus .el-input__inner {
+.discrete >>> .el-input__inner:focus,
+.discrete >>> .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
 }
-.simulation-mode-popper .el-select-dropdown__item {
+.discrete-popper .el-select-dropdown__item {
   font-family: Asap, sans-serif;
 }
-.simulation-mode-popper .el-select-dropdown__item.selected {
+.discrete-popper .el-select-dropdown__item.selected {
   font-weight: normal;
   color: #8300bf;
 }
@@ -433,8 +433,8 @@ p.default {
 p.error {
   margin-left: 16px;
 }
-p.first-slider-and-field,
-p.slider-and-field {
+p.first-scalar,
+p.scalar {
   grid-column-start: 1;
   grid-column-end: 3;
   margin-bottom: 8px;
@@ -451,13 +451,13 @@ p.input-parameters {
 p.title {
   line-height: 20px;
 }
-p.simulation-mode {
+p.discrete {
   margin-bottom: 4px;
 }
-p.first-slider-and-field {
+p.first-scalar {
   margin-top: 0;
 }
-p.slider-and-field {
+p.scalar {
   margin-top: 6px;
 }
 span.error {
