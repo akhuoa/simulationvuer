@@ -191,7 +191,7 @@ export default {
           if (!input.values.every(value => {
             if ((typeof value !== "object")
                 || (typeof value.name !== "string")
-                || (typeof value.id !== "number")) {
+                || (typeof value.value !== "number")) {
               return false;
             }
 
@@ -370,15 +370,15 @@ export default {
               values: [
                 {
                   name: "Normal sinus rhythm",
-                  id: 0,
+                  value: 0,
                 },
                 {
                   name: "Stellate stimulation",
-                  id: 1,
+                  value: 1,
                 },
                 {
                   name: "Vagal stimulation",
-                  id: 2,
+                  value: 2,
                 },
               ],
             },
