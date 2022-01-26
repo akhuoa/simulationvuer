@@ -360,6 +360,7 @@ export default {
           },
           input: [
             {
+              id: "sm",
               name: "Simulation mode",
               defaultValue: "Normal sinus rhythm",
               values: [
@@ -373,6 +374,7 @@ export default {
               defaultValue: 0,
               minimumValue: 0,
               maximumValue: 10,
+              enabled: "(sm == 1) || (sm == 2)",
             },
           ],
           output: [
@@ -423,7 +425,13 @@ export default {
 
     this.$nextTick(function () {
       if (this.json.input !== undefined) {
+        let firstScalarInput = true;
+
         this.json.input.forEach(input => {
+          // Determine whether we are dealing with a discrete or a scalar input.
+
+          let isDiscrete = input.values !== undefined;
+
           // Add the Label.
 
           let label = new VueLabel({
@@ -433,6 +441,20 @@ export default {
           });
 
           label.$mount();
+
+          label.$el.classList.add(isDiscrete?
+                                    "discrete":
+                                    firstScalarInput?
+                                      "first-scalar":
+                                      "scalar");
+
+          if (!isDiscrete) {
+            firstScalarInput = false;
+          }
+
+          this.$refs.input.attributes.forEach(attribute => {
+            label.$el.setAttribute(attribute.nodeName, attribute.nodeValue);
+          });
 
           this.$refs.input.appendChild(label.$el);
         });
