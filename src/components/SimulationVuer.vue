@@ -181,6 +181,50 @@ export default {
           return false;
         }
 
+        // Check whether the input is discrete or a scalar.
+
+        if ((typeof input.defaultValue === "string")
+            && (typeof input.values === "object")) {
+          // We are dealing with a discrete input, so make sure that its data is
+          // sound.
+
+          if (!input.values.every(value => {
+            if ((typeof value !== "object")
+                || (value.length !== 2)
+                || (typeof value[0] !== "string")
+                || (typeof value[1] !== "number")) {
+              return false;
+            }
+
+            return true;
+          })) {
+            return false;
+          }
+
+          const discreteValues = input.values.map(function(value) {
+            return value[0];
+          });
+
+          if (!discreteValues.includes(input.defaultValue)) {
+            return false;
+          }
+        } else if ((typeof input.defaultValue === "number")
+            && (typeof input.minimumValue === "number")
+            && (typeof input.maximumValue === "number")) {
+          // We are dealing with a scalar input, so make sure that its data is
+          // sound.
+
+          if ((input.defaultValue < input.minimumValue)
+              || (input.defaultValue > input.maximumValue)
+              || (input.minimumValue >= input.maximumValue)) {
+            return false;
+          }
+        } else {
+          // Not something that we support.
+
+          return false;
+        }
+
         return true;
       });
     },
@@ -317,9 +361,18 @@ export default {
           input: [
             {
               name: "Simulation mode",
+              defaultValue: "Normal sinus rhythm",
+              values: [
+                ["Normal sinus rhythm", 0],
+                ["Stellate stimulation", 1],
+                ["Vagal stimulation", 2],
+              ],
             },
             {
               name: "Simulation level",
+              defaultValue: 0,
+              minimumValue: 0,
+              maximumValue: 10,
             },
           ],
           output: [
@@ -332,12 +385,21 @@ export default {
           input: [
             {
               name: "Spike frequency",
+              defaultValue: 300,
+              minimumValue: 0,
+              maximumValue: 1000,
             },
             {
               name: "Spike number",
+              defaultValue: 10,
+              minimumValue: 0,
+              maximumValue: 30,
             },
             {
               name: "Spike amplitude",
+              defaultValue: 10,
+              minimumValue: 0,
+              maximumValue: 30,
             },
           ],
           output: [
