@@ -228,6 +228,11 @@ export default {
         return true;
       });
     },
+    setVueAttributes(element) {
+      this.$refs.input.attributes.forEach(attribute => {
+        element.setAttribute(attribute.nodeName, attribute.nodeValue);
+      });
+    },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
@@ -441,7 +446,6 @@ export default {
           });
 
           label.$mount();
-
           label.$el.classList.add(isDiscrete?
                                     "discrete":
                                     firstScalarInput?
@@ -452,9 +456,7 @@ export default {
             firstScalarInput = false;
           }
 
-          this.$refs.input.attributes.forEach(attribute => {
-            label.$el.setAttribute(attribute.nodeName, attribute.nodeValue);
-          });
+          this.setVueAttributes(label.$el);
 
           this.$refs.input.appendChild(label.$el);
         });
