@@ -184,11 +184,11 @@ export default {
         // Check whether the input is discrete or a scalar.
 
         if ((typeof input.defaultValue === "string")
-            && (typeof input.values === "object")) {
+            && (typeof input.possibleValues === "object")) {
           // We are dealing with a discrete input, so make sure that its data is
           // sound.
 
-          if (!input.values.every(value => {
+          if (!input.possibleValues.every(value => {
             if ((typeof value !== "object")
                 || (typeof value.name !== "string")
                 || (typeof value.value !== "number")) {
@@ -200,7 +200,7 @@ export default {
             return false;
           }
 
-          const discreteValues = input.values.map(function(value) {
+          const discreteValues = input.possibleValues.map(function(value) {
             return value.name;
           });
 
@@ -367,7 +367,7 @@ export default {
               id: "sm",
               name: "Simulation mode",
               defaultValue: "Normal sinus rhythm",
-              values: [
+              possibleValues: [
                 {
                   name: "Normal sinus rhythm",
                   value: 0,
@@ -444,7 +444,7 @@ export default {
         this.json.input.forEach(input => {
           // Determine whether we are dealing with a discrete or a scalar input.
 
-          let isDiscrete = input.values !== undefined;
+          let isDiscrete = input.possibleValues !== undefined;
 
           // Add the Label.
 
