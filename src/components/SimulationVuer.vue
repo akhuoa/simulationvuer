@@ -435,6 +435,7 @@ export default {
       template: "<p class=\"default\">{{ label }}</p>",
     };
     const VueLabel = Vue.extend(Label);
+    const VueSelect = Vue.extend(Select);
 
     this.$nextTick(function () {
       if (this.json.input !== undefined) {
@@ -467,6 +468,25 @@ export default {
           this.setVueAttributes(label.$el);
 
           this.$refs.input.appendChild(label.$el);
+
+          // Add a drop-down list or a slider and a text box depending on
+          // whether we are dealing with a discrete or a scalar input.
+
+          if (isDiscrete) {
+            let select = new VueSelect({
+              propsData: {
+                size: "mini",
+                value: input.defaultValue,
+              }
+            });
+
+            select.$mount();
+            select.$el.classList.add("discrete");
+
+            this.setVueAttributes(select.$el);
+
+            this.$refs.input.appendChild(select.$el);
+          }
         });
       }
     });
