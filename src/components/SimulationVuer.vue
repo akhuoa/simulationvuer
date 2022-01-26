@@ -190,9 +190,8 @@ export default {
 
           if (!input.values.every(value => {
             if ((typeof value !== "object")
-                || (value.length !== 2)
-                || (typeof value[0] !== "string")
-                || (typeof value[1] !== "number")) {
+                || (typeof value.name !== "string")
+                || (typeof value.id !== "number")) {
               return false;
             }
 
@@ -202,7 +201,7 @@ export default {
           }
 
           const discreteValues = input.values.map(function(value) {
-            return value[0];
+            return value.name;
           });
 
           if (!discreteValues.includes(input.defaultValue)) {
@@ -369,9 +368,18 @@ export default {
               name: "Simulation mode",
               defaultValue: "Normal sinus rhythm",
               values: [
-                ["Normal sinus rhythm", 0],
-                ["Stellate stimulation", 1],
-                ["Vagal stimulation", 2],
+                {
+                  name: "Normal sinus rhythm",
+                  id: 0,
+                },
+                {
+                  name: "Stellate stimulation",
+                  id: 1,
+                },
+                {
+                  name: "Vagal stimulation",
+                  id: 2,
+                },
               ],
             },
             {
