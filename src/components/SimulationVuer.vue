@@ -555,6 +555,8 @@ export default {
             this.mountAndSetVueAttributes(slider);
             this.mountAndSetVueAttributes(inputNumber);
 
+            inputNumber.$el.classList.add("scalar");
+
             slidersAndFieldsContainer.$el.appendChild(slider.$el);
             slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
           }
