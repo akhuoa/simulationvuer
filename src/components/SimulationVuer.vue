@@ -437,18 +437,39 @@ export default {
       template: "<p class=\"default\">{{ label }}</p>",
     };
     const VueLabel = Vue.extend(Label);
+    const Container = {
+      template: "<div class=\"sliders-and-fields\"/>",
+    };
+    const VueContainer = Vue.extend(Container);
     const VueSelect = Vue.extend(Select);
     const VueSlider = Vue.extend(Slider);
     const VueInputNumber = Vue.extend(InputNumber);
 
     this.$nextTick(function () {
       if (this.json.input !== undefined) {
+        let elementMode = 1; // 1: drop-down list and 2: slider and text box.
+        let slidersAndFieldsContainer = undefined;
         let firstScalarInput = true;
 
         this.json.input.forEach(input => {
           // Determine whether we are dealing with a discrete or a scalar input.
 
           let isDiscrete = input.possibleValues !== undefined;
+
+          // Determine our element mode and create a container for our sliders
+          // and input numbers, if needed.
+
+          if (isDiscrete) {
+            elementMode = 1;
+          } else if (elementMode === 1) {
+            slidersAndFieldsContainer = new VueContainer();
+
+            this.mountAndSetVueAttributes(slidersAndFieldsContainer);
+
+            this.$refs.input.appendChild(slidersAndFieldsContainer.$el);
+
+            elementMode = 2;
+          }
 
           // Add the Label.
 
@@ -470,12 +491,18 @@ export default {
             firstScalarInput = false;
           }
 
-          this.$refs.input.appendChild(label.$el);
+          let labelParent = isDiscrete?
+                              this.$refs.input:
+                              slidersAndFieldsContainer.$el;
+
+          labelParent.appendChild(label.$el);
 
           // Add a drop-down list or a slider and a text box depending on
           // whether we are dealing with a discrete or a scalar input.
 
           if (isDiscrete) {
+            // Add the drop-down list.
+
             let select = new VueSelect({
               propsData: {
                 popperAppendToBody: false,
@@ -502,6 +529,8 @@ export default {
 
             this.$refs.input.appendChild(select.$el);
           } else {
+            // Add the slider and input number.
+
             let slider = new VueSlider({
               propsData: {
                 disabled: false,
@@ -526,8 +555,8 @@ export default {
             this.mountAndSetVueAttributes(slider);
             this.mountAndSetVueAttributes(inputNumber);
 
-            this.$refs.input.appendChild(slider.$el);
-            this.$refs.input.appendChild(inputNumber.$el);
+            slidersAndFieldsContainer.$el.appendChild(slider.$el);
+            slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
           }
         });
       }
