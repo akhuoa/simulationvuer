@@ -181,7 +181,7 @@ export default {
 
         // Check whether the input is discrete or a scalar.
 
-        if ((typeof input.defaultValue === "string")
+        if ((typeof input.defaultValue === "number")
             && (typeof input.possibleValues === "object")) {
           // We are dealing with a discrete input, so make sure that its data is
           // sound.
@@ -199,7 +199,7 @@ export default {
           }
 
           const discreteValues = input.possibleValues.map(function(value) {
-            return value.name;
+            return value.value;
           });
 
           if (!discreteValues.includes(input.defaultValue)) {
@@ -366,7 +366,7 @@ export default {
             {
               id: "sm",
               name: "Simulation mode",
-              defaultValue: "Normal sinus rhythm",
+              defaultValue: 0,
               possibleValues: [
                 {
                   name: "Normal sinus rhythm",
