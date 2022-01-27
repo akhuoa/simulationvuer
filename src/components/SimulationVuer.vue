@@ -500,18 +500,6 @@ export default {
 
             select.options = possibleValues;
 
-
-            let possibleValues = [];
-
-            input.possibleValues.forEach(value => {
-              possibleValues.push({
-                key: value.value,
-                label: value.name,
-                value: value.value,
-              });
-            });
-
-            select.options = possibleValues;
             this.$refs.input.appendChild(select.$el);
           } else {
             let slider = new VueSlider({
