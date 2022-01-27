@@ -436,6 +436,8 @@ export default {
     };
     const VueLabel = Vue.extend(Label);
     const VueSelect = Vue.extend(Select);
+    const VueSlider = Vue.extend(Slider);
+    const VueInputNumber = Vue.extend(InputNumber);
 
     this.$nextTick(function () {
       if (this.json.input !== undefined) {
@@ -499,6 +501,33 @@ export default {
             select.options = possibleValues;
 
             this.$refs.input.appendChild(select.$el);
+          } else {
+            let slider = new VueSlider({
+              propsData: {
+                disabled: false,
+                max: input.maximumValue,
+                showInput: false,
+                showTooltip: false,
+                size: "mini",
+                value: input.defaultValue,
+              }
+            });
+            let inputNumber = new VueInputNumber({
+              propsData: {
+                controls: false,
+                disabled: false,
+                min: input.minimumValue,
+                max: input.maximumValue,
+                size: "mini",
+                value: input.defaultValue,
+              }
+            });
+
+            slider.$mount();
+            inputNumber.$mount();
+
+            this.$refs.input.appendChild(slider.$el);
+            this.$refs.input.appendChild(inputNumber.$el);
           }
         });
       }
