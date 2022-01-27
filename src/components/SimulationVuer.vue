@@ -93,7 +93,7 @@ export default {
       entry: Object,
     },
   },
-  data: function () {
+  data: function() {
     return {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
@@ -172,7 +172,7 @@ export default {
 
       // Check each input.
 
-      return this.json.input.every(input => {
+      return this.json.input.every((input) => {
         // Check that the input has a valid name.
 
         if ((typeof input.name !== "string") || (input.name === "")) {
@@ -186,7 +186,7 @@ export default {
           // We are dealing with a discrete input, so make sure that its data is
           // sound.
 
-          if (!input.possibleValues.every(value => {
+          if (!input.possibleValues.every((value) => {
             if ((typeof value !== "object")
                 || (typeof value.name !== "string")
                 || (typeof value.value !== "number")) {
@@ -198,11 +198,25 @@ export default {
             return false;
           }
 
-          const discreteValues = input.possibleValues.map(function(value) {
+          const values = input.possibleValues.map((value) => {
             return value.value;
           });
 
-          if (!discreteValues.includes(input.defaultValue)) {
+          let valueUsed = [];
+
+          if (!values.every((value) => {
+            if (valueUsed[value]) {
+              return false;
+            }
+
+            valueUsed[value] = true;
+
+            return true;
+          })) {
+            return false;
+          }
+
+          if (!values.includes(input.defaultValue)) {
             return false;
           }
         } else if ((typeof input.defaultValue === "number")
@@ -228,7 +242,7 @@ export default {
     mountAndSetVueAttributes(element) {
       element.$mount();
 
-      this.$refs.input.attributes.forEach(attribute => {
+      this.$refs.input.attributes.forEach((attribute) => {
         element.$el.setAttribute(attribute.nodeName, attribute.nodeValue);
       });
     },
@@ -320,7 +334,7 @@ export default {
                 this.simulationSpikeData = [
                   {
                     x: response.results["environment/time"],
-                    y: response.results["Brain_stem/w"].map(function (element) {
+                    y: response.results["Brain_stem/w"].map((element) => {
                       return 100 * element;
                     }),
                   },
@@ -348,7 +362,7 @@ export default {
       xmlhttp.send(JSON.stringify(request));
     },
   },
-  mounted: function () {
+  mounted: function() {
     // Manually (for now) specify the JSON configuration to be used by either
     // the normal model or the composite model.
 
@@ -443,13 +457,13 @@ export default {
     const VueSlider = Vue.extend(Slider);
     const VueInputNumber = Vue.extend(InputNumber);
 
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       if (this.json.input !== undefined) {
         let elementMode = 1; // 1: drop-down list and 2: slider and text box.
         let slidersAndFieldsContainer = undefined;
         let firstScalarInput = true;
 
-        this.json.input.forEach(input => {
+        this.json.input.forEach((input) => {
           // Determine whether we are dealing with a discrete or a scalar input.
 
           let isDiscrete = input.possibleValues !== undefined;
@@ -515,7 +529,7 @@ export default {
 
             let possibleValues = [];
 
-            input.possibleValues.forEach(value => {
+            input.possibleValues.forEach((value) => {
               possibleValues.push({
                 key: value.value,
                 label: value.name,
