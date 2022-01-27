@@ -475,6 +475,7 @@ export default {
           if (isDiscrete) {
             let select = new VueSelect({
               propsData: {
+                popperAppendToBody: false,
                 size: "mini",
                 value: input.defaultValue,
               }
@@ -484,6 +485,18 @@ export default {
             select.$el.classList.add("discrete");
 
             this.setVueAttributes(select.$el);
+
+            let possibleValues = [];
+
+            input.possibleValues.forEach(value => {
+              possibleValues.push({
+                key: value.value,
+                label: value.name,
+                value: value.value,
+              });
+            });
+
+            select.options = possibleValues;
 
             this.$refs.input.appendChild(select.$el);
           }
