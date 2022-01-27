@@ -227,9 +227,11 @@ export default {
         return true;
       });
     },
-    setVueAttributes(element) {
+    mountAndSetVueAttributes(element) {
+      element.$mount();
+
       this.$refs.input.attributes.forEach(attribute => {
-        element.setAttribute(attribute.nodeName, attribute.nodeValue);
+        element.$el.setAttribute(attribute.nodeName, attribute.nodeValue);
       });
     },
     goToOsparc() {
@@ -456,7 +458,8 @@ export default {
             }
           });
 
-          label.$mount();
+          this.mountAndSetVueAttributes(label);
+
           label.$el.classList.add(isDiscrete?
                                     "discrete":
                                     firstScalarInput?
@@ -466,8 +469,6 @@ export default {
           if (!isDiscrete) {
             firstScalarInput = false;
           }
-
-          this.setVueAttributes(label.$el);
 
           this.$refs.input.appendChild(label.$el);
 
@@ -483,10 +484,9 @@ export default {
               }
             });
 
-            select.$mount();
-            select.$el.classList.add("discrete");
+            this.mountAndSetVueAttributes(select);
 
-            this.setVueAttributes(select.$el);
+            select.$el.classList.add("discrete");
 
             let possibleValues = [];
 
@@ -523,8 +523,8 @@ export default {
               }
             });
 
-            slider.$mount();
-            inputNumber.$mount();
+            this.mountAndSetVueAttributes(slider);
+            this.mountAndSetVueAttributes(inputNumber);
 
             this.$refs.input.appendChild(slider.$el);
             this.$refs.input.appendChild(inputNumber.$el);
