@@ -94,8 +94,6 @@ export default {
     },
   },
   data: function () {
-    let title = (this.entry !== undefined)?this.entry.name:"";
-
     return {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
@@ -161,7 +159,7 @@ export default {
       simulationBeingComputed: false,
       simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
-      title: title,
+      title: (this.entry !== undefined)?this.entry.name:"",
     };
   },
   methods: {
