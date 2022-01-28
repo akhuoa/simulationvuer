@@ -220,8 +220,8 @@ export default {
             return false;
           }
         } else if ((typeof input.defaultValue === "number")
-            && (typeof input.minimumValue === "number")
-            && (typeof input.maximumValue === "number")) {
+                   && (typeof input.minimumValue === "number")
+                   && (typeof input.maximumValue === "number")) {
           // We are dealing with a scalar input, so make sure that its data is
           // sound.
 
