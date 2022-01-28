@@ -1,7 +1,7 @@
 <template>
   <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
-    <p v-if="!validJson()" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
-    <div class="main" v-if="validJson()">
+    <p v-if="!hasValidJson" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <div class="main" v-if="hasValidJson">
       <div class="main-left">
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
@@ -97,6 +97,7 @@ export default {
     return {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
+      hasValidJson: true,
       errorMessage: "",
       note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
@@ -439,6 +440,14 @@ export default {
       }
     }
 
+    // Make sure that the JSON configuration is valid.
+
+    this.hasValidJson = this.validJson();
+
+    if (!this.hasValidJson) {
+      return;
+    }
+
     // Add input components, i.e. a label plus either a drop-down list (for a
     // discrete input) or a slider and a text box (for a scalar input).
     // Note: we do this using $nextTick() to guarantee that all child components
@@ -458,122 +467,120 @@ export default {
     const VueInputNumber = Vue.extend(InputNumber);
 
     this.$nextTick(() => {
-      if (this.json.input !== undefined) {
-        let elementMode = 1; // 1: drop-down list and 2: slider and text box.
-        let slidersAndFieldsContainer = undefined;
-        let firstScalarInput = true;
+      let elementMode = 1; // 1: drop-down list and 2: slider and text box.
+      let slidersAndFieldsContainer = undefined;
+      let firstScalarInput = true;
 
-        this.json.input.forEach((input) => {
-          // Determine whether we are dealing with a discrete or a scalar input.
+      this.json.input.forEach((input) => {
+        // Determine whether we are dealing with a discrete or a scalar input.
 
-          let isDiscrete = input.possibleValues !== undefined;
+        let isDiscrete = input.possibleValues !== undefined;
 
-          // Determine our element mode and create a container for our sliders
-          // and input numbers, if needed.
+        // Determine our element mode and create a container for our sliders and
+        // input numbers, if needed.
 
-          if (isDiscrete) {
-            elementMode = 1;
-          } else if (elementMode === 1) {
-            slidersAndFieldsContainer = new VueContainer();
+        if (isDiscrete) {
+          elementMode = 1;
+        } else if (elementMode === 1) {
+          slidersAndFieldsContainer = new VueContainer();
 
-            this.mountAndSetVueAttributes(slidersAndFieldsContainer);
+          this.mountAndSetVueAttributes(slidersAndFieldsContainer);
 
-            this.$refs.input.appendChild(slidersAndFieldsContainer.$el);
+          this.$refs.input.appendChild(slidersAndFieldsContainer.$el);
 
-            elementMode = 2;
+          elementMode = 2;
+        }
+
+        // Add the Label.
+
+        let label = new VueLabel({
+          propsData: {
+            label: input.name,
           }
+        });
 
-          // Add the Label.
+        this.mountAndSetVueAttributes(label);
 
-          let label = new VueLabel({
+        label.$el.classList.add(isDiscrete?
+                                  "discrete":
+                                  firstScalarInput?
+                                    "first-scalar":
+                                    "scalar");
+
+        if (!isDiscrete) {
+          firstScalarInput = false;
+        }
+
+        let labelParent = isDiscrete?
+                            this.$refs.input:
+                            slidersAndFieldsContainer.$el;
+
+        labelParent.appendChild(label.$el);
+
+        // Add a drop-down list or a slider and a text box depending on whether
+        // we are dealing with a discrete or a scalar input.
+
+        if (isDiscrete) {
+          // Add the drop-down list.
+
+          let select = new VueSelect({
             propsData: {
-              label: input.name,
+              popperAppendToBody: false,
+              size: "mini",
+              value: input.defaultValue,
             }
           });
 
-          this.mountAndSetVueAttributes(label);
+          this.mountAndSetVueAttributes(select);
 
-          label.$el.classList.add(isDiscrete?
-                                    "discrete":
-                                    firstScalarInput?
-                                      "first-scalar":
-                                      "scalar");
+          select.$el.classList.add("discrete");
 
-          if (!isDiscrete) {
-            firstScalarInput = false;
-          }
+          let possibleValues = [];
 
-          let labelParent = isDiscrete?
-                              this.$refs.input:
-                              slidersAndFieldsContainer.$el;
-
-          labelParent.appendChild(label.$el);
-
-          // Add a drop-down list or a slider and a text box depending on
-          // whether we are dealing with a discrete or a scalar input.
-
-          if (isDiscrete) {
-            // Add the drop-down list.
-
-            let select = new VueSelect({
-              propsData: {
-                popperAppendToBody: false,
-                size: "mini",
-                value: input.defaultValue,
-              }
+          input.possibleValues.forEach((value) => {
+            possibleValues.push({
+              key: value.value,
+              label: value.name,
+              value: value.value,
             });
+          });
 
-            this.mountAndSetVueAttributes(select);
+          select.options = possibleValues;
 
-            select.$el.classList.add("discrete");
+          this.$refs.input.appendChild(select.$el);
+        } else {
+          // Add the slider and input number.
 
-            let possibleValues = [];
+          let slider = new VueSlider({
+            propsData: {
+              disabled: false,
+              max: input.maximumValue,
+              showInput: false,
+              showTooltip: false,
+              size: "mini",
+              value: input.defaultValue,
+            }
+          });
+          let inputNumber = new VueInputNumber({
+            propsData: {
+              controls: false,
+              disabled: false,
+              min: input.minimumValue,
+              max: input.maximumValue,
+              size: "mini",
+              value: input.defaultValue,
+            }
+          });
 
-            input.possibleValues.forEach((value) => {
-              possibleValues.push({
-                key: value.value,
-                label: value.name,
-                value: value.value,
-              });
-            });
+          this.mountAndSetVueAttributes(slider);
+          this.mountAndSetVueAttributes(inputNumber);
 
-            select.options = possibleValues;
+          inputNumber.$el.classList.add("scalar");
 
-            this.$refs.input.appendChild(select.$el);
-          } else {
-            // Add the slider and input number.
-
-            let slider = new VueSlider({
-              propsData: {
-                disabled: false,
-                max: input.maximumValue,
-                showInput: false,
-                showTooltip: false,
-                size: "mini",
-                value: input.defaultValue,
-              }
-            });
-            let inputNumber = new VueInputNumber({
-              propsData: {
-                controls: false,
-                disabled: false,
-                min: input.minimumValue,
-                max: input.maximumValue,
-                size: "mini",
-                value: input.defaultValue,
-              }
-            });
-
-            this.mountAndSetVueAttributes(slider);
-            this.mountAndSetVueAttributes(inputNumber);
-
-            inputNumber.$el.classList.add("scalar");
-
-            slidersAndFieldsContainer.$el.appendChild(slider.$el);
-            slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
-          }
-        });
-      }
+          slidersAndFieldsContainer.$el.appendChild(slider.$el);
+          slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
+        }
+      });
     });
   },
 };
