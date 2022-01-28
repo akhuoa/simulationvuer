@@ -11,7 +11,7 @@
         <div v-if="mode === 0">
           <p class="default discrete">Simulation mode</p>
           <el-select class="discrete" popper-class="discrete-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
-            <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
+            <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.name" :value="simulationMode.value" />
           </el-select>
           <div class="sliders-and-fields">
             <p class="default first-scalar">Stimulation level</p>
@@ -104,15 +104,15 @@ export default {
       simulationMode: 0,
       simulationModes: [
         {
-          label: "Normal sinus rhythm",
+          name: "Normal sinus rhythm",
           value: 0,
         },
         {
-          label: "Stellate stimulation",
+          name: "Stellate stimulation",
           value: 1,
         },
         {
-          label: "Vagal stimulation",
+          name: "Vagal stimulation",
           value: 2,
         },
       ],
@@ -398,7 +398,7 @@ export default {
               ],
             },
             {
-              name: "Simulation level",
+              name: "Stimulation level",
               defaultValue: 0,
               minimumValue: 0,
               maximumValue: 10,
@@ -453,20 +453,18 @@ export default {
     // Note: we do this using $nextTick() to guarantee that all child components
     //       have been mounted.
 
-    const Label = {
-      props: ["label"],
-      template: "<p class=\"default\">{{ label }}</p>",
-    };
-    const VueLabel = Vue.extend(Label);
-    const Container = {
-      template: "<div class=\"sliders-and-fields\"/>",
-    };
-    const VueContainer = Vue.extend(Container);
-    const VueSelect = Vue.extend(Select);
-    const VueSlider = Vue.extend(Slider);
-    const VueInputNumber = Vue.extend(InputNumber);
-
     this.$nextTick(() => {
+      const VueLabel = Vue.extend({
+        props: ["label"],
+        template: "<p class=\"default\">{{ label }}</p>",
+      });
+      const VueContainer = Vue.extend({
+        template: "<div class=\"sliders-and-fields\"/>",
+      });
+      const VueSelect = Vue.extend(Select);
+      const VueSlider = Vue.extend(Slider);
+      const VueInputNumber = Vue.extend(InputNumber);
+
       let elementMode = 1; // 1: drop-down list and 2: slider and text box.
       let slidersAndFieldsContainer = undefined;
       let firstScalarInput = true;
@@ -528,7 +526,7 @@ export default {
               popperAppendToBody: false,
               size: "mini",
               value: input.defaultValue,
-            }
+            },
           });
 
           this.mountAndSetVueAttributes(select);
@@ -559,7 +557,7 @@ export default {
               showTooltip: false,
               size: "mini",
               value: input.defaultValue,
-            }
+            },
           });
           let inputNumber = new VueInputNumber({
             propsData: {
@@ -569,7 +567,7 @@ export default {
               max: input.maximumValue,
               size: "mini",
               value: input.defaultValue,
-            }
+            },
           });
 
           this.mountAndSetVueAttributes(slider);
