@@ -241,12 +241,19 @@ export default {
         return true;
       });
     },
+    setVueAttributes(element) {
+      this.$refs.input.attributes.forEach((attribute) => {
+        element.setAttribute(attribute.nodeName, attribute.nodeValue);
+      });
+
+      element.children.forEach((childElement) => {
+        this.setVueAttributes(childElement);
+      });
+    },
     mountAndSetVueAttributes(element) {
       element.$mount();
 
-      this.$refs.input.attributes.forEach((attribute) => {
-        element.$el.setAttribute(attribute.nodeName, attribute.nodeValue);
-      });
+      this.setVueAttributes(element.$el);
     },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
@@ -537,7 +544,6 @@ export default {
 
         if (isDiscrete) {
           // Add the drop-down list.
-//---GRY--- NEED TO APPLY THE VUE ATTRIBUTES TO THE DROP-DOWN LIST ITEMS!
 
           let select = new VueSelect({
             propsData: {
