@@ -461,7 +461,12 @@ export default {
       const VueContainer = Vue.extend({
         template: "<div class=\"sliders-and-fields\"/>",
       });
-      const VueSelect = Vue.extend(Select);
+      const VueSelect = Vue.extend({
+        props: ["changeCallback", "defaultValue", "possibleValues", "vModel"],
+        template: "<el-select class=\"discrete\" popper-class=\"discrete-popper\" :popper-append-to-body=\"false\" v-model=\"vModel\" size=\"mini\" @change=\"changeCallback\"> \
+  <el-option v-for=\"possibleValue in possibleValues\" :key=\"possibleValue.value\" :label=\"possibleValue.name\" :value=\"possibleValue.value\" /> \
+</el-select>",
+      });
       const VueSlider = Vue.extend(Slider);
       const VueInputNumber = Vue.extend(InputNumber);
 
@@ -523,27 +528,14 @@ export default {
 
           let select = new VueSelect({
             propsData: {
-              popperAppendToBody: false,
-              size: "mini",
-              value: input.defaultValue,
+              changeCallback: this.simulationModeChanged,
+              defaultValue: input.defaultValue,
+              possibleValues: input.possibleValues,
+              // vModel: ..., //---GRY--- TO BE DONE!
             },
           });
 
           this.mountAndSetVueAttributes(select);
-
-          select.$el.classList.add("discrete");
-
-          let possibleValues = [];
-
-          input.possibleValues.forEach((value) => {
-            possibleValues.push({
-              key: value.value,
-              label: value.name,
-              value: value.value,
-            });
-          });
-
-          select.options = possibleValues;
 
           this.$refs.input.appendChild(select.$el);
         } else {
