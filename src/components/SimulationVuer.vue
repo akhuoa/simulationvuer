@@ -467,7 +467,10 @@ export default {
   <el-option v-for=\"possibleValue in possibleValues\" :key=\"possibleValue.value\" :label=\"possibleValue.name\" :value=\"possibleValue.value\" /> \
 </el-select>",
       });
-      const VueSlider = Vue.extend(Slider);
+      const VueSlider = Vue.extend({
+        props: ["disabled", "maximumValue", "vModel"],
+        template: "<el-slider v-model=\"vModel\" :max=\"maximumValue\" :show-tooltip=\"false\" :show-input=\"false\" :disabled=\"disabled\" />",
+      });
       const VueInputNumber = Vue.extend(InputNumber);
 
       let elementMode = 1; // 1: drop-down list and 2: slider and text box.
@@ -544,11 +547,8 @@ export default {
           let slider = new VueSlider({
             propsData: {
               disabled: false,
-              max: input.maximumValue,
-              showInput: false,
-              showTooltip: false,
-              size: "mini",
-              value: input.defaultValue,
+              maximumValue: input.maximumValue,
+              // vModel: ..., //---GRY--- TO BE DONE!
             },
           });
           let inputNumber = new VueInputNumber({
