@@ -471,7 +471,10 @@ export default {
         props: ["disabled", "maximumValue", "vModel"],
         template: "<el-slider v-model=\"vModel\" :max=\"maximumValue\" :show-tooltip=\"false\" :show-input=\"false\" :disabled=\"disabled\" />",
       });
-      const VueInputNumber = Vue.extend(InputNumber);
+      const VueInputNumber = Vue.extend({
+        props: ["disabled", "maximumValue", "minimumValue", "vModel"],
+        template: "<el-input-number class=\"scalar\" v-model=\"vModel\" size=\"mini\" :controls=\"false\" :min=\"minimumValue\" :max=\"maximumValue\" :disabled=\"disabled\" />",
+      });
 
       let elementMode = 1; // 1: drop-down list and 2: slider and text box.
       let slidersAndFieldsContainer = undefined;
@@ -553,12 +556,10 @@ export default {
           });
           let inputNumber = new VueInputNumber({
             propsData: {
-              controls: false,
               disabled: false,
-              min: input.minimumValue,
-              max: input.maximumValue,
-              size: "mini",
-              value: input.defaultValue,
+              minimumValue: input.minimumValue,
+              maximumValue: input.maximumValue,
+              // vModel: ..., //---GRY--- TO BE DONE!
             },
           });
 
