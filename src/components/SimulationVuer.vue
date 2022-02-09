@@ -98,6 +98,7 @@ export default {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
       hasValidJson: true,
+      inputValues: [],
       errorMessage: "",
       note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
@@ -462,25 +463,30 @@ export default {
         template: "<div class=\"sliders-and-fields\"/>",
       });
       const VueSelect = Vue.extend({
-        props: ["changeCallback", "defaultValue", "possibleValues", "vModel"],
+        props: ["changeCallback", "defaultValue", "id", "possibleValues", "vModel"],
         template: "<el-select class=\"discrete\" popper-class=\"discrete-popper\" :popper-append-to-body=\"false\" v-model=\"vModel\" size=\"mini\" @change=\"changeCallback\"> \
   <el-option v-for=\"possibleValue in possibleValues\" :key=\"possibleValue.value\" :label=\"possibleValue.name\" :value=\"possibleValue.value\" /> \
 </el-select>",
       });
       const VueSlider = Vue.extend({
-        props: ["disabled", "maximumValue", "vModel"],
+        props: ["disabled", "id", "maximumValue", "vModel"],
         template: "<el-slider v-model=\"vModel\" :max=\"maximumValue\" :show-tooltip=\"false\" :show-input=\"false\" :disabled=\"disabled\" />",
       });
       const VueInputNumber = Vue.extend({
-        props: ["disabled", "maximumValue", "minimumValue", "vModel"],
+        props: ["disabled", "id", "maximumValue", "minimumValue", "vModel"],
         template: "<el-input-number class=\"scalar\" v-model=\"vModel\" size=\"mini\" :controls=\"false\" :min=\"minimumValue\" :max=\"maximumValue\" :disabled=\"disabled\" />",
       });
 
       let elementMode = 1; // 1: drop-down list and 2: slider and text box.
       let slidersAndFieldsContainer = undefined;
       let firstScalarInput = true;
+      let id = -1;
 
       this.json.input.forEach((input) => {
+        // Keep track of the input value.
+
+        this.inputValues[++id] = input.defaultValue;
+
         // Determine whether we are dealing with a discrete or a scalar input.
 
         let isDiscrete = input.possibleValues !== undefined;
@@ -536,8 +542,9 @@ export default {
             propsData: {
               changeCallback: this.simulationModeChanged,
               defaultValue: input.defaultValue,
+              id: id,
               possibleValues: input.possibleValues,
-              // vModel: ..., //---GRY--- TO BE DONE!
+              vModel: this.inputValues[id],
             },
           });
 
@@ -549,17 +556,19 @@ export default {
 
           let slider = new VueSlider({
             propsData: {
-              disabled: false,
+              id: id,
+              disabled: false, //---GRY--- TO BE UPDATED!
               maximumValue: input.maximumValue,
-              // vModel: ..., //---GRY--- TO BE DONE!
+              vModel: this.inputValues[id],
             },
           });
           let inputNumber = new VueInputNumber({
             propsData: {
-              disabled: false,
+              disabled: false, //---GRY--- TO BE UPDATED!
+              id: id,
               minimumValue: input.minimumValue,
               maximumValue: input.maximumValue,
-              // vModel: ..., //---GRY--- TO BE DONE!
+              vModel: this.inputValues[id],
             },
           });
 
