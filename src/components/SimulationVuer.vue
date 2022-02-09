@@ -537,6 +537,7 @@ export default {
 
         if (isDiscrete) {
           // Add the drop-down list.
+//---GRY--- NEED TO APPLY THE VUE ATTRIBUTES TO THE DROP-DOWN LIST ITEMS!
 
           let select = new VueSelect({
             propsData: {
