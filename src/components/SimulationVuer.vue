@@ -83,14 +83,12 @@ export default {
   },
   props: {
     apiLocation: {
+      required: true,
       type: String,
-      default: "",
     },
     entry: {
-      /**
-       * Object containing information for the current simulation.
-       */
-      entry: Object,
+      required: true,
+      type: Object,
     },
   },
   data: function() {
@@ -463,25 +461,54 @@ export default {
 
     this.$nextTick(() => {
       const VueLabel = Vue.extend({
-        props: ["label"],
-        template: "<p class=\"default\">{{ label }}</p>",
+        props: {
+          classes: String,
+          label: String,
+        },
+        template: `
+          <p :class="classes">{{ label }}</p>
+        `,
       });
       const VueContainer = Vue.extend({
-        template: "<div class=\"sliders-and-fields\"/>",
+        template: `
+          <div class="sliders-and-fields"/>
+        `,
       });
       const VueSelect = Vue.extend({
-        props: ["changeCallback", "defaultValue", "id", "possibleValues", "vModel"],
-        template: "<el-select class=\"discrete\" popper-class=\"discrete-popper\" :popper-append-to-body=\"false\" v-model=\"vModel\" size=\"mini\" @change=\"changeCallback\"> \
-  <el-option v-for=\"possibleValue in possibleValues\" :key=\"possibleValue.value\" :label=\"possibleValue.name\" :value=\"possibleValue.value\" /> \
-</el-select>",
+        props: {
+          changeCallback: Function,
+          id: Number,
+          possibleValues: Array,
+          vModel: Number,
+        },
+        template: `
+          <el-select class="discrete" popper-class="discrete-popper" size="mini" v-model="vModel" :popper-append-to-body="false" @change="changeCallback">
+            <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
+          </el-select>
+        `,
       });
       const VueSlider = Vue.extend({
-        props: ["disabled", "id", "maximumValue", "vModel"],
-        template: "<el-slider v-model=\"vModel\" :max=\"maximumValue\" :show-tooltip=\"false\" :show-input=\"false\" :disabled=\"disabled\" />",
+        props: {
+          disabled: Boolean,
+          id: Number,
+          maximumValue: Number,
+          vModel: Number,
+        },
+        template: `
+          <el-slider v-model="vModel" :disabled="disabled" :max="maximumValue" :show-input="false" :show-tooltip="false" />
+        `,
       });
       const VueInputNumber = Vue.extend({
-        props: ["disabled", "id", "maximumValue", "minimumValue", "vModel"],
-        template: "<el-input-number class=\"scalar\" v-model=\"vModel\" size=\"mini\" :controls=\"false\" :min=\"minimumValue\" :max=\"maximumValue\" :disabled=\"disabled\" />",
+        props: {
+          disabled: Boolean,
+          id: Number,
+          maximumValue: Number,
+          minimumValue: Number,
+          vModel: Number,
+        },
+        template: `
+          <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="disabled" :max="maximumValue" :min="minimumValue" />
+        `,
       });
 
       let elementMode = 1; // 1: drop-down list and 2: slider and text box.
@@ -517,17 +544,12 @@ export default {
 
         let label = new VueLabel({
           propsData: {
+            classes: "default " + (isDiscrete?"discrete":firstScalarInput?"first-scalar":"scalar"),
             label: input.name,
           }
         });
 
         this.mountAndSetVueAttributes(label);
-
-        label.$el.classList.add(isDiscrete?
-                                  "discrete":
-                                  firstScalarInput?
-                                    "first-scalar":
-                                    "scalar");
 
         if (!isDiscrete) {
           firstScalarInput = false;
@@ -548,7 +570,6 @@ export default {
           let select = new VueSelect({
             propsData: {
               changeCallback: this.simulationModeChanged,
-              defaultValue: input.defaultValue,
               id: id,
               possibleValues: input.possibleValues,
               vModel: this.inputValues[id],
@@ -563,8 +584,8 @@ export default {
 
           let slider = new VueSlider({
             propsData: {
-              id: id,
               disabled: false, //---GRY--- TO BE UPDATED!
+              id: id,
               maximumValue: input.maximumValue,
               vModel: this.inputValues[id],
             },
@@ -573,16 +594,14 @@ export default {
             propsData: {
               disabled: false, //---GRY--- TO BE UPDATED!
               id: id,
-              minimumValue: input.minimumValue,
               maximumValue: input.maximumValue,
+              minimumValue: input.minimumValue,
               vModel: this.inputValues[id],
             },
           });
 
           this.mountAndSetVueAttributes(slider);
           this.mountAndSetVueAttributes(inputNumber);
-
-          inputNumber.$el.classList.add("scalar");
 
           slidersAndFieldsContainer.$el.appendChild(slider.$el);
           slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
