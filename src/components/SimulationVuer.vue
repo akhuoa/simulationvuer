@@ -511,7 +511,7 @@ export default {
         `,
       });
 
-      let elementMode = 1; // 1: drop-down list and 2: slider and text box.
+      let isPreviousDiscrete = true;
       let slidersAndFieldsContainer = undefined;
       let firstScalarInput = true;
       let id = -1;
@@ -528,17 +528,15 @@ export default {
         // Determine our element mode and create a container for our sliders and
         // input numbers, if needed.
 
-        if (isDiscrete) {
-          elementMode = 1;
-        } else if (elementMode === 1) {
+        if (!isDiscrete && isPreviousDiscrete) {
           slidersAndFieldsContainer = new VueContainer();
 
           this.mountAndSetVueAttributes(slidersAndFieldsContainer);
 
           this.$refs.input.appendChild(slidersAndFieldsContainer.$el);
-
-          elementMode = 2;
         }
+
+        isPreviousDiscrete = isDiscrete;
 
         // Add the Label.
 
