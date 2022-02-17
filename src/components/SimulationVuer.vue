@@ -96,9 +96,8 @@ export default {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
       hasValidJson: true,
-      selects: [],
-      sliders: [],
-      inputNumbers: [],
+      discreteElements: [{}],
+      scalarElements: [{}],
       errorMessage: "",
       note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
@@ -266,11 +265,18 @@ export default {
       this.simulationValid = true;
     },
     selectionChanged: function(index, value) {
-      console.log("[" + index + "] " + value);
+      // Some information about the select which selection has changed.
+
+      console.log("---[el-select #" + index + "]---");
+      console.log("Value: " + value);
+      console.log("Id: " + this.discreteElements[index].id);
     },
     synchroniseSliderAndInputNumber: function(index, value) {
-      this.sliders[index].vModel = value;
-      this.inputNumbers[index].vModel = value;
+      // Make sure that both a slider and its corresponding input number have
+      // the same value.
+
+      this.scalarElements[index].slider.vModel = value;
+      this.scalarElements[index].input_number.vModel = value;
     },
     runSimulation() {
       this.simulationBeingComputed = true;
@@ -602,9 +608,12 @@ export default {
 
           this.$refs.input.appendChild(select.$el);
 
-          // Keep track of the select.
+          // Keep track of the select and its id.
 
-          this.selects[index] = select;
+          this.discreteElements[index] = {
+            select: select,
+            id: input.id,
+          };
         } else {
           // Add the slider and input number.
 
@@ -637,8 +646,10 @@ export default {
 
           // Keep track of the slider and input number.
 
-          this.sliders[index] = slider;
-          this.inputNumbers[index] = inputNumber;
+          this.scalarElements[index] = {
+            slider: slider,
+            input_number: inputNumber,
+          };
         }
       });
     });
