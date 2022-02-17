@@ -828,6 +828,7 @@ p.title {
   line-height: 20px;
 }
 p.discrete {
+  margin-top: 0;
   margin-bottom: 4px;
 }
 p.first-scalar {
