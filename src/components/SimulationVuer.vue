@@ -182,10 +182,17 @@ export default {
 
         // Check whether the input is discrete or a scalar.
 
-        if ((typeof input.defaultValue === "number")
+        if (((typeof input.id === "string") || (typeof input.id === "undefined"))
+            && (typeof input.name === "string")
+            && (typeof input.defaultValue === "number")
             && (typeof input.possibleValues === "object")) {
           // We are dealing with a discrete input, so make sure that its data is
           // sound.
+
+          if (((typeof input.id === "string") && (input.id === ""))
+              || (input.name === "")) {
+            return false;
+          }
 
           if (!input.possibleValues.every((value) => {
             if ((typeof value !== "object")
@@ -220,13 +227,17 @@ export default {
           if (!values.includes(input.defaultValue)) {
             return false;
           }
-        } else if ((typeof input.defaultValue === "number")
+        } else if (((typeof input.enabled === "string") || (typeof input.enabled === "undefined"))
+                   && (typeof input.name === "string")
+                   && (typeof input.defaultValue === "number")
                    && (typeof input.minimumValue === "number")
                    && (typeof input.maximumValue === "number")) {
           // We are dealing with a scalar input, so make sure that its data is
           // sound.
 
-          if ((input.defaultValue < input.minimumValue)
+          if (((typeof input.enabled === "string") && (input.enabled === ""))
+              || (input.name === "")
+              || (input.defaultValue < input.minimumValue)
               || (input.defaultValue > input.maximumValue)
               || (input.minimumValue >= input.maximumValue)) {
             return false;
