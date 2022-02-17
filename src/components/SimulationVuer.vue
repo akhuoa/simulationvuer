@@ -543,13 +543,10 @@ export default {
       let isPreviousDiscrete = true;
       let slidersAndFieldsContainer = undefined;
       let firstScalarInput = true;
-      let index = -1;
+      let discreteElementIndex = -1;
+      let scalarElementIndex = -1;
 
       this.json.input.forEach((input) => {
-        // // Index for the new input.
-
-        ++index;
-
         // Determine whether we are dealing with a discrete or a scalar input.
 
         let isDiscrete = input.possibleValues !== undefined;
@@ -594,9 +591,11 @@ export default {
         if (isDiscrete) {
           // Add the drop-down list.
 
+          ++discreteElementIndex;
+
           let select = new VueSelect({
             propsData: {
-              index: index,
+              index: discreteElementIndex,
               possibleValues: input.possibleValues,
               vModel: input.defaultValue,
             },
@@ -610,17 +609,19 @@ export default {
 
           // Keep track of the select and its id.
 
-          this.discreteElements[index] = {
+          this.discreteElements[discreteElementIndex] = {
             select: select,
             id: input.id,
           };
         } else {
           // Add the slider and input number.
 
+          ++scalarElementIndex;
+
           let slider = new VueSlider({
             propsData: {
               disabled: false, //---GRY--- TO BE UPDATED!
-              index: index,
+              index: scalarElementIndex,
               maximumValue: input.maximumValue,
               vModel: input.defaultValue,
             },
@@ -628,7 +629,7 @@ export default {
           let inputNumber = new VueInputNumber({
             propsData: {
               disabled: false, //---GRY--- TO BE UPDATED!
-              index: index,
+              index: scalarElementIndex,
               maximumValue: input.maximumValue,
               minimumValue: input.minimumValue,
               vModel: input.defaultValue,
@@ -646,7 +647,7 @@ export default {
 
           // Keep track of the slider and input number.
 
-          this.scalarElements[index] = {
+          this.scalarElements[scalarElementIndex] = {
             slider: slider,
             input_number: inputNumber,
           };
