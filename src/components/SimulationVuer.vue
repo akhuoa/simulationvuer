@@ -265,12 +265,12 @@ export default {
       this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
     },
-    selectionChanged: function(id, value) {
-      console.log("[" + id + "] " + value);
+    selectionChanged: function(index, value) {
+      console.log("[" + index + "] " + value);
     },
-    synchroniseSliderAndInputNumber: function(id, value) {
-      this.sliders[id].vModel = value;
-      this.inputNumbers[id].vModel = value;
+    synchroniseSliderAndInputNumber: function(index, value) {
+      this.sliders[index].vModel = value;
+      this.inputNumbers[index].vModel = value;
     },
     runSimulation() {
       this.simulationBeingComputed = true;
@@ -486,11 +486,11 @@ export default {
       const VueSelect = Vue.extend({
         methods: {
           emitSelectionChanged: function(value) {
-            this.$emit("selectionChanged", this.id, value);
+            this.$emit("selectionChanged", this.index, value);
           }
         },
         props: {
-          id: Number,
+          index: Number,
           possibleValues: Array,
           vModel: Number,
         },
@@ -503,12 +503,12 @@ export default {
       const VueSlider = Vue.extend({
         methods: {
           emitSynchroniseSliderAndInputNumber: function(value) {
-            this.$emit("synchroniseSliderAndInputNumber", this.id, value);
+            this.$emit("synchroniseSliderAndInputNumber", this.index, value);
           }
         },
         props: {
           disabled: Boolean,
-          id: Number,
+          index: Number,
           maximumValue: Number,
           vModel: Number,
         },
@@ -519,12 +519,12 @@ export default {
       const VueInputNumber = Vue.extend({
         methods: {
           emitSynchroniseSliderAndInputNumber: function(value) {
-            this.$emit("synchroniseSliderAndInputNumber", this.id, value);
+            this.$emit("synchroniseSliderAndInputNumber", this.index, value);
           }
         },
         props: {
           disabled: Boolean,
-          id: Number,
+          index: Number,
           maximumValue: Number,
           minimumValue: Number,
           vModel: Number,
@@ -537,12 +537,12 @@ export default {
       let isPreviousDiscrete = true;
       let slidersAndFieldsContainer = undefined;
       let firstScalarInput = true;
-      let id = -1;
+      let index = -1;
 
       this.json.input.forEach((input) => {
-        // // New input.
+        // // Index for the new input.
 
-        ++id;
+        ++index;
 
         // Determine whether we are dealing with a discrete or a scalar input.
 
@@ -590,7 +590,7 @@ export default {
 
           let select = new VueSelect({
             propsData: {
-              id: id,
+              index: index,
               possibleValues: input.possibleValues,
               vModel: input.defaultValue,
             },
@@ -604,14 +604,14 @@ export default {
 
           // Keep track of the select.
 
-          this.selects[id] = select;
+          this.selects[index] = select;
         } else {
           // Add the slider and input number.
 
           let slider = new VueSlider({
             propsData: {
               disabled: false, //---GRY--- TO BE UPDATED!
-              id: id,
+              index: index,
               maximumValue: input.maximumValue,
               vModel: input.defaultValue,
             },
@@ -619,7 +619,7 @@ export default {
           let inputNumber = new VueInputNumber({
             propsData: {
               disabled: false, //---GRY--- TO BE UPDATED!
-              id: id,
+              index: index,
               maximumValue: input.maximumValue,
               minimumValue: input.minimumValue,
               vModel: input.defaultValue,
@@ -637,8 +637,8 @@ export default {
 
           // Keep track of the slider and input number.
 
-          this.sliders[id] = slider;
-          this.inputNumbers[id] = inputNumber;
+          this.sliders[index] = slider;
+          this.inputNumbers[index] = inputNumber;
         }
       });
     });
