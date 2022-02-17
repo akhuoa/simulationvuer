@@ -96,7 +96,8 @@ export default {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
       hasValidJson: true,
-      inputValues: [],
+      sliders: [],
+      inputNumbers: [],
       errorMessage: "",
       note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
@@ -262,6 +263,10 @@ export default {
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
+    },
+    synchroniseSliderAndInputNumber: function(id, value) {
+      this.sliders[id].vModel = value;
+      this.inputNumbers[id].vModel = value;
     },
     runSimulation() {
       this.simulationBeingComputed = true;
@@ -488,6 +493,11 @@ export default {
         `,
       });
       const VueSlider = Vue.extend({
+        methods: {
+          emitSynchroniseSliderAndInputNumber: function(value) {
+            this.$emit("synchroniseSliderAndInputNumber", this.id, value);
+          }
+        },
         props: {
           disabled: Boolean,
           id: Number,
@@ -495,10 +505,15 @@ export default {
           vModel: Number,
         },
         template: `
-          <el-slider v-model="vModel" :disabled="disabled" :max="maximumValue" :show-input="false" :show-tooltip="false" />
+          <el-slider v-model="vModel" :disabled="disabled" :max="maximumValue" :show-input="false" :show-tooltip="false" @input="emitSynchroniseSliderAndInputNumber" />
         `,
       });
       const VueInputNumber = Vue.extend({
+        methods: {
+          emitSynchroniseSliderAndInputNumber: function(value) {
+            this.$emit("synchroniseSliderAndInputNumber", this.id, value);
+          }
+        },
         props: {
           disabled: Boolean,
           id: Number,
@@ -507,7 +522,7 @@ export default {
           vModel: Number,
         },
         template: `
-          <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="disabled" :max="maximumValue" :min="minimumValue" />
+          <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="disabled" :max="maximumValue" :min="minimumValue" @change="emitSynchroniseSliderAndInputNumber" />
         `,
       });
 
@@ -517,9 +532,9 @@ export default {
       let id = -1;
 
       this.json.input.forEach((input) => {
-        // Keep track of the input value.
+        // // New input.
 
-        this.inputValues[++id] = input.defaultValue;
+        ++id;
 
         // Determine whether we are dealing with a discrete or a scalar input.
 
@@ -570,7 +585,7 @@ export default {
               changeCallback: this.simulationModeChanged,
               id: id,
               possibleValues: input.possibleValues,
-              vModel: this.inputValues[id],
+              vModel: input.defaultValue,
             },
           });
 
@@ -585,7 +600,7 @@ export default {
               disabled: false, //---GRY--- TO BE UPDATED!
               id: id,
               maximumValue: input.maximumValue,
-              vModel: this.inputValues[id],
+              vModel: input.defaultValue,
             },
           });
           let inputNumber = new VueInputNumber({
@@ -594,15 +609,23 @@ export default {
               id: id,
               maximumValue: input.maximumValue,
               minimumValue: input.minimumValue,
-              vModel: this.inputValues[id],
+              vModel: input.defaultValue,
             },
           });
 
           this.mountAndSetVueAttributes(slider);
           this.mountAndSetVueAttributes(inputNumber);
 
+          slider.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
+          inputNumber.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
+
           slidersAndFieldsContainer.$el.appendChild(slider.$el);
           slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
+
+          // Keep track of the slider and input number.
+
+          this.sliders[id] = slider;
+          this.inputNumbers[id] = inputNumber;
         }
       });
     });
