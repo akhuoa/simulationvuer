@@ -173,6 +173,8 @@ export default {
 
       // Check each input.
 
+      let idUsed = [];
+
       return this.json.input.every((input) => {
         // Check that the input has a valid name.
 
@@ -192,6 +194,14 @@ export default {
           if (((typeof input.id === "string") && (input.id === ""))
               || (input.name === "")) {
             return false;
+          }
+
+          if (typeof input.id !== undefined) {
+            if (idUsed[input.id]) {
+              return false;
+            }
+
+            idUsed[input.id] = true;
           }
 
           if (!input.possibleValues.every((value) => {
