@@ -275,12 +275,27 @@ export default {
       this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
     },
-    selectionChanged: function(index, value) {
-      // Some information about the select which selection has changed.
+    selectionChanged: function() {
+      // Enable/disable all the scalar elements.
 
-      console.log("---[el-select #" + index + "]---");
-      console.log("Value: " + value);
-      console.log("Id: " + this.discreteElements[index].id);
+      this.scalarElements.forEach((scalarElement) => {
+        let enabled = scalarElement.enabled;
+
+        if (enabled !== undefined) {
+          this.discreteElements.forEach((discreteElement) => {
+            if (discreteElement.id !== undefined) {
+              let re = new RegExp(`\\b${ discreteElement.id }\\b`, 'g');
+
+              enabled = enabled.replace(re, discreteElement.select.vModel);
+            }
+          });
+
+          let disabled = !eval(enabled);
+
+          scalarElement.slider.disabled = disabled;
+          scalarElement.input_number.disabled = disabled;
+        }
+      });
     },
     synchroniseSliderAndInputNumber: function(index, value) {
       // Make sure that both a slider and its corresponding input number have
@@ -430,11 +445,11 @@ export default {
               ],
             },
             {
+              enabled: "(sm == 1) || (sm == 2)",
               name: "Stimulation level",
               defaultValue: 0,
               minimumValue: 0,
               maximumValue: 10,
-              enabled: "(sm == 1) || (sm == 2)",
             },
           ],
           output: [
@@ -659,11 +674,17 @@ export default {
           // Keep track of the slider and input number.
 
           this.scalarElements[scalarElementIndex] = {
+            enabled: input.enabled,
             slider: slider,
             input_number: inputNumber,
           };
         }
       });
+
+      // Initially enable/disable all the scalar elements by pretending that a
+      // selection changed.
+
+      this.selectionChanged();
     });
   },
 };
