@@ -96,6 +96,7 @@ export default {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
       hasValidJson: true,
+      selects: [],
       sliders: [],
       inputNumbers: [],
       errorMessage: "",
@@ -263,6 +264,9 @@ export default {
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
+    },
+    selectionChanged: function(id, value) {
+      console.log("[" + id + "] " + value);
     },
     synchroniseSliderAndInputNumber: function(id, value) {
       this.sliders[id].vModel = value;
@@ -480,14 +484,18 @@ export default {
         `,
       });
       const VueSelect = Vue.extend({
+        methods: {
+          emitSelectionChanged: function(value) {
+            this.$emit("selectionChanged", this.id, value);
+          }
+        },
         props: {
-          changeCallback: Function,
           id: Number,
           possibleValues: Array,
           vModel: Number,
         },
         template: `
-          <el-select class="discrete" popper-class="discrete-popper" size="mini" v-model="vModel" :popper-append-to-body="false" @change="changeCallback">
+          <el-select class="discrete" popper-class="discrete-popper" size="mini" v-model="vModel" :popper-append-to-body="false" @change="emitSelectionChanged">
             <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
           </el-select>
         `,
@@ -582,7 +590,6 @@ export default {
 
           let select = new VueSelect({
             propsData: {
-              changeCallback: this.simulationModeChanged,
               id: id,
               possibleValues: input.possibleValues,
               vModel: input.defaultValue,
@@ -591,7 +598,13 @@ export default {
 
           this.mountAndSetVueAttributes(select);
 
+          select.$on("selectionChanged", this.selectionChanged);
+
           this.$refs.input.appendChild(select.$el);
+
+          // Keep track of the select.
+
+          this.selects[id] = select;
         } else {
           // Add the slider and input number.
 
