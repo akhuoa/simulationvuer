@@ -62,6 +62,7 @@ import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
+import { jsonForNormalModel, jsonForCompositeModel } from "./configuration.js";
 import { validJson } from "./json.js";
 
 let NoSimulationData = [{}];
@@ -333,71 +334,10 @@ export default {
     if (this.entry !== undefined) {
       if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
         this.mode = 0;
-        this.json = {
-          simulation: {
-            endingPoint: 3.0,
-            pointInterval: 0.001,
-          },
-          input: [
-            {
-              id: "sm",
-              name: "Simulation mode",
-              defaultValue: 0,
-              possibleValues: [
-                {
-                  name: "Normal sinus rhythm",
-                  value: 0,
-                },
-                {
-                  name: "Stellate stimulation",
-                  value: 1,
-                },
-                {
-                  name: "Vagal stimulation",
-                  value: 2,
-                },
-              ],
-            },
-            {
-              enabled: "(sm == 1) || (sm == 2)",
-              name: "Stimulation level",
-              defaultValue: 0,
-              minimumValue: 0,
-              maximumValue: 10,
-            },
-          ],
-          output: [
-            "Membrane/V",
-          ],
-        };
+        this.json = jsonForNormalModel();
       } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
         this.mode = 1;
-        this.json = {
-          input: [
-            {
-              name: "Spike frequency",
-              defaultValue: 300,
-              minimumValue: 0,
-              maximumValue: 1000,
-            },
-            {
-              name: "Spike number",
-              defaultValue: 10,
-              minimumValue: 0,
-              maximumValue: 30,
-            },
-            {
-              name: "Spike amplitude",
-              defaultValue: 10,
-              minimumValue: 0,
-              maximumValue: 30,
-            },
-          ],
-          output: [
-            "Membrane/V",
-            "Brain_stem/w",
-          ],
-        };
+        this.json = jsonForCompositeModel();
       }
     }
 
