@@ -36,7 +36,7 @@ export function validJson(json) {
     // Check that the input has a valid name.
 
     if (!((typeof input.name === "string") && (input.name !== ""))) {
-      console.warn("JSON: a name is required and it must be a non-empty string.");
+      console.warn("JSON: an input name is required and it must be a non-empty string.");
 
       return false;
     }
@@ -50,7 +50,7 @@ export function validJson(json) {
 
       if (!((typeof input.id === "string") && (input.id !== "")
             || (typeof input.id === "undefined"))) {
-        console.warn("JSON: an id, if present, must be a non-empty string.");
+        console.warn("JSON: an input id, if present, must be a non-empty string.");
 
         return false;
       }
@@ -59,7 +59,7 @@ export function validJson(json) {
 
       if (typeof input.id !== undefined) {
         if (idUsed[input.id]) {
-          console.warn("JSON: an id must be unique (" + input.id + " is used more than once).");
+          console.warn("JSON: an input id must be unique (" + input.id + " is used more than once).");
 
           return false;
         }
@@ -76,7 +76,7 @@ export function validJson(json) {
         if (!((typeof possibleValue === "object")
               && (typeof possibleValue.name === "string") && (possibleValue.name !== "")
               && (typeof possibleValue.value === "number"))) {
-          console.warn("JSON: a possible value must be an object with a non-empty name and a value.");
+          console.warn("JSON: an input possible value must be an object with a non-empty name and a value.");
 
           return false;
         }
@@ -96,7 +96,7 @@ export function validJson(json) {
 
       if (!values.every((value) => {
         if (valueUsed[value]) {
-          console.warn("JSON: a possible value must have a unique value (" + value + " is used more than once).");
+          console.warn("JSON: an input possible value must have a unique value (" + value + " is used more than once).");
 
           return false;
         }
@@ -111,7 +111,7 @@ export function validJson(json) {
       // Check that the default value is one of the possible values.
 
       if (!values.includes(input.defaultValue)) {
-        console.warn("JSON: the default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
+        console.warn("JSON: the input default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
 
         return false;
       }
@@ -123,20 +123,20 @@ export function validJson(json) {
 
       if (!((typeof input.enabled === "string") && (input.enabled !== "")
             || (typeof input.enabled === "undefined"))) {
-        console.warn("JSON: an enabled, if present, must be a non-empty string.");
+        console.warn("JSON: an input enabled, if present, must be a non-empty string.");
 
         return false;
       }
 
       if (!(input.minimumValue < input.maximumValue)) {
-        console.warn("JSON: the minimum value (" + input.minimumValue + ") must be lower than the maximum value (" + input.maximumValue + ").");
+        console.warn("JSON: the input minimum value (" + input.minimumValue + ") must be lower than the maximum value (" + input.maximumValue + ").");
 
         return false;
       }
 
       if (!((input.defaultValue >= input.minimumValue)
             && (input.defaultValue <= input.maximumValue))) {
-        console.warn("JSON: the default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
+        console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
 
         return false;
       }
