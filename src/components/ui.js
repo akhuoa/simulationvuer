@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { evaluateValue } from "./common.js";
 
 const VueLabel = Vue.extend({
   props: {
@@ -103,15 +104,7 @@ export default class Ui {
       let enabled = scalarElement.enabled;
 
       if (enabled !== undefined) {
-        ui.discreteElements.forEach((discreteElement) => {
-          if (discreteElement.id !== undefined) {
-            let re = new RegExp(`\\b${ discreteElement.id }\\b`, 'g');
-
-            enabled = enabled.replace(re, discreteElement.select.vModel);
-          }
-        });
-
-        let disabled = !eval(enabled);
+        let disabled = !evaluateValue(ui, enabled);
 
         scalarElement.slider.disabled = disabled;
         scalarElement.input_number.disabled = disabled;
