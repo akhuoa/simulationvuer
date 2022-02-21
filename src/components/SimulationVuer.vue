@@ -6,7 +6,7 @@
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div ref="input">
+        <div ref="ui">
         </div>
         <div v-if="mode === 0">
           <p class="default discrete">Simulation mode</p>
@@ -64,6 +64,7 @@ import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 import { jsonForNormalModel, jsonForCompositeModel } from "./configuration.js";
 import { validJson } from "./json.js";
+import Ui from "./ui.js";
 
 let NoSimulationData = [{}];
 
@@ -98,8 +99,6 @@ export default {
       mode: 0, //---GRY--- TO BE DELETED!
       json: {},
       hasValidJson: true,
-      discreteElements: [{}],
-      scalarElements: [{}],
       errorMessage: "",
       note: "Additional parameters are available on oSPARC",
       stimulationLevel: 0,
@@ -166,20 +165,6 @@ export default {
     };
   },
   methods: {
-    setVueAttributes(element) {
-      this.$refs.input.attributes.forEach((attribute) => {
-        element.setAttribute(attribute.nodeName, attribute.nodeValue);
-      });
-
-      element.children.forEach((childElement) => {
-        this.setVueAttributes(childElement);
-      });
-    },
-    mountAndSetVueAttributes(element) {
-      element.$mount();
-
-      this.setVueAttributes(element.$el);
-    },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
@@ -189,35 +174,6 @@ export default {
     simulationModeChanged() {
       this.simulationPotentialData = NoSimulationData;
       this.simulationValid = true;
-    },
-    selectionChanged: function() {
-      // Enable/disable all the scalar elements.
-
-      this.scalarElements.forEach((scalarElement) => {
-        let enabled = scalarElement.enabled;
-
-        if (enabled !== undefined) {
-          this.discreteElements.forEach((discreteElement) => {
-            if (discreteElement.id !== undefined) {
-              let re = new RegExp(`\\b${ discreteElement.id }\\b`, 'g');
-
-              enabled = enabled.replace(re, discreteElement.select.vModel);
-            }
-          });
-
-          let disabled = !eval(enabled);
-
-          scalarElement.slider.disabled = disabled;
-          scalarElement.input_number.disabled = disabled;
-        }
-      });
-    },
-    synchroniseSliderAndInputNumber: function(index, value) {
-      // Make sure that both a slider and its corresponding input number have
-      // the same value.
-
-      this.scalarElements[index].slider.vModel = value;
-      this.scalarElements[index].input_number.vModel = value;
     },
     runSimulation() {
       this.simulationBeingComputed = true;
@@ -349,196 +305,12 @@ export default {
       return;
     }
 
-    // Add input components, i.e. a label plus either a drop-down list (for a
-    // discrete input) or a slider and a text box (for a scalar input).
+    // Create the UI for the given simulation dataset.
     // Note: we do this using $nextTick() to guarantee that all child components
-    //       have been mounted.
+    //       have been mounted since we need access to this.$refs.ui.
 
     this.$nextTick(() => {
-      const VueLabel = Vue.extend({
-        props: {
-          classes: String,
-          label: String,
-        },
-        template: `
-          <p :class="classes">{{ label }}</p>
-        `,
-      });
-      const VueContainer = Vue.extend({
-        template: `
-          <div class="sliders-and-fields"/>
-        `,
-      });
-      const VueSelect = Vue.extend({
-        methods: {
-          emitSelectionChanged: function(value) {
-            this.$emit("selectionChanged", this.index, value);
-          }
-        },
-        props: {
-          index: Number,
-          possibleValues: Array,
-          vModel: Number,
-        },
-        template: `
-          <el-select class="discrete" popper-class="discrete-popper" size="mini" v-model="vModel" :popper-append-to-body="false" @change="emitSelectionChanged">
-            <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
-          </el-select>
-        `,
-      });
-      const VueSlider = Vue.extend({
-        methods: {
-          emitSynchroniseSliderAndInputNumber: function(value) {
-            this.$emit("synchroniseSliderAndInputNumber", this.index, value);
-          }
-        },
-        props: {
-          disabled: Boolean,
-          index: Number,
-          maximumValue: Number,
-          vModel: Number,
-        },
-        template: `
-          <el-slider v-model="vModel" :disabled="disabled" :max="maximumValue" :show-input="false" :show-tooltip="false" @input="emitSynchroniseSliderAndInputNumber" />
-        `,
-      });
-      const VueInputNumber = Vue.extend({
-        methods: {
-          emitSynchroniseSliderAndInputNumber: function(value) {
-            this.$emit("synchroniseSliderAndInputNumber", this.index, value);
-          }
-        },
-        props: {
-          disabled: Boolean,
-          index: Number,
-          maximumValue: Number,
-          minimumValue: Number,
-          vModel: Number,
-        },
-        template: `
-          <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="disabled" :max="maximumValue" :min="minimumValue" @change="emitSynchroniseSliderAndInputNumber" />
-        `,
-      });
-
-      let isPreviousDiscrete = true;
-      let slidersAndFieldsContainer = undefined;
-      let firstScalarInput = true;
-      let discreteElementIndex = -1;
-      let scalarElementIndex = -1;
-
-      this.json.input.forEach((input) => {
-        // Determine whether we are dealing with a discrete or a scalar input.
-
-        let isDiscrete = input.possibleValues !== undefined;
-
-        // Determine our element mode and create a container for our sliders and
-        // input numbers, if needed.
-
-        if (!isDiscrete && isPreviousDiscrete) {
-          slidersAndFieldsContainer = new VueContainer();
-
-          this.mountAndSetVueAttributes(slidersAndFieldsContainer);
-
-          this.$refs.input.appendChild(slidersAndFieldsContainer.$el);
-        }
-
-        isPreviousDiscrete = isDiscrete;
-
-        // Add the Label.
-
-        let label = new VueLabel({
-          propsData: {
-            classes: "default " + (isDiscrete?"discrete":firstScalarInput?"first-scalar":"scalar"),
-            label: input.name,
-          }
-        });
-
-        this.mountAndSetVueAttributes(label);
-
-        if (!isDiscrete) {
-          firstScalarInput = false;
-        }
-
-        let labelParent = isDiscrete?
-                            this.$refs.input:
-                            slidersAndFieldsContainer.$el;
-
-        labelParent.appendChild(label.$el);
-
-        // Add a drop-down list or a slider and a text box depending on whether
-        // we are dealing with a discrete or a scalar input.
-
-        if (isDiscrete) {
-          // Add the drop-down list.
-
-          ++discreteElementIndex;
-
-          let select = new VueSelect({
-            propsData: {
-              index: discreteElementIndex,
-              possibleValues: input.possibleValues,
-              vModel: input.defaultValue,
-            },
-          });
-
-          this.mountAndSetVueAttributes(select);
-
-          select.$on("selectionChanged", this.selectionChanged);
-
-          this.$refs.input.appendChild(select.$el);
-
-          // Keep track of the select and its id.
-
-          this.discreteElements[discreteElementIndex] = {
-            select: select,
-            id: input.id,
-          };
-        } else {
-          // Add the slider and input number.
-
-          ++scalarElementIndex;
-
-          let slider = new VueSlider({
-            propsData: {
-              disabled: false, //---GRY--- TO BE UPDATED!
-              index: scalarElementIndex,
-              maximumValue: input.maximumValue,
-              vModel: input.defaultValue,
-            },
-          });
-          let inputNumber = new VueInputNumber({
-            propsData: {
-              disabled: false, //---GRY--- TO BE UPDATED!
-              index: scalarElementIndex,
-              maximumValue: input.maximumValue,
-              minimumValue: input.minimumValue,
-              vModel: input.defaultValue,
-            },
-          });
-
-          this.mountAndSetVueAttributes(slider);
-          this.mountAndSetVueAttributes(inputNumber);
-
-          slider.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
-          inputNumber.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
-
-          slidersAndFieldsContainer.$el.appendChild(slider.$el);
-          slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
-
-          // Keep track of the slider and input number.
-
-          this.scalarElements[scalarElementIndex] = {
-            enabled: input.enabled,
-            slider: slider,
-            input_number: inputNumber,
-          };
-        }
-      });
-
-      // Initially enable/disable all the scalar elements by pretending that a
-      // selection changed.
-
-      this.selectionChanged();
+      new Ui(this.$refs.ui, this.json);
     });
   },
 };
