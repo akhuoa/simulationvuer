@@ -7,6 +7,28 @@ export function validJson(json) {
     return false;
   }
 
+  // Check simulation information.
+
+  let simulation = json.simulation;
+
+  if (typeof simulation === "object") {
+    // Check that the ending point is valid.
+
+    if (!((typeof simulation.endingPoint === "number") && (simulation.endingPoint > 0.0))) {
+      console.warn("JSON: a simulation ending point must be present and greater than zero.");
+
+      return false;
+    }
+
+    // Check that the point interval is valid.
+
+    if (!((typeof simulation.pointInterval === "number") && (simulation.pointInterval > 0.0))) {
+      console.warn("JSON: a simulation point interval must be present and greater than zero.");
+
+      return false;
+    }
+  }
+
   // Check each input.
 
   let idUsed = [];
