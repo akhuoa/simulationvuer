@@ -167,9 +167,7 @@ export default class Ui {
 
       this.addVueElement(root, labelParent, label);
 
-      if (!isDiscrete) {
-        firstScalarInput = false;
-      }
+      firstScalarInput = isDiscrete;
 
       // Add a drop-down list or a slider and a text box depending on whether
       // we are dealing with a discrete or a scalar input.
