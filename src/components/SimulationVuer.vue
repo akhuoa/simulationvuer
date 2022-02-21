@@ -186,10 +186,10 @@ export default {
 
       // Specify the simulation parameters.
 
-      if (this.json.simulation.parameters != undefined) {
+      if (this.json.parameters != undefined) {
         request.json_config.parameters = {};
 
-        this.json.simulation.parameters.forEach((parameter) => {
+        this.json.parameters.forEach((parameter) => {
           request.json_config.parameters[parameter.name] = evaluateValue(this.ui, parameter.value);
         });
       }

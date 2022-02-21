@@ -9,12 +9,10 @@ export function validJson(json) {
 
   // Check simulation information.
 
-  let simulation = json.simulation;
-
-  if (typeof simulation === "object") {
+  if (typeof json.simulation === "object") {
     // Check that the ending point is valid.
 
-    if (!((typeof simulation.endingPoint === "number") && (simulation.endingPoint > 0.0))) {
+    if (!((typeof json.simulation.endingPoint === "number") && (json.simulation.endingPoint > 0.0))) {
       console.warn("JSON: a simulation ending point must be present and greater than zero.");
 
       return false;
@@ -22,19 +20,23 @@ export function validJson(json) {
 
     // Check that the point interval is valid.
 
-    if (!((typeof simulation.pointInterval === "number") && (simulation.pointInterval > 0.0))) {
+    if (!((typeof json.simulation.pointInterval === "number") && (json.simulation.pointInterval > 0.0))) {
       console.warn("JSON: a simulation point interval must be present and greater than zero.");
 
       return false;
     }
+  }
 
+  // Check simulation information.
+
+  if (typeof json.parameters === "object") {
     // Check that the parameters, if any, are valid.
 
-    let parametersValid = simulation.parameters.every((parameter) => {
+    let parametersValid = json.parameters.every((parameter) => {
       // Check that the parameter has a valid name.
 
       if (!((typeof parameter.name === "string") && (parameter.name !== ""))) {
-        console.warn("JSON: a simulation parameter name is required and it must be a non-empty string.");
+        console.warn("JSON: a parameter name is required and it must be a non-empty string.");
 
         return false;
       }
@@ -42,7 +44,7 @@ export function validJson(json) {
       // Check that the parameter has a valid value.
 
       if (!((typeof parameter.value === "string") && (parameter.value !== ""))) {
-        console.warn("JSON: a simulation parameter value is required and it must be a non-empty string.");
+        console.warn("JSON: a parameter value is required and it must be a non-empty string.");
 
         return false;
       }
