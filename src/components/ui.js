@@ -130,6 +130,7 @@ export default class Ui {
   constructor(root, json) {
     // Generate the UI for the input fields.
 
+    let inputRoot = root.input;
     let isPreviousDiscrete = true;
     let slidersAndFieldsContainer = undefined;
     let firstScalarInput = true;
@@ -147,7 +148,7 @@ export default class Ui {
       if (!isDiscrete && isPreviousDiscrete) {
         slidersAndFieldsContainer = new VueContainer();
 
-        this.addVueElement(root, root, slidersAndFieldsContainer);
+        this.addVueElement(inputRoot, inputRoot, slidersAndFieldsContainer);
       }
 
       isPreviousDiscrete = isDiscrete;
@@ -161,7 +162,7 @@ export default class Ui {
         }
       });
 
-      this.addVueElement(root, isDiscrete?root:slidersAndFieldsContainer.$el, label);
+      this.addVueElement(inputRoot, isDiscrete?inputRoot:slidersAndFieldsContainer.$el, label);
 
       firstScalarInput = isDiscrete;
 
@@ -182,7 +183,7 @@ export default class Ui {
           },
         });
 
-        this.addVueElement(root, root, select);
+        this.addVueElement(inputRoot, inputRoot, select);
 
         select.$on("selectionChanged", this.selectionChanged);
 
@@ -217,8 +218,8 @@ export default class Ui {
           },
         });
 
-        this.addVueElement(root, slidersAndFieldsContainer.$el, slider);
-        this.addVueElement(root, slidersAndFieldsContainer.$el, inputNumber);
+        this.addVueElement(inputRoot, slidersAndFieldsContainer.$el, slider);
+        this.addVueElement(inputRoot, slidersAndFieldsContainer.$el, inputNumber);
 
         slider.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
         inputNumber.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);

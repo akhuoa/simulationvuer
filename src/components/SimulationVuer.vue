@@ -6,7 +6,7 @@
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div ref="ui">
+        <div ref="input">
         </div>
         <div v-if="mode === 0">
           <p class="default discrete">Simulation mode</p>
@@ -310,7 +310,7 @@ export default {
     //       have been mounted since we need access to this.$refs.ui.
 
     this.$nextTick(() => {
-      new Ui(this.$refs.ui, this.json);
+      new Ui(this.$refs, this.json);
     });
   },
 };
