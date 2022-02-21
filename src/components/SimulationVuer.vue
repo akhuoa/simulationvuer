@@ -8,17 +8,6 @@
         <p class="default input-parameters">Input parameters</p>
         <div ref="input">
         </div>
-        <div v-if="mode === 0">
-          <p class="default discrete">Simulation mode</p>
-          <el-select class="discrete" popper-class="discrete-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
-            <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.name" :value="simulationMode.value" />
-          </el-select>
-          <div class="sliders-and-fields">
-            <p class="default first-scalar">Stimulation level</p>
-            <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
-            <el-input-number class="scalar" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
-          </div>
-        </div>
         <div v-if="mode === 1">
           <div class="sliders-and-fields">
             <p class="default first-scalar">Spike frequency</p>
@@ -63,6 +52,7 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 import { jsonForNormalModel, jsonForCompositeModel } from "./configuration.js";
+import { evaluateValue } from "./common.js";
 import { validJson } from "./json.js";
 import Ui from "./ui.js";
 
@@ -162,6 +152,7 @@ export default {
       simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
       title: (this.entry !== undefined)?this.entry.name:"",
+      ui: null,
     };
   },
   methods: {
@@ -193,20 +184,14 @@ export default {
         };
       }
 
-      // Apply a stellate/vagal stimulation, if needed.
-      // Notes:
-      //  - this.simulationMode:
-      //     - 0: normal sinus rhythm;
-      //     - 1: stellate stimulation; and
-      //     - 2: vagal stimulation.
-      //  - this.stimulationLevel has a value in [0; 10], but to compute ACh, we
-      //    need a value in [0; 1].
+      // Specify the simulation parameters.
 
-      if (this.simulationMode !== 0) {
-        request.json_config.parameters = {
-          "Rate_modulation_experiments/Iso_1_uM": 1.0,
-          "Rate_modulation_experiments/ACh": this.simulationMode === 1 ? (1.0 - 0.1 * this.stimulationLevel) * 22.0e-6 : 22.0e-6 + 0.1 * this.stimulationLevel * (38.0e-6 - 22.0e-6),
-        };
+      if (this.json.simulation.parameters != undefined) {
+        request.json_config.parameters = {};
+
+        this.json.simulation.parameters.forEach((parameter) => {
+          request.json_config.parameters[parameter.name] = evaluateValue(this.ui, parameter.value);
+        });
       }
 
       // Apply the spike settings, if needed.
@@ -305,7 +290,7 @@ export default {
     //       have been mounted since we need access to this.$refs.ui.
 
     this.$nextTick(() => {
-      new Ui(this.$refs, this.json);
+      this.ui = new Ui(this.$refs, this.json);
     });
   },
 };
