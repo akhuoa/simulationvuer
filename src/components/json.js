@@ -83,7 +83,7 @@ export function validJson(json) {
 
       // Check that the id is not already used.
 
-      if (typeof input.id !== undefined) {
+      if (typeof input.id !== "undefined") {
         if (idUsed[input.id]) {
           console.warn("JSON: an input id must be unique (" + input.id + " is used more than once).");
 
