@@ -187,15 +187,10 @@ export default {
       // our resource is a CellML file).
 
       if (this.json.simulation !== undefined) {
-        request.json_config.simulation = {};
-
-        if (this.json.simulation.endingPoint !== undefined) {
-          request.json_config.simulation["Ending point"] = this.json.simulation.endingPoint;
-        }
-
-        if (this.json.simulation.pointInterval !== undefined) {
-          request.json_config.simulation["Point interval"] = this.json.simulation.pointInterval;
-        }
+        request.json_config.simulation = {
+          "Ending point": this.json.simulation.endingPoint,
+          "Point interval": this.json.simulation.pointInterval,
+        };
       }
 
       // Apply a stellate/vagal stimulation, if needed.
