@@ -86,10 +86,12 @@ export default class Ui {
     });
   }
 
-  mountAndSetVueAttributes(root, element) {
+  addVueElement(root, parent, element) {
     element.$mount();
 
     this.setVueAttributes(root, element.$el);
+
+    parent.appendChild(element.$el);
   }
 
   selectionChanged() {
@@ -145,9 +147,7 @@ export default class Ui {
       if (!isDiscrete && isPreviousDiscrete) {
         slidersAndFieldsContainer = new VueContainer();
 
-        this.mountAndSetVueAttributes(root, slidersAndFieldsContainer);
-
-        root.appendChild(slidersAndFieldsContainer.$el);
+        this.addVueElement(root, root, slidersAndFieldsContainer);
       }
 
       isPreviousDiscrete = isDiscrete;
@@ -161,17 +161,15 @@ export default class Ui {
         }
       });
 
-      this.mountAndSetVueAttributes(root, label);
-
-      if (!isDiscrete) {
-        firstScalarInput = false;
-      }
-
       let labelParent = isDiscrete?
                           root:
                           slidersAndFieldsContainer.$el;
 
-      labelParent.appendChild(label.$el);
+      this.addVueElement(root, labelParent, label);
+
+      if (!isDiscrete) {
+        firstScalarInput = false;
+      }
 
       // Add a drop-down list or a slider and a text box depending on whether
       // we are dealing with a discrete or a scalar input.
@@ -190,11 +188,9 @@ export default class Ui {
           },
         });
 
-        this.mountAndSetVueAttributes(root, select);
+        this.addVueElement(root, root, select);
 
         select.$on("selectionChanged", this.selectionChanged);
-
-        root.appendChild(select.$el);
 
         // Keep track of the select and its id.
 
@@ -227,14 +223,11 @@ export default class Ui {
           },
         });
 
-        this.mountAndSetVueAttributes(root, slider);
-        this.mountAndSetVueAttributes(root, inputNumber);
+        this.addVueElement(root, slidersAndFieldsContainer.$el, slider);
+        this.addVueElement(root, slidersAndFieldsContainer.$el, inputNumber);
 
         slider.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
         inputNumber.$on("synchroniseSliderAndInputNumber", this.synchroniseSliderAndInputNumber);
-
-        slidersAndFieldsContainer.$el.appendChild(slider.$el);
-        slidersAndFieldsContainer.$el.appendChild(inputNumber.$el);
 
         // Keep track of the slider and input number.
 
