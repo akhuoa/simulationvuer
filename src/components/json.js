@@ -27,6 +27,32 @@ export function validJson(json) {
 
       return false;
     }
+
+    // Check that the parameters, if any, are valid.
+
+    let parametersValid = simulation.parameters.every((parameter) => {
+      // Check that the parameter has a valid name.
+
+      if (!((typeof parameter.name === "string") && (parameter.name !== ""))) {
+        console.warn("JSON: a simulation parameter name is required and it must be a non-empty string.");
+
+        return false;
+      }
+
+      // Check that the parameter has a valid value.
+
+      if (!((typeof parameter.value === "string") && (parameter.value !== ""))) {
+        console.warn("JSON: a simulation parameter value is required and it must be a non-empty string.");
+
+        return false;
+      }
+
+      return true;
+    });
+
+    if (!parametersValid) {
+      return false;
+    }
   }
 
   // Check each input.

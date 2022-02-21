@@ -3,6 +3,16 @@ export function jsonForNormalModel() {
     simulation: {
       endingPoint: 3.0,
       pointInterval: 0.001,
+      parameters: [
+        {
+          name: "Rate_modulation_experiments/Iso_1_uM",
+          value: "(sm == 0)?0.0:1.0",
+        },
+        {
+          name: "Rate_modulation_experiments/ACh",
+          value: "(sm == 0)?0.0:(sm === 1)?(1.0-0.1*sl)*22.0e-6:22.0e-6+0.1*sl*(38.0e-6-22.0e-6)",
+        },
+      ]
     },
     input: [
       {
