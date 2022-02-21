@@ -190,8 +190,8 @@ export default class Ui {
         // Keep track of the select and its id.
 
         this.discreteElements[discreteElementIndex] = {
-          select: select,
           id: input.id,
+          select: select,
         };
       } else {
         // Add the slider and input number.
@@ -228,8 +228,8 @@ export default class Ui {
 
         this.scalarElements[scalarElementIndex] = {
           enabled: input.enabled,
-          slider: slider,
           input_number: inputNumber,
+          slider: slider,
         };
       }
     });
