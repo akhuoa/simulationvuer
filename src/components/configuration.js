@@ -36,6 +36,7 @@ export function jsonForNormalModel() {
       },
       {
         enabled: "(sm == 1) || (sm == 2)",
+        id: "sl",
         name: "Stimulation level",
         defaultValue: 0,
         minimumValue: 0,

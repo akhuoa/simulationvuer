@@ -69,10 +69,15 @@ export function validJson(json) {
 
     // Check whether we are dealing with a discrete input or a scalar input.
 
-    if ((typeof input.defaultValue === "number")
-        && (typeof input.possibleValues === "object")) {
-      // We are dealing with a discrete input, so check that it has a valid
-      // id, if any.
+    let isDiscreteInput = (typeof input.defaultValue === "number")
+                          && (typeof input.possibleValues === "object");
+    let isScalarInput = (typeof input.defaultValue === "number")
+                        && (typeof input.minimumValue === "number")
+                        && (typeof input.maximumValue === "number");
+
+    if (isDiscreteInput || isScalarInput) {
+      // We are dealing with either a discrete or a scalar input, so check that
+      // it has a valid id, if any.
 
       if (!((typeof input.id === "string") && (input.id !== "")
             || (typeof input.id === "undefined"))) {
@@ -93,78 +98,81 @@ export function validJson(json) {
         idUsed[input.id] = true;
       }
 
-      // Check that each possible value is valid.
+      // Some checks that depend on the type of input we are dealing with.
 
-      if (!input.possibleValues.every((possibleValue) => {
-        // Check that the possible value is an object with a non-empty name
-        // and a value.
+      if (isDiscreteInput) {
+        // We are dealing with a discrete input, so check that each possible
+        // value is valid.
 
-        if (!((typeof possibleValue === "object")
-              && (typeof possibleValue.name === "string") && (possibleValue.name !== "")
-              && (typeof possibleValue.value === "number"))) {
-          console.warn("JSON: an input possible value must be an object with a non-empty name and a value.");
+        if (!input.possibleValues.every((possibleValue) => {
+          // Check that the possible value is an object with a non-empty name
+          // and a value.
+
+          if (!((typeof possibleValue === "object")
+                && (typeof possibleValue.name === "string") && (possibleValue.name !== "")
+                && (typeof possibleValue.value === "number"))) {
+            console.warn("JSON: an input possible value must be an object with a non-empty name and a value.");
+
+            return false;
+          }
+
+          return true;
+        })) {
+          return false;
+        }
+
+        // Check that the values of the possible values are unique.
+
+        const values = input.possibleValues.map((value) => {
+          return value.value;
+        });
+
+        let valueUsed = [];
+
+        if (!values.every((value) => {
+          if (valueUsed[value]) {
+            console.warn("JSON: an input possible value must have a unique value (" + value + " is used more than once).");
+
+            return false;
+          }
+
+          valueUsed[value] = true;
+
+          return true;
+        })) {
+          return false;
+        }
+
+        // Check that the default value is one of the possible values.
+
+        if (!values.includes(input.defaultValue)) {
+          console.warn("JSON: the input default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
+
+          return false;
+        }
+      } else {
+        // We are dealing with a scalar input, so check that it has a valid
+        // enabled, if any.
+
+        if (!((typeof input.enabled === "string") && (input.enabled !== "")
+              || (typeof input.enabled === "undefined"))) {
+          console.warn("JSON: an input enabled, if present, must be a non-empty string.");
 
           return false;
         }
 
-        return true;
-      })) {
-        return false;
-      }
-
-      // Check that the values of the possible values are unique.
-
-      const values = input.possibleValues.map((value) => {
-        return value.value;
-      });
-
-      let valueUsed = [];
-
-      if (!values.every((value) => {
-        if (valueUsed[value]) {
-          console.warn("JSON: an input possible value must have a unique value (" + value + " is used more than once).");
+        if (!(input.minimumValue < input.maximumValue)) {
+          console.warn("JSON: the input minimum value (" + input.minimumValue + ") must be lower than the maximum value (" + input.maximumValue + ").");
 
           return false;
         }
 
-        valueUsed[value] = true;
+        if (!((input.defaultValue >= input.minimumValue)
+              && (input.defaultValue <= input.maximumValue))) {
+          console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
 
-        return true;
-      })) {
-        return false;
-      }
-
-      // Check that the default value is one of the possible values.
-
-      if (!values.includes(input.defaultValue)) {
-        console.warn("JSON: the input default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
-
-        return false;
-      }
-    } else if ((typeof input.defaultValue === "number")
-                && (typeof input.minimumValue === "number")
-                && (typeof input.maximumValue === "number")) {
-      // We are dealing with a scalar input, so check that it has a valid
-      // enabled, if any.
-
-      if (!((typeof input.enabled === "string") && (input.enabled !== "")
-            || (typeof input.enabled === "undefined"))) {
-        console.warn("JSON: an input enabled, if present, must be a non-empty string.");
-
-        return false;
-      }
-
-      if (!(input.minimumValue < input.maximumValue)) {
-        console.warn("JSON: the input minimum value (" + input.minimumValue + ") must be lower than the maximum value (" + input.maximumValue + ").");
-
-        return false;
-      }
-
-      if (!((input.defaultValue >= input.minimumValue)
-            && (input.defaultValue <= input.maximumValue))) {
-        console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
-
-        return false;
+          return false;
+        }
       }
     } else {
       // Not something that we can recognise.
