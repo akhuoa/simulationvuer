@@ -228,6 +228,7 @@ export default class Ui {
 
         this.scalarElements[scalarElementIndex] = {
           enabled: input.enabled,
+          id: input.id,
           input_number: inputNumber,
           slider: slider,
         };
