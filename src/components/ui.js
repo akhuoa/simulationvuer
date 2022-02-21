@@ -97,7 +97,7 @@ export default class Ui {
   selectionChanged() {
     // Enable/disable all the scalar elements.
 
-    let ui = (this instanceof Ui) ? this : this.parent;
+    let ui = (this instanceof Ui)?this:this.parent;
 
     ui.scalarElements.forEach((scalarElement) => {
       let enabled = scalarElement.enabled;
@@ -161,11 +161,7 @@ export default class Ui {
         }
       });
 
-      let labelParent = isDiscrete?
-                          root:
-                          slidersAndFieldsContainer.$el;
-
-      this.addVueElement(root, labelParent, label);
+      this.addVueElement(root, isDiscrete?root:slidersAndFieldsContainer.$el, label);
 
       firstScalarInput = isDiscrete;
 
