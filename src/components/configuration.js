@@ -30,7 +30,9 @@ export function jsonForNormalModel() {
       },
     ],
     output: [
-      "Membrane/V",
+      {
+        name: "Membrane/V",
+      },
     ],
     parameters: [
       {
@@ -75,8 +77,12 @@ export function jsonForCompositeModel() {
       },
     ],
     output: [
-      "Membrane/V",
-      "Brain_stem/w",
+      {
+        name: "Membrane/V",
+      },
+      {
+        name: "Brain_stem/w",
+      },
     ],
     parameters: [
       {

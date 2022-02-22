@@ -190,10 +190,10 @@ export function validJson(json) {
   // Check the output information.
 
   return json.output.every((output) => {
-    // Check that the output is valid.
+    // Check that the output has a valid name.
 
-    if (!((typeof output === "string") && (output !== ""))) {
-      console.warn("JSON: an output must be a non-empty string.");
+    if (!((typeof output.name === "string") && (output.name !== ""))) {
+      console.warn("JSON: an output name is required and must be a non-empty string.");
 
       return false;
     }
