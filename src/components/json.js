@@ -29,32 +29,28 @@ export function validJson(json) {
 
   // Check the parameters information.
 
-  if (typeof json.parameters === "object") {
-    // Check that the parameters, if any, are valid.
+  let parametersValid = json.parameters.every((parameter) => {
+    // Check that the parameter has a valid name.
 
-    let parametersValid = json.parameters.every((parameter) => {
-      // Check that the parameter has a valid name.
+    if (!((typeof parameter.name === "string") && (parameter.name !== ""))) {
+      console.warn("JSON: a parameter name is required and must be a non-empty string.");
 
-      if (!((typeof parameter.name === "string") && (parameter.name !== ""))) {
-        console.warn("JSON: a parameter name is required and must be a non-empty string.");
-
-        return false;
-      }
-
-      // Check that the parameter has a valid value.
-
-      if (!((typeof parameter.value === "string") && (parameter.value !== ""))) {
-        console.warn("JSON: a parameter value is required and must be a non-empty string.");
-
-        return false;
-      }
-
-      return true;
-    });
-
-    if (!parametersValid) {
       return false;
     }
+
+    // Check that the parameter has a valid value.
+
+    if (!((typeof parameter.value === "string") && (parameter.value !== ""))) {
+      console.warn("JSON: a parameter value is required and must be a non-empty string.");
+
+      return false;
+    }
+
+    return true;
+  });
+
+  if (!parametersValid) {
+    return false;
   }
 
   // Check the input information.
