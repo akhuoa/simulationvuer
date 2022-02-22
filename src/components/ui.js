@@ -1,6 +1,31 @@
 import Vue from "vue";
 import { evaluateValue } from "./common.js";
 
+const VueContainer = Vue.extend({
+  template: `
+    <div class="sliders-and-fields"/>
+  `,
+});
+
+const VueInputNumber = Vue.extend({
+  methods: {
+    emitSynchroniseSliderAndInputNumber: function(value) {
+      this.$emit("synchroniseSliderAndInputNumber", this.index, value);
+    }
+  },
+  props: {
+    disabled: Boolean,
+    index: Number,
+    maximumValue: Number,
+    minimumValue: Number,
+    parent: Object,
+    vModel: Number,
+  },
+  template: `
+    <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="disabled" :max="maximumValue" :min="minimumValue" @change="emitSynchroniseSliderAndInputNumber" />
+  `,
+});
+
 const VueLabel = Vue.extend({
   props: {
     classes: String,
@@ -8,12 +33,6 @@ const VueLabel = Vue.extend({
   },
   template: `
     <p :class="classes">{{ label }}</p>
-  `,
-});
-
-const VueContainer = Vue.extend({
-  template: `
-    <div class="sliders-and-fields"/>
   `,
 });
 
@@ -51,25 +70,6 @@ const VueSlider = Vue.extend({
   },
   template: `
     <el-slider v-model="vModel" :disabled="disabled" :max="maximumValue" :show-input="false" :show-tooltip="false" @input="emitSynchroniseSliderAndInputNumber" />
-  `,
-});
-
-const VueInputNumber = Vue.extend({
-  methods: {
-    emitSynchroniseSliderAndInputNumber: function(value) {
-      this.$emit("synchroniseSliderAndInputNumber", this.index, value);
-    }
-  },
-  props: {
-    disabled: Boolean,
-    index: Number,
-    maximumValue: Number,
-    minimumValue: Number,
-    parent: Object,
-    vModel: Number,
-  },
-  template: `
-    <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="disabled" :max="maximumValue" :min="minimumValue" @change="emitSynchroniseSliderAndInputNumber" />
   `,
 });
 

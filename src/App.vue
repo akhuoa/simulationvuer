@@ -7,12 +7,12 @@
     <p>
       Instance for an unknown or invalid model:
     </p>
-    <SimulationVuer :apiLocation="apiLocation" />
+    <SimulationVuer :apiLocation="apiLocation" :entry="noEntry" />
     <hr />
     <p>
       Instance showing the simulation of the <a href="https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml/view">Fabbri <em>et al.</em> (2017)</a> model:
     </p>
-    <SimulationVuer :apiLocation="apiLocation" :entry="entry" />
+    <SimulationVuer :apiLocation="apiLocation" :entry="normalEntry" />
     <hr />
     <p>
       Instance showing the simulation of the <a href="https://models.physiomeproject.org/e/611/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml/view">Fabbri <em>et al.</em> (2017)</a> + <a href="https://models.physiomeproject.org/workspace/694">Gerstner & Kistler (2002)</a> composite model:
@@ -33,7 +33,9 @@ export default {
   data: function () {
     return {
       apiLocation: process.env.VUE_APP_API_LOCATION,
-      entry: {
+      noEntry: {
+      },
+      normalEntry: {
         "dataset": "https://sparc.science/datasets/135?type=dataset",
         "description": "CellML version of the Fabbri et al. 2017 mathematical model of the spontaneous electrical activity of a human sinoatrial node (SAN) pacemaker cell",
         "name": "Computational analysis of the human sinus node action potential - Model development and effects of mutations",
