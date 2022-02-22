@@ -51,20 +51,37 @@ export function jsonForNormalModel() {
 
 export function jsonForCompositeModel() {
   return {
+    parameters: [
+      {
+        name: "Brain_stem/t_period",
+        value: "sf",
+      },
+      {
+        name: "Brain_stem/w_n",
+        value: "sn",
+      },
+      {
+        name: "Brain_stem/w_value",
+        value: "0.01*sa",
+      },
+    ],
     input: [
       {
+        id: "sf",
         name: "Spike frequency",
         defaultValue: 300,
         minimumValue: 0,
         maximumValue: 1000,
       },
       {
+        id: "sn",
         name: "Spike number",
         defaultValue: 10,
         minimumValue: 0,
         maximumValue: 30,
       },
       {
+        id: "sa",
         name: "Spike amplitude",
         defaultValue: 10,
         minimumValue: 0,

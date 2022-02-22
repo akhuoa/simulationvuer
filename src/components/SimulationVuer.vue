@@ -6,21 +6,7 @@
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div ref="input">
-        </div>
-        <div v-if="mode === 1">
-          <div class="sliders-and-fields">
-            <p class="default first-scalar">Spike frequency</p>
-            <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="scalar" v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
-            <p class="default scalar">Spike number</p>
-            <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="scalar" v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
-            <p class="default scalar">Spike amplitude</p>
-            <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="scalar" v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
-          </div>
-        </div>
+        <div ref="input" />
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
@@ -192,16 +178,6 @@ export default {
         this.json.parameters.forEach((parameter) => {
           request.json_config.parameters[parameter.name] = evaluateValue(this.ui, parameter.value);
         });
-      }
-
-      // Apply the spike settings, if needed.
-
-      if (this.mode === 1) {
-        request.json_config.parameters = {
-          "Brain_stem/t_period": this.simulationSpikeFrequency,
-          "Brain_stem/w_n": this.simulationSpikeNumber,
-          "Brain_stem/w_value": 0.01 * this.simulationSpikeAmplitude,
-        };
       }
 
       // Specify what we want to retrieve.
