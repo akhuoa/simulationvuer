@@ -74,8 +74,8 @@ const VueInputNumber = Vue.extend({
 });
 
 export default class Ui {
-  discreteElements = [{}];
-  scalarElements = [{}];
+  discreteElements = [];
+  scalarElements = [];
 
   setVueAttributes(root, element) {
     root.attributes.forEach((attribute) => {
