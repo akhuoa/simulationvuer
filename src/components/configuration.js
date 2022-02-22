@@ -2,8 +2,8 @@ export function jsonForNormalModel() {
   return {
     input: [
       {
-        id: "sm",
         defaultValue: 0,
+        id: "sm",
         name: "Simulation mode",
         possibleValues: [
           {

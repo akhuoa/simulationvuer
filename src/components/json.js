@@ -1,47 +1,262 @@
-export function validJson(json) {
-  // Make sure that we have some JSON data.
+import { Validator } from "jsonschema";
 
-  if (Object.keys(json).length === 0) {
-    console.warn("JSON: no data is available.");
+export function validJson(json) {
+  // Check the JSON against our schema.
+
+  let validator = new Validator();
+  let schema = {
+    additionalProperties: false,
+    properties: {
+      input: {
+        items: {
+          oneOf: [
+            {
+              additionalProperties: false,
+              properties: {
+                defaultValue: {
+                  required: true,
+                  type: "number",
+                },
+                id: {
+                  type: "string",
+                },
+                name: {
+                  required: true,
+                  type: "string",
+                },
+                possibleValues: {
+                  items: {
+                    additionalProperties: false,
+                    properties: {
+                      name: {
+                        required: true,
+                        type: "string",
+                      },
+                      value: {
+                        required: true,
+                        type: "number",
+                      },
+                    },
+                    type: "object",
+                  },
+                  minItems: 1,
+                  required: true,
+                  type: "array",
+                },
+              },
+            },
+            {
+              additionalProperties: false,
+              properties: {
+                defaultValue: {
+                  required: true,
+                  type: "number",
+                },
+                enabled: {
+                  type: "string",
+                },
+                id: {
+                  type: "string",
+                },
+                maximumValue: {
+                  required: true,
+                  type: "number",
+                },
+                minimumValue: {
+                  required: true,
+                  type: "number",
+                },
+                name: {
+                  required: true,
+                  type: "string",
+                },
+              },
+            },
+          ],
+          type: "object",
+        },
+        minItems: 1,
+        type: "array",
+      },
+      output: {
+        items: {
+          additionalProperties: false,
+          properties: {
+            name: {
+              required: true,
+              type: "string",
+            },
+          },
+          type: "object",
+        },
+        minItems: 1,
+        required: true,
+        type: "array",
+      },
+      parameters: {
+        items: {
+          additionalProperties: false,
+          properties: {
+            name: {
+              required: true,
+              type: "string",
+            },
+            value: {
+              required: true,
+              type: "string",
+            },
+          },
+          type: "object",
+        },
+        type: "array",
+      },
+      simulation: {
+        additionalProperties: false,
+        properties: {
+          endingPoint: {
+            required: true,
+            type: "number",
+          },
+          pointInterval: {
+            required: true,
+            type: "number",
+          },
+        },
+        type: "object",
+      },
+    },
+    type: "object",
+  };
+
+  let result = validator.validate(json, schema, { nestedErrors: true });
+
+  if (!result.valid) {
+    console.warn(result.toString());
 
     return false;
   }
 
-  // Check the simulation information.
+  // Make sure that the input information makes sense.
 
-  if (typeof json.simulation === "object") {
-    // Check that the ending point is valid.
-
-    if (!((typeof json.simulation.endingPoint === "number") && (json.simulation.endingPoint > 0.0))) {
-      console.warn("JSON: a simulation ending point must be present and greater than zero.");
-
-      return false;
-    }
-
-    // Check that the point interval is valid.
-
-    if (!((typeof json.simulation.pointInterval === "number") && (json.simulation.pointInterval > 0.0))) {
-      console.warn("JSON: a simulation point interval must be present and greater than zero.");
+  let idUsed = [];
+  let inputValid = json.input.every((input) => {
+    if (input.name === "") {
+      console.warn("JSON: an input name must not be empty.");
 
       return false;
     }
+
+    if (input.id !== undefined) {
+      if (input.id === "") {
+        console.warn("JSON: an input id must not be empty.");
+
+        return false;
+      }
+
+      if (idUsed[input.id]) {
+        console.warn("JSON: an input id must be unique (" + input.id + " is used more than once).");
+
+        return false;
+      }
+
+      idUsed[input.id] = true;
+    }
+
+    if (input.possibleValues !== undefined) {
+      if (!input.possibleValues.every((possibleValue) => {
+        if (possibleValue.name === "") {
+          console.warn("JSON: an input possible value must not have an empty name.");
+
+          return false;
+        }
+
+        return true;
+      })) {
+        return false;
+      }
+
+      let values = input.possibleValues.map((value) => {
+        return value.value;
+      });
+      let valueUsed = [];
+
+      if (!values.every((value) => {
+        if (valueUsed[value]) {
+          console.warn("JSON: an input possible value must have a unique value (" + value + " is used more than once).");
+
+          return false;
+        }
+
+        valueUsed[value] = true;
+
+        return true;
+      })) {
+        return false;
+      }
+
+      if (!values.includes(input.defaultValue)) {
+        console.warn("JSON: the input default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
+
+        return false;
+      }
+    }
+
+    if (input.enabled !== undefined) {
+      if (input.enabled === "") {
+        console.warn("JSON: an input enabled must not be empty.");
+
+        return false;
+      }
+    }
+
+    if ((input.minimumValue !== undefined) && (input.maximumValue !== undefined)) {
+      if (input.minimumValue >= input.maximumValue) {
+        console.warn("JSON: the input minimum value (" + input.minimumValue + ") must be lower than the maximum value (" + input.maximumValue + ").");
+
+        return false;
+      }
+
+      if ((input.defaultValue < input.minimumValue) || (input.defaultValue > input.maximumValue)) {
+        console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
+
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  if (!inputValid) {
+    return false;
   }
 
-  // Check the parameters information.
+  // Make sure that the output information makes sense.
 
-  let parametersValid = json.parameters.every((parameter) => {
-    // Check that the parameter has a valid name.
-
-    if (!((typeof parameter.name === "string") && (parameter.name !== ""))) {
-      console.warn("JSON: a parameter name is required and must be a non-empty string.");
+  let outputValid = json.output.every((output) => {
+    if (output.name === "") {
+      console.warn("JSON: an output name must not be empty.");
 
       return false;
     }
 
-    // Check that the parameter has a valid value.
+    return true;
+  });
 
-    if (!((typeof parameter.value === "string") && (parameter.value !== ""))) {
-      console.warn("JSON: a parameter value is required and must be a non-empty string.");
+  if (!outputValid) {
+    return false;
+  }
+
+  // Make sure that the parameters information makes sense.
+
+  let parametersValid = json.parameters.every((parameter) => {
+    if (parameter.name === "") {
+      console.warn("JSON: a parameter name must not be empty.");
+
+      return false;
+    }
+
+    if (parameter.value === "") {
+      console.warn("JSON: a parameter value must not be empty.");
 
       return false;
     }
@@ -53,151 +268,21 @@ export function validJson(json) {
     return false;
   }
 
-  // Check the input information.
+  // Make sure that the simulation information makes sense.
 
-  let idUsed = [];
-  let inputValid = json.input.every((input) => {
-    // Check that the input has a valid name.
-
-    if (!((typeof input.name === "string") && (input.name !== ""))) {
-      console.warn("JSON: an input name is required and must be a non-empty string.");
+  if (json.simulation !== undefined) {
+    if (json.simulation.endingPoint <= 0.0) {
+      console.warn("JSON: a simulation ending point must be greater than zero.");
 
       return false;
     }
 
-    // Check whether we are dealing with a discrete input or a scalar input.
-
-    let isDiscreteInput = (typeof input.defaultValue === "number")
-                          && (typeof input.possibleValues === "object");
-    let isScalarInput = (typeof input.defaultValue === "number")
-                        && (typeof input.minimumValue === "number")
-                        && (typeof input.maximumValue === "number");
-
-    if (isDiscreteInput || isScalarInput) {
-      // We are dealing with either a discrete or a scalar input, so check that
-      // it has a valid id, if any.
-
-      if (!((typeof input.id === "string") && (input.id !== "")
-            || (typeof input.id === "undefined"))) {
-        console.warn("JSON: an input id, if present, must be a non-empty string.");
-
-        return false;
-      }
-
-      // Check that the id is not already used.
-
-      if (typeof input.id !== "undefined") {
-        if (idUsed[input.id]) {
-          console.warn("JSON: an input id must be unique (" + input.id + " is used more than once).");
-
-          return false;
-        }
-
-        idUsed[input.id] = true;
-      }
-
-      // Some checks that depend on the type of input we are dealing with.
-
-      if (isDiscreteInput) {
-        // We are dealing with a discrete input, so check that each possible
-        // value is valid.
-
-        if (!input.possibleValues.every((possibleValue) => {
-          // Check that the possible value is an object with a non-empty name
-          // and a value.
-
-          if (!((typeof possibleValue === "object")
-                && (typeof possibleValue.name === "string") && (possibleValue.name !== "")
-                && (typeof possibleValue.value === "number"))) {
-            console.warn("JSON: an input possible value must be an object with a non-empty name and a value.");
-
-            return false;
-          }
-
-          return true;
-        })) {
-          return false;
-        }
-
-        // Check that the values of the possible values are unique.
-
-        const values = input.possibleValues.map((value) => {
-          return value.value;
-        });
-
-        let valueUsed = [];
-
-        if (!values.every((value) => {
-          if (valueUsed[value]) {
-            console.warn("JSON: an input possible value must have a unique value (" + value + " is used more than once).");
-
-            return false;
-          }
-
-          valueUsed[value] = true;
-
-          return true;
-        })) {
-          return false;
-        }
-
-        // Check that the default value is one of the possible values.
-
-        if (!values.includes(input.defaultValue)) {
-          console.warn("JSON: the input default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
-
-          return false;
-        }
-      } else {
-        // We are dealing with a scalar input, so check that it has a valid
-        // enabled, if any.
-
-        if (!((typeof input.enabled === "string") && (input.enabled !== "")
-              || (typeof input.enabled === "undefined"))) {
-          console.warn("JSON: an input enabled, if present, must be a non-empty string.");
-
-          return false;
-        }
-
-        if (!(input.minimumValue < input.maximumValue)) {
-          console.warn("JSON: the input minimum value (" + input.minimumValue + ") must be lower than the maximum value (" + input.maximumValue + ").");
-
-          return false;
-        }
-
-        if (!((input.defaultValue >= input.minimumValue)
-              && (input.defaultValue <= input.maximumValue))) {
-          console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
-
-          return false;
-        }
-      }
-    } else {
-      // Not something that we can recognise.
-
-      console.warn("JSON: the input cannot be recognised.");
+    if (json.simulation.pointInterval <= 0.0) {
+      console.warn("JSON: a simulation point interval must be greater than zero.");
 
       return false;
     }
-
-    return true;
-  });
-
-  if (!inputValid) {
-    return false;
   }
 
-  // Check the output information.
-
-  return json.output.every((output) => {
-    // Check that the output has a valid name.
-
-    if (!((typeof output.name === "string") && (output.name !== ""))) {
-      console.warn("JSON: an output name is required and must be a non-empty string.");
-
-      return false;
-    }
-
-    return true;
-  });
+  return true;
 }
