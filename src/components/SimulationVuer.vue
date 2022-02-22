@@ -148,10 +148,6 @@ export default {
     viewDataset() {
       window.open(this.entry.dataset, "_blank");
     },
-    simulationModeChanged() {
-      this.simulationPotentialData = NoSimulationData;
-      this.simulationValid = true;
-    },
     runSimulation() {
       this.simulationBeingComputed = true;
 
