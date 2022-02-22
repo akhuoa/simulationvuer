@@ -86,6 +86,14 @@ export function validJson(json) {
               required: true,
               type: "string",
             },
+            xAxisTitle: {
+              required: true,
+              type: "string",
+            },
+            yAxisTitle: {
+              required: true,
+              type: "string",
+            },
           },
           type: "object",
         },
@@ -235,6 +243,18 @@ export function validJson(json) {
   let outputValid = json.output.every((output) => {
     if (output.name === "") {
       console.warn("JSON: an output name must not be empty.");
+
+      return false;
+    }
+
+    if (output.xAxisTitle === "") {
+      console.warn("JSON: an output X axis title must not be empty.");
+
+      return false;
+    }
+
+    if (output.yAxisTitle === "") {
+      console.warn("JSON: an output Y axis title must not be empty.");
 
       return false;
     }

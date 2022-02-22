@@ -32,6 +32,8 @@ export function jsonForNormalModel() {
     output: [
       {
         name: "Membrane/V",
+        xAxisTitle: "Time (s)",
+        yAxisTitle: "Membrane potential (mV)",
       },
     ],
     parameters: [
@@ -79,9 +81,13 @@ export function jsonForCompositeModel() {
     output: [
       {
         name: "Membrane/V",
+        xAxisTitle: "Time (s)",
+        yAxisTitle: "Membrane potential (mV)",
       },
       {
         name: "Brain_stem/w",
+        xAxisTitle: "Time (s)",
+        yAxisTitle: "Spike amplitude",
       },
     ],
     parameters: [
