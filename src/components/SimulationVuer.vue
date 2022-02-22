@@ -1,5 +1,5 @@
 <template>
-  <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
+  <div class="simulation-vuer" v-loading="simulationBeingComputed" element-loading-text="Loading simulation results...">
     <p v-if="!hasValidJson" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
     <div class="main" v-if="hasValidJson">
       <div class="main-left">
@@ -16,7 +16,7 @@
         <div class="secondary-button">
           <el-button size="mini" @click="viewDataset()">View dataset</el-button>
         </div>
-        <p class="default note">{{note}}</p>
+        <p class="default note">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" v-if="mode === 0" v-show="simulationValid">
         <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
@@ -76,23 +76,6 @@ export default {
       json: {},
       hasValidJson: true,
       errorMessage: "",
-      note: "Additional parameters are available on oSPARC",
-      stimulationLevel: 0,
-      simulationMode: 0,
-      simulationModes: [
-        {
-          name: "Normal sinus rhythm",
-          value: 0,
-        },
-        {
-          name: "Stellate stimulation",
-          value: 1,
-        },
-        {
-          name: "Vagal stimulation",
-          value: 2,
-        },
-      ],
       simulationSpikeLayout: {
         xaxis: {
           title: {
@@ -111,9 +94,6 @@ export default {
           }
         },
       },
-      simulationSpikeFrequency: 300,
-      simulationSpikeNumber: 10,
-      simulationSpikeAmplitude: 10, // The real value is 100 times smaller.
       simulationSpikeData: NoSimulationData,
       simulationPotentialLayout: {
         xaxis: {
@@ -135,7 +115,6 @@ export default {
       },
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
-      simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
       title: (this.entry !== undefined)?this.entry.name:"",
       ui: null,

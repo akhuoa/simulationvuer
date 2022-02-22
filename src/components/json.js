@@ -7,7 +7,7 @@ export function validJson(json) {
     return false;
   }
 
-  // Check simulation information.
+  // Check the simulation information.
 
   if (typeof json.simulation === "object") {
     // Check that the ending point is valid.
@@ -27,7 +27,7 @@ export function validJson(json) {
     }
   }
 
-  // Check simulation information.
+  // Check the parameters information.
 
   if (typeof json.parameters === "object") {
     // Check that the parameters, if any, are valid.
@@ -36,7 +36,7 @@ export function validJson(json) {
       // Check that the parameter has a valid name.
 
       if (!((typeof parameter.name === "string") && (parameter.name !== ""))) {
-        console.warn("JSON: a parameter name is required and it must be a non-empty string.");
+        console.warn("JSON: a parameter name is required and must be a non-empty string.");
 
         return false;
       }
@@ -44,7 +44,7 @@ export function validJson(json) {
       // Check that the parameter has a valid value.
 
       if (!((typeof parameter.value === "string") && (parameter.value !== ""))) {
-        console.warn("JSON: a parameter value is required and it must be a non-empty string.");
+        console.warn("JSON: a parameter value is required and must be a non-empty string.");
 
         return false;
       }
@@ -57,14 +57,14 @@ export function validJson(json) {
     }
   }
 
-  // Check each input.
+  // Check the input information.
 
   let idUsed = [];
   let inputValid = json.input.every((input) => {
     // Check that the input has a valid name.
 
     if (!((typeof input.name === "string") && (input.name !== ""))) {
-      console.warn("JSON: an input name is required and it must be a non-empty string.");
+      console.warn("JSON: an input name is required and must be a non-empty string.");
 
       return false;
     }
@@ -191,7 +191,7 @@ export function validJson(json) {
     return false;
   }
 
-  // Check each output.
+  // Check the output information.
 
   return json.output.every((output) => {
     // Check that the output is valid.
