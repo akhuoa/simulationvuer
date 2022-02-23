@@ -120,17 +120,17 @@ export default class Ui {
     this.parent.scalarElements[index].input_number.vModel = value;
   }
 
-  constructor(root, json) {
+  constructor(parent) {
     // Generate the UI for the input fields.
 
-    let inputRoot = root.input;
+    let inputRoot = parent.$refs.input;
     let isPreviousDiscrete = true;
     let slidersAndFieldsContainer = undefined;
     let firstScalarInput = true;
     let discreteElementIndex = -1;
     let scalarElementIndex = -1;
 
-    json.input.forEach((input) => {
+    parent.json.input.forEach((input) => {
       // Determine whether we are dealing with a discrete or a scalar input.
 
       let isDiscrete = input.possibleValues !== undefined;
@@ -233,7 +233,30 @@ export default class Ui {
     //       create them dynamically. So, all we need to do here is to configure
     //       them.
 
-    root.output.classList.add("x" + json.output.length);
+    parent.$refs.output.classList.add("x" + parent.json.output.length);
+
+    let index = -1;
+
+    parent.json.output.forEach((output) => {
+      parent.layout[++index] = {
+        xaxis: {
+          title: {
+            text: output.xAxisTitle,
+            font: {
+              size: 10,
+            },
+          },
+        },
+        yaxis: {
+          title: {
+            text: output.yAxisTitle,
+            font: {
+              size: 10,
+            },
+          }
+        },
+      };
+    });
 
     // Enable/disable all the elements by pretending that a selection changed.
 

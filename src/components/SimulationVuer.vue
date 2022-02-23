@@ -19,7 +19,7 @@
         <p class="default note">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="simulationValid">
-        <PlotVuer v-for="output in json.output" :key="output.name" :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(output, index) in json.output" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -73,24 +73,7 @@ export default {
       hasValidJson: true,
       errorMessage: "",
       simulationSpikeData: NoSimulationData,
-      simulationPotentialLayout: {
-        xaxis: {
-          title: {
-            text: "Time (s)",
-            font: {
-              size: 10,
-            },
-          },
-        },
-        yaxis: {
-          title: {
-            text: "Membrane potential (mV)",
-            font: {
-              size: 10,
-            },
-          }
-        },
-      },
+      layout: [],
       simulationPotentialData: NoSimulationData,
       simulationBeingComputed: false,
       simulationValid: true,
@@ -221,12 +204,8 @@ export default {
     }
 
     // Create the UI for the given simulation dataset.
-    // Note: we do this using $nextTick() to guarantee that all child components
-    //       have been mounted since we need access to this.$refs.ui.
 
-    this.$nextTick(() => {
-      this.ui = new Ui(this.$refs, this.json);
-    });
+    this.ui = new Ui(this);
   },
 };
 </script>
