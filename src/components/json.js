@@ -79,28 +79,55 @@ export function validJson(json) {
         type: "array",
       },
       output: {
-        items: {
-          additionalProperties: false,
-          properties: {
-            name: {
-              required: true,
-              type: "string",
+        additionalProperties: false,
+        properties: {
+          data: {
+            items: {
+              additionalProperties: false,
+              properties: {
+                id: {
+                  type: "string",
+                },
+                name: {
+                  required: true,
+                  type: "string",
+                },
+              },
+              type: "object",
             },
-            xAxisTitle: {
-              required: true,
-              type: "string",
-            },
-            yAxisTitle: {
-              required: true,
-              type: "string",
-            },
+            type: "array",
           },
-          type: "object",
+          plots: {
+            items: {
+              additionalProperties: false,
+              properties: {
+                xAxisTitle: {
+                  required: true,
+                  type: "string",
+                },
+                xValue: {
+                  required: true,
+                  type: "string",
+                },
+                yAxisTitle: {
+                  required: true,
+                  type: "string",
+                },
+                yValue: {
+                  required: true,
+                  type: "string",
+                },
+              },
+              type: "object",
+            },
+            maxItems: 9,
+            minItems: 1,
+            required: true,
+            type: "array",
+          },
         },
-        maxItems: 9,
-        minItems: 1,
         required: true,
-        type: "array",
+        type: "object",
       },
       parameters: {
         items: {
@@ -147,14 +174,8 @@ export function validJson(json) {
 
   // Make sure that the input information makes sense.
 
-  let idUsed = [];
+  let inputIdUsed = [];
   let inputValid = json.input.every((input) => {
-    if (input.name === "") {
-      console.warn("JSON: an input name must not be empty.");
-
-      return false;
-    }
-
     if (input.id !== undefined) {
       if (input.id === "") {
         console.warn("JSON: an input id must not be empty.");
@@ -162,13 +183,19 @@ export function validJson(json) {
         return false;
       }
 
-      if (idUsed[input.id]) {
+      if (inputIdUsed[input.id]) {
         console.warn("JSON: an input id must be unique (" + input.id + " is used more than once).");
 
         return false;
       }
 
-      idUsed[input.id] = true;
+      inputIdUsed[input.id] = true;
+    }
+
+    if (input.name === "") {
+      console.warn("JSON: an input name must not be empty.");
+
+      return false;
     }
 
     if (input.possibleValues !== undefined) {
@@ -241,21 +268,26 @@ export function validJson(json) {
 
   // Make sure that the output information makes sense.
 
-  let outputValid = json.output.every((output) => {
-    if (output.name === "") {
-      console.warn("JSON: an output name must not be empty.");
+  let outputIdUsed = [];
+  let outputDataValid = json.output.data.every((outputData) => {
+    if (outputData.id !== undefined) {
+      if (outputData.id === "") {
+        console.warn("JSON: an output data id must not be empty.");
 
-      return false;
+        return false;
+      }
+
+      if (outputIdUsed[outputData.id]) {
+        console.warn("JSON: an output data id must be unique (" + outputData.id + " is used more than once).");
+
+        return false;
+      }
+
+      outputIdUsed[outputData.id] = true;
     }
 
-    if (output.xAxisTitle === "") {
-      console.warn("JSON: an output X axis title must not be empty.");
-
-      return false;
-    }
-
-    if (output.yAxisTitle === "") {
-      console.warn("JSON: an output Y axis title must not be empty.");
+    if (outputData.name === "") {
+      console.warn("JSON: an output data name must not be empty.");
 
       return false;
     }
@@ -263,7 +295,39 @@ export function validJson(json) {
     return true;
   });
 
-  if (!outputValid) {
+  if (!outputDataValid) {
+    return false;
+  }
+
+  let outputPlotsValid = json.output.plots.every((outputPlot) => {
+    if (outputPlot.xAxisTitle === "") {
+      console.warn("JSON: an output plot X axis title must not be empty.");
+
+      return false;
+    }
+
+    if (outputPlot.xValue === "") {
+      console.warn("JSON: an output plot X value must not be empty.");
+
+      return false;
+    }
+
+    if (outputPlot.yAxisTitle === "") {
+      console.warn("JSON: an output plot Y axis title must not be empty.");
+
+      return false;
+    }
+
+    if (outputPlot.yValue === "") {
+      console.warn("JSON: an output plot Y value must not be empty.");
+
+      return false;
+    }
+
+    return true;
+  });
+
+  if (!outputPlotsValid) {
     return false;
   }
 

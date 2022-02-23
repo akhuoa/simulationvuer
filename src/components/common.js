@@ -19,3 +19,11 @@ export function evaluateValue(ui, value) {
 
   return Function("return " + value + ";")();
 }
+
+export function evaluateSimulationValue(parent, results, value, i) {
+  parent.json.output.data.forEach((data) => {
+    value = doEvaluateValue(value, data.id, results[parent.simulationDataId[data.id]][i]);
+  });
+
+  return Function("return " + value + ";")();
+}

@@ -19,7 +19,7 @@
         <p class="default note">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="simulationValid">
-        <PlotVuer v-for="(output, index) in json.output" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(outputPlot, index) in json.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -34,11 +34,10 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
 import { jsonForNormalModel, jsonForCompositeModel } from "./configuration.js";
-import { evaluateValue } from "./common.js";
+import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
 import Ui from "./ui.js";
-
-let NoSimulationData = [{}];
+import { prepareForUi } from "./ui.js";
 
 Vue.use(Aside);
 Vue.use(Button);
@@ -72,9 +71,9 @@ export default {
       json: {},
       hasValidJson: true,
       errorMessage: "",
-      simulationSpikeData: NoSimulationData,
       layout: [],
-      simulationPotentialData: NoSimulationData,
+      simulationData: [],
+      simulationDataId: {},
       simulationBeingComputed: false,
       simulationValid: true,
       title: (this.entry !== undefined)?this.entry.name:"",
@@ -118,13 +117,13 @@ export default {
 
       // Specify what we want to retrieve.
 
-      if (this.json.output !== undefined)  {
+      if (this.json.output.data !== undefined)  {
         let index = -1;
 
         request.json_config.output = [];
 
-        this.json.output.forEach((output) => {
-          request.json_config.output[++index] = output.name;
+        this.json.output.data.forEach((outputData) => {
+          request.json_config.output[++index] = outputData.name;
         });
       }
 
@@ -144,28 +143,27 @@ export default {
             this.simulationValid = response.status === "ok";
 
             if (this.simulationValid) {
-              // Retrieve the spike data, if needed. (Our default spike
-              // amplitude is 0.1, but we normalise it to 10.)
+              // Retrieve and post-process the simulation data.
 
-              if (this.mode === 1) {
-                this.simulationSpikeData = [
+              let index = -1;
+              let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
+
+              this.json.output.plots.forEach((outputPlot) => {
+                let xValue = [];
+                let yValue = [];
+
+                for (let i = 0; i < iMax; ++i) {
+                  xValue[i] = evaluateSimulationValue(this, response.results, outputPlot.xValue, i);
+                  yValue[i] = evaluateSimulationValue(this, response.results, outputPlot.yValue, i);
+                }
+
+                this.simulationData[++index] = [
                   {
-                    x: response.results["environment/time"],
-                    y: response.results["Brain_stem/w"].map((element) => {
-                      return 100 * element;
-                    }),
+                    x: xValue,
+                    y: yValue,
                   },
                 ];
-              }
-
-              // Retrieve the potential data.
-
-              this.simulationPotentialData = [
-                {
-                  x: response.results["environment/time"],
-                  y: response.results["Membrane/V"],
-                },
-              ];
+              });
             } else {
               this.errorMessage = response.description;
             }
@@ -179,7 +177,7 @@ export default {
       xmlhttp.send(JSON.stringify(request));
     },
   },
-  mounted: function() {
+  created: function() {
     // Manually (for now) specify the JSON configuration to be used by either
     // the normal model or the composite model.
 
@@ -203,9 +201,16 @@ export default {
       return;
     }
 
-    // Create the UI for the given simulation dataset.
+    // Prepare ourselves for the UI by initialising some data.
 
-    this.ui = new Ui(this);
+    prepareForUi(this);
+  },
+  mounted: function() {
+    // Finish mounting by creating the UI for the given simulation dataset.
+
+    if (this.hasValidJson) {
+      this.ui = new Ui(this);
+    }
   },
 };
 </script>

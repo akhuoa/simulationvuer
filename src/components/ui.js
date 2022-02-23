@@ -1,6 +1,39 @@
 import Vue from "vue";
 import { evaluateValue } from "./common.js";
 
+export function prepareForUi(parent) {
+  let index = -1;
+
+  parent.json.output.data.forEach((data) => {
+    parent.simulationDataId[data.id] = data.name;
+  });
+
+  parent.json.output.plots.forEach((outputPlot) => {
+    ++index;
+
+    parent.layout[index] = {
+      xaxis: {
+        title: {
+          text: outputPlot.xAxisTitle,
+          font: {
+            size: 10,
+          },
+        },
+      },
+      yaxis: {
+        title: {
+          text: outputPlot.yAxisTitle,
+          font: {
+            size: 10,
+          },
+        }
+      },
+    };
+
+    parent.simulationData[index] = [{}];
+  });
+}
+
 const VueContainer = Vue.extend({
   template: `
     <div class="sliders-and-fields"/>
@@ -193,7 +226,6 @@ export default class Ui {
 
         let slider = new VueSlider({
           propsData: {
-            disabled: false, //---GRY--- TO BE UPDATED!
             index: scalarElementIndex,
             maximumValue: input.maximumValue,
             parent: this,
@@ -202,7 +234,6 @@ export default class Ui {
         });
         let inputNumber = new VueInputNumber({
           propsData: {
-            disabled: false, //---GRY--- TO BE UPDATED!
             index: scalarElementIndex,
             maximumValue: input.maximumValue,
             minimumValue: input.minimumValue,
@@ -233,30 +264,7 @@ export default class Ui {
     //       create them dynamically. So, all we need to do here is to configure
     //       them.
 
-    parent.$refs.output.classList.add("x" + parent.json.output.length);
-
-    let index = -1;
-
-    parent.json.output.forEach((output) => {
-      parent.layout[++index] = {
-        xaxis: {
-          title: {
-            text: output.xAxisTitle,
-            font: {
-              size: 10,
-            },
-          },
-        },
-        yaxis: {
-          title: {
-            text: output.yAxisTitle,
-            font: {
-              size: 10,
-            },
-          }
-        },
-      };
-    });
+    parent.$refs.output.classList.add("x" + parent.json.output.plots.length);
 
     // Enable/disable all the elements by pretending that a selection changed.
 

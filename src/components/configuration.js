@@ -29,13 +29,26 @@ export function jsonForNormalModel() {
         name: "Stimulation level",
       },
     ],
-    output: [
-      {
-        name: "Membrane/V",
-        xAxisTitle: "Time (s)",
-        yAxisTitle: "Membrane potential (mV)",
-      },
-    ],
+    output: {
+      data: [
+        {
+          id: "time",
+          name: "environment/time",
+        },
+        {
+          id: "vm",
+          name: "Membrane/V",
+        },
+      ],
+      plots: [
+        {
+          xAxisTitle: "Time (s)",
+          xValue: "time",
+          yAxisTitle: "Membrane potential (mV)",
+          yValue: "vm",
+        },
+      ],
+    },
     parameters: [
       {
         name: "Rate_modulation_experiments/Iso_1_uM",
@@ -78,18 +91,36 @@ export function jsonForCompositeModel() {
         name: "Spike amplitude",
       },
     ],
-    output: [
-      {
-        name: "Brain_stem/w",
-        xAxisTitle: "Time (s)",
-        yAxisTitle: "Spike amplitude",
-      },
-      {
-        name: "Membrane/V",
-        xAxisTitle: "Time (s)",
-        yAxisTitle: "Membrane potential (mV)",
-      },
-    ],
+    output: {
+      data: [
+        {
+          id: "sa",
+          name: "Brain_stem/w",
+        },
+        {
+          id: "time",
+          name: "environment/time",
+        },
+        {
+          id: "vm",
+          name: "Membrane/V",
+        },
+      ],
+      plots: [
+        {
+          xAxisTitle: "Time (s)",
+          xValue: "time",
+          yAxisTitle: "Spike amplitude",
+          yValue: "100.0 * sa",
+        },
+        {
+          xAxisTitle: "Time (s)",
+          xValue: "time",
+          yAxisTitle: "Membrane potential (mV)",
+          yValue: "vm",
+        },
+      ],
+    },
     parameters: [
       {
         name: "Brain_stem/t_period",
