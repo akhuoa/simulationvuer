@@ -17,5 +17,5 @@ export function evaluateValue(ui, value) {
     value = doEvaluateValue(value, scalarElement.id, scalarElement.input_number.vModel);
   });
 
-  return eval(value);
+  return Function("return " + value + ";")();
 }
