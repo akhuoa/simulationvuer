@@ -280,6 +280,27 @@ div.main-right.x1 {
 div.main-right.x2 {
   height: 50%;
 }
+div.main-right.x3 {
+  height: 33.333%;
+}
+div.main-right.x4 {
+  height: 25%;
+}
+div.main-right.x5 {
+  height: 20%;
+}
+div.main-right.x6 {
+  height: 16.667%;
+}
+div.main-right.x7 {
+  height: 14.286%;
+}
+div.main-right.x8 {
+  height: 12.5%;
+}
+div.main-right.x9 {
+  height: 11.111%;
+}
 >>> div.main-right div.controls {
   height: 0;
 }
