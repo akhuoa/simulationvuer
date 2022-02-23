@@ -18,12 +18,8 @@
         </div>
         <p class="default note">Additional parameters are available on oSPARC</p>
       </div>
-      <div class="main-right" v-if="mode === 0" v-show="simulationValid">
-        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-      </div>
-      <div class="main-right composite" v-if="mode === 1" v-show="simulationValid">
-        <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
-        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+      <div class="main-right" ref="output" v-show="simulationValid">
+        <PlotVuer v-for="output in json.output" :key="output.name" :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -76,24 +72,6 @@ export default {
       json: {},
       hasValidJson: true,
       errorMessage: "",
-      simulationSpikeLayout: {
-        xaxis: {
-          title: {
-            text: "Time (s)",
-            font: {
-              size: 10,
-            },
-          },
-        },
-        yaxis: {
-          title: {
-            text: "Spike amplitude",
-            font: {
-              size: 10,
-            },
-          }
-        },
-      },
       simulationSpikeData: NoSimulationData,
       simulationPotentialLayout: {
         xaxis: {
@@ -311,7 +289,10 @@ div.main-left {
   height: 100%;
   overflow: auto;
 }
-div.main-right.composite {
+div.main-right.x1 {
+  height: 100%;
+}
+div.main-right.x2 {
   height: 50%;
 }
 >>> div.main-right div.controls {

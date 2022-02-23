@@ -228,8 +228,14 @@ export default class Ui {
       }
     });
 
-    // Initially enable/disable all the scalar elements by pretending that a
-    // selection changed.
+    // Configure the PlotVuer's.
+    // Note: the PlotVuer's are created in SimulationVuer.vue since we can't
+    //       create them dynamically. So, all we need to do here is to configure
+    //       them.
+
+    root.output.classList.add("x" + json.output.length);
+
+    // Enable/disable all the elements by pretending that a selection changed.
 
     this.selectionChanged();
   }

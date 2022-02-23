@@ -97,6 +97,7 @@ export function validJson(json) {
           },
           type: "object",
         },
+        maxItems: 2,
         minItems: 1,
         required: true,
         type: "array",
