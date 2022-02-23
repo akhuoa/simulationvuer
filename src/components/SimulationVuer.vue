@@ -136,7 +136,13 @@ export default {
       // Specify what we want to retrieve.
 
       if (this.json.output !== undefined)  {
-        request.json_config.output = this.json.output;
+        let index = -1;
+
+        request.json_config.output = [];
+
+        this.json.output.forEach((output) => {
+          request.json_config.output[++index] = output.name;
+        });
       }
 
       // Run the simulation.
