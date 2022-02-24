@@ -1,35 +1,12 @@
 <template>
-  <div class="simulation-vuer" v-loading="simulationBeingComputed" :element-loading-text="simulationBeingComputedLabel">
-    <p v-show="mode === -1" class="default error"><span class="error">Error:</span> an unknown model was provided.</p>
-    <div class="main" v-show="mode !== -1">
+  <div class="simulation-vuer" v-loading="simulationBeingComputed" element-loading-text="Loading simulation results...">
+    <p v-if="!hasValidJson" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <div class="main" v-if="hasValidJson">
       <div class="main-left">
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div v-show="mode === 0">
-          <p class="default simulation-mode">Simulation mode</p>
-          <el-select class="simulation-mode" popper-class="simulation-mode-popper" :popper-append-to-body="false" v-model="simulationMode" size="mini" @change="simulationModeChanged()">
-            <el-option v-for="simulationMode in simulationModes" :key="simulationMode.value" :label="simulationMode.label" :value="simulationMode.value" />
-          </el-select>
-          <div class="sliders-and-fields">
-            <p class="default first-slider-and-field">Stimulation level</p>
-            <el-slider v-model="stimulationLevel" :max="10" :show-tooltip="false" :show-input="false" :disabled="simulationMode == 0" />
-            <el-input-number class="slider-and-field" v-model="stimulationLevel" size="mini" :controls="false" :min="0" :max="10" :disabled="simulationMode == 0" />
-          </div>
-        </div>
-        <div v-show="mode === 1">
-          <div class="sliders-and-fields">
-            <p class="default first-slider-and-field">Spike frequency</p>
-            <el-slider v-model="simulationSpikeFrequency" :max="1000" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="slider-and-field" v-model="simulationSpikeFrequency" size="mini" :controls="false" :min="0" :max="1000" />
-            <p class="default slider-and-field">Spike number</p>
-            <el-slider v-model="simulationSpikeNumber" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="slider-and-field" v-model="simulationSpikeNumber" size="mini" :controls="false" :min="0" :max="30" />
-            <p class="default slider-and-field">Spike amplitude</p>
-            <el-slider v-model="simulationSpikeAmplitude" :max="30" :show-tooltip="false" :show-input="false" />
-            <el-input-number class="slider-and-field" v-model="simulationSpikeAmplitude" size="mini" :controls="false" :min="0" :max="30" />
-          </div>
-        </div>
+        <div ref="input" />
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
@@ -39,14 +16,10 @@
         <div class="secondary-button">
           <el-button size="mini" @click="viewDataset()">View dataset</el-button>
         </div>
-        <p class="default note">{{note}}</p>
+        <p class="default note">Additional parameters are available on oSPARC</p>
       </div>
-      <div class="main-right" v-if="mode === 0" v-show="simulationValid">
-        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
-      </div>
-      <div class="main-right composite" v-if="mode === 1" v-show="simulationValid">
-        <PlotVuer :layout-input="simulationSpikeLayout" :dataInput="simulationSpikeData" :plotType="'plotly-only'" />
-        <PlotVuer :layout-input="simulationPotentialLayout" :dataInput="simulationPotentialData" :plotType="'plotly-only'" />
+      <div class="main-right" ref="output" v-show="simulationValid">
+        <PlotVuer v-for="(outputPlot, index) in json.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!simulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -60,8 +33,11 @@ import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
-
-var NoSimulationData = [{}];
+import { jsonForNormalModel, jsonForCompositeModel } from "./configuration.js";
+import { evaluateValue, evaluateSimulationValue } from "./common.js";
+import { validJson } from "./json.js";
+import Ui from "./ui.js";
+import { prepareForUi } from "./ui.js";
 
 Vue.use(Aside);
 Vue.use(Button);
@@ -81,84 +57,27 @@ export default {
   },
   props: {
     apiLocation: {
+      required: true,
       type: String,
-      default: "",
     },
     entry: {
-      /**
-       * Object containing information for the current simulation.
-       */
-      entry: Object,
+      required: true,
+      type: Object,
     },
   },
-  data: function () {
-    let title = this.entry?this.entry.name:"";
-
+  data: function() {
     return {
-      mode: 0,
+      mode: 0, //---GRY--- TO BE DELETED!
+      json: {},
+      hasValidJson: true,
       errorMessage: "",
-      note: "Additional parameters are available on oSPARC",
-      stimulationLevel: 0,
-      simulationMode: 0,
-      simulationModes: [
-        {
-          label: "Normal sinus rhythm",
-          value: 0,
-        },
-        {
-          label: "Stellate stimulation",
-          value: 1,
-        },
-        {
-          label: "Vagal stimulation",
-          value: 2,
-        },
-      ],
-      simulationSpikeLayout: {
-        xaxis: {
-          title: {
-            text: "Time (s)",
-            font: {
-              size: 10,
-            },
-          },
-        },
-        yaxis: {
-          title: {
-            text: "Spike amplitude",
-            font: {
-              size: 10,
-            },
-          }
-        },
-      },
-      simulationSpikeFrequency: 300,
-      simulationSpikeNumber: 10,
-      simulationSpikeAmplitude: 10, // The real value is 100 times smaller.
-      simulationSpikeData: NoSimulationData,
-      simulationPotentialLayout: {
-        xaxis: {
-          title: {
-            text: "Time (s)",
-            font: {
-              size: 10,
-            },
-          },
-        },
-        yaxis: {
-          title: {
-            text: "Membrane potential (mV)",
-            font: {
-              size: 10,
-            },
-          }
-        },
-      },
-      simulationPotentialData: NoSimulationData,
+      layout: [],
+      simulationData: [],
+      simulationDataId: {},
       simulationBeingComputed: false,
-      simulationBeingComputedLabel: "Loading simulation results...",
       simulationValid: true,
-      title: title,
+      title: (this.entry !== undefined)?this.entry.name:"",
+      ui: null,
     };
   },
   methods: {
@@ -168,65 +87,49 @@ export default {
     viewDataset() {
       window.open(this.entry.dataset, "_blank");
     },
-    simulationModeChanged() {
-      this.simulationPotentialData = NoSimulationData;
-      this.simulationValid = true;
-    },
     runSimulation() {
       this.simulationBeingComputed = true;
 
-      var request = {
+      let request = {
         model_url: this.entry.resource,
-        json_config: {
-          output: ["Membrane/V"],
-        },
+        json_config: {},
       };
 
       // Specify the ending point and point interval for the normal mode (since
       // our resource is a CellML file).
 
-      if (this.mode === 0) {
-        request.json_config["simulation"] = {
-          "Ending point": 3,
-          "Point interval": 0.001,
+      if (this.json.simulation !== undefined) {
+        request.json_config.simulation = {
+          "Ending point": this.json.simulation.endingPoint,
+          "Point interval": this.json.simulation.pointInterval,
         };
       }
 
-      // Apply a stellate/vagal stimulation, if needed.
-      // Notes:
-      //  - this.simulationMode:
-      //     - 0: normal sinus rhythm;
-      //     - 1: stellate stimulation; and
-      //     - 2: vagal stimulation.
-      //  - this.stimulationLevel has a value in [0; 10], but to compute ACh, we
-      //    need a value in [0; 1].
+      // Specify the simulation parameters.
 
-      if (this.simulationMode !== 0) {
-        request.json_config["parameters"] = {
-          "Rate_modulation_experiments/Iso_1_uM": 1.0,
-          "Rate_modulation_experiments/ACh": this.simulationMode === 1 ? (1.0 - 0.1 * this.stimulationLevel) * 22.0e-6 : 22.0e-6 + 0.1 * this.stimulationLevel * (38.0e-6 - 22.0e-6),
-        };
+      if (this.json.parameters != undefined) {
+        request.json_config.parameters = {};
+
+        this.json.parameters.forEach((parameter) => {
+          request.json_config.parameters[parameter.name] = evaluateValue(this.ui, parameter.value);
+        });
       }
 
-      // Apply the spike settings, if needed.
+      // Specify what we want to retrieve.
 
-      if (this.mode === 1) {
-        request.json_config["parameters"] = {
-          "Brain_stem/t_period": this.simulationSpikeFrequency,
-          "Brain_stem/w_n": this.simulationSpikeNumber,
-          "Brain_stem/w_value": 0.01 * this.simulationSpikeAmplitude,
-        };
-      }
+      if (this.json.output.data !== undefined)  {
+        let index = -1;
 
-      // Request the spikes if we are in composite mode.
+        request.json_config.output = [];
 
-      if (this.mode === 1) {
-        request.json_config["output"].push("Brain_stem/w");
+        this.json.output.data.forEach((outputData) => {
+          request.json_config.output[++index] = outputData.name;
+        });
       }
 
       // Run the simulation.
 
-      var xmlhttp = new XMLHttpRequest();
+      let xmlhttp = new XMLHttpRequest();
 
       xmlhttp.open("POST", this.apiLocation + "/simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
@@ -235,33 +138,32 @@ export default {
           this.simulationBeingComputed = false;
 
           if (xmlhttp.status === 200) {
-            var response = JSON.parse(xmlhttp.responseText);
+            let response = JSON.parse(xmlhttp.responseText);
 
             this.simulationValid = response.status === "ok";
 
             if (this.simulationValid) {
-              // Retrieve the spike data, if needed. (Our default spike
-              // amplitude is 0.1, but we normalise it to 10.)
+              // Retrieve and post-process the simulation data.
 
-              if (this.mode === 1) {
-                this.simulationSpikeData = [
+              let index = -1;
+              let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
+
+              this.json.output.plots.forEach((outputPlot) => {
+                let xValue = [];
+                let yValue = [];
+
+                for (let i = 0; i < iMax; ++i) {
+                  xValue[i] = evaluateSimulationValue(this, response.results, outputPlot.xValue, i);
+                  yValue[i] = evaluateSimulationValue(this, response.results, outputPlot.yValue, i);
+                }
+
+                this.simulationData[++index] = [
                   {
-                    x: response.results["environment/time"],
-                    y: response.results["Brain_stem/w"].map(function (element) {
-                      return 100 * element;
-                    }),
+                    x: xValue,
+                    y: yValue,
                   },
                 ];
-              }
-
-              // Retrieve the potential data.
-
-              this.simulationPotentialData = [
-                {
-                  x: response.results["environment/time"],
-                  y: response.results["Membrane/V"],
-                },
-              ];
+              });
             } else {
               this.errorMessage = response.description;
             }
@@ -275,20 +177,39 @@ export default {
       xmlhttp.send(JSON.stringify(request));
     },
   },
-  mounted: function () {
-    // Determine the mode in which we should run:
-    //  - -1: unknown mode;
-    //  -  0: normal mode; and
-    //  -  1: composite mode.
+  created: function() {
+    // Manually (for now) specify the JSON configuration to be used by either
+    // the normal model or the composite model.
 
     this.mode = -1;
 
-    if (this.entry) {
+    if (this.entry !== undefined) {
       if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
         this.mode = 0;
+        this.json = jsonForNormalModel();
       } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
         this.mode = 1;
+        this.json = jsonForCompositeModel();
       }
+    }
+
+    // Make sure that the JSON configuration is valid.
+
+    this.hasValidJson = validJson(this.json);
+
+    if (!this.hasValidJson) {
+      return;
+    }
+
+    // Prepare ourselves for the UI by initialising some data.
+
+    prepareForUi(this);
+  },
+  mounted: function() {
+    // Finish mounting by creating the UI for the given simulation dataset.
+
+    if (this.hasValidJson) {
+      this.ui = new Ui(this);
     }
   },
 };
@@ -304,18 +225,18 @@ export default {
   margin: -8px 0 8px 0;
   width: 191px;
 }
->>> .el-input-number.slider-and-field {
+>>> .el-input-number.scalar {
   margin-top: -8px;
   width: 0;
   height: 0;
 }
->>> .el-input-number.slider-and-field .el-input {
+>>> .el-input-number.scalar .el-input {
   width: 60px;
 }
->>> .el-input-number.slider-and-field .el-input__inner:focus {
+>>> .el-input-number.scalar .el-input__inner:focus {
   border-color: #8300bf;
 }
->>> .el-select.simulation-mode {
+>>> .el-select.discrete {
   margin-bottom: 16px;
 }
 >>> .el-slider {
@@ -329,20 +250,20 @@ export default {
 >>> .el-slider__button {
   border-color: #8300bf;
 }
-.simulation-mode {
+.discrete {
   margin-left: 8px;
 }
-.simulation-mode >>> .el-input__inner {
+.discrete >>> .el-input__inner {
   font-family: Asap, sans-serif;
 }
-.simulation-mode >>> .el-input__inner:focus,
-.simulation-mode >>> .el-input.is-focus .el-input__inner {
+.discrete >>> .el-input__inner:focus,
+.discrete >>> .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
 }
-.simulation-mode-popper .el-select-dropdown__item {
+.discrete-popper .el-select-dropdown__item {
   font-family: Asap, sans-serif;
 }
-.simulation-mode-popper .el-select-dropdown__item.selected {
+.discrete-popper .el-select-dropdown__item.selected {
   font-weight: normal;
   color: #8300bf;
 }
@@ -358,8 +279,32 @@ div.main-left {
   height: 100%;
   overflow: auto;
 }
-div.main-right.composite {
+div.main-right.x1 {
+  height: 100%;
+}
+div.main-right.x2 {
   height: 50%;
+}
+div.main-right.x3 {
+  height: 33.333%;
+}
+div.main-right.x4 {
+  height: 25%;
+}
+div.main-right.x5 {
+  height: 20%;
+}
+div.main-right.x6 {
+  height: 16.667%;
+}
+div.main-right.x7 {
+  height: 14.286%;
+}
+div.main-right.x8 {
+  height: 12.5%;
+}
+div.main-right.x9 {
+  height: 11.111%;
 }
 >>> div.main-right div.controls {
   height: 0;
@@ -413,8 +358,8 @@ p.default {
 p.error {
   margin-left: 16px;
 }
-p.first-slider-and-field,
-p.slider-and-field {
+p.first-scalar,
+p.scalar {
   grid-column-start: 1;
   grid-column-end: 3;
   margin-bottom: 8px;
@@ -431,13 +376,14 @@ p.input-parameters {
 p.title {
   line-height: 20px;
 }
-p.simulation-mode {
+p.discrete {
+  margin-top: 0;
   margin-bottom: 4px;
 }
-p.first-slider-and-field {
+p.first-scalar {
   margin-top: 0;
 }
-p.slider-and-field {
+p.scalar {
   margin-top: 6px;
 }
 span.error {
