@@ -260,9 +260,6 @@ export default class Ui {
     });
 
     // Configure the PlotVuer's.
-    // Note: the PlotVuer's are created in SimulationVuer.vue since we can't
-    //       create them dynamically. So, all we need to do here is to configure
-    //       them.
 
     parent.$refs.output.classList.add("x" + parent.json.output.plots.length);
 
