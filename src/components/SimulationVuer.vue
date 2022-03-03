@@ -33,11 +33,12 @@ import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
-import { jsonForNormalModel, jsonForCompositeModel } from "./configuration.js";
 import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
 import Ui from "./ui.js";
 import { prepareForUi } from "./ui.js";
+import jsonForNormalModel from "./normal.json";
+import jsonForCompositeModel from "./composite.json";
 
 Vue.use(Aside);
 Vue.use(Button);
@@ -182,9 +183,9 @@ export default {
 
     if (this.entry !== undefined) {
       if (this.entry.resource === "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml") {
-        this.json = jsonForNormalModel();
+        this.json = jsonForNormalModel;
       } else if (this.entry.resource === "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml") {
-        this.json = jsonForCompositeModel();
+        this.json = jsonForCompositeModel;
       }
     }
 

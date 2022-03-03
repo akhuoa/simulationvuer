@@ -1,0 +1,69 @@
+{
+  "input": [
+    {
+      "defaultValue": 300,
+      "id": "sf",
+      "maximumValue": 1000,
+      "minimumValue": 0,
+      "name": "Spike frequency"
+    },
+    {
+      "defaultValue": 10,
+      "id": "sn",
+      "maximumValue": 30,
+      "minimumValue": 0,
+      "name": "Spike number"
+    },
+    {
+      "defaultValue": 10,
+      "id": "sa",
+      "maximumValue": 30,
+      "minimumValue": 0,
+      "name": "Spike amplitude"
+    }
+  ],
+  "output": {
+    "data": [
+      {
+        "id": "sa",
+        "name": "Brain_stem/w"
+      },
+      {
+        "id": "time",
+        "name": "environment/time"
+      },
+      {
+        "id": "vm",
+        "name": "Membrane/V"
+      }
+    ],
+    "plots": [
+      {
+        "xAxisTitle": "Time (s)",
+        "xValue": "time",
+        "yAxisTitle": "Spike amplitude",
+        "yValue": "100.0 * sa"
+      },
+      {
+        "xAxisTitle": "Time (s)",
+        "xValue": "time",
+        "yAxisTitle": "Membrane potential (mV)",
+        "yValue": "vm"
+      }
+    ]
+  },
+  "parameters": [
+    {
+      "name": "Brain_stem/t_period",
+      "value": "sf"
+    },
+    {
+      "name": "Brain_stem/w_n",
+      "value": "sn"
+    },
+    {
+      "name": "Brain_stem/w_value",
+      "value": "0.01 * sa"
+    }
+  ]
+}
