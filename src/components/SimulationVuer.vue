@@ -68,13 +68,14 @@ export default {
   },
   data: function() {
     return {
-      json: {},
-      hasValidJson: true,
       errorMessage: "",
+      firstScalarInput: [],
+      hasValidJson: true,
+      json: {},
       layout: [],
       simulationData: [],
-      simulationDataId: {},
       simulationBeingComputed: false,
+      simulationDataId: {},
       simulationValid: true,
       title: (this.entry !== undefined)?this.entry.name:"",
       ui: null,
@@ -95,8 +96,8 @@ export default {
         json_config: {},
       };
 
-      // Specify the ending point and point interval for the normal mode (since
-      // our resource is a CellML file).
+      // Specify the ending point and point interval, if we have some simulation
+      // data.
 
       if (this.json.simulation !== undefined) {
         request.json_config.simulation = {
@@ -111,7 +112,7 @@ export default {
         request.json_config.parameters = {};
 
         this.json.parameters.forEach((parameter) => {
-          request.json_config.parameters[parameter.name] = evaluateValue(this.ui, parameter.value);
+          request.json_config.parameters[parameter.name] = evaluateValue(this, parameter.value);
         });
       }
 
