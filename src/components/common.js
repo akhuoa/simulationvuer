@@ -9,12 +9,12 @@ function doEvaluateValue(value, from, to) {
 }
 
 export function evaluateValue(parent, value) {
-  parent.ui.discreteElements.forEach((discreteElement) => {
-    value = doEvaluateValue(value, discreteElement.id, discreteElement.select.vModel);
-  });
+  let index = -1;
 
-  parent.ui.scalarElements.forEach((scalarElement) => {
-    value = doEvaluateValue(value, scalarElement.id, scalarElement.input_number.vModel);
+  parent.json.input.forEach((input) => {
+    ++index;
+
+    value = doEvaluateValue(value, input.id, parent.$children[index].vModel);
   });
 
   return Function("return " + value + ";")();

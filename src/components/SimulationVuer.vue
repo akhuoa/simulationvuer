@@ -6,6 +6,9 @@
         <p class="default title">{{title}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
+        <div>
+          <SimulationVuerInput v-for="(input, index) in json.input" :defaultValue="input.defaultValue" :firstScalarInput="firstScalarInput[index]" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" />
+        </div>
         <div ref="input" />
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
@@ -32,29 +35,23 @@
 import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
-import { Aside, Button, Container, Divider, InputNumber, Loading, Main, Option, Select, Slider } from "element-ui";
+import SimulationVuerInput from "./SimulationVuerInput.vue";
+import { Button, Divider, Loading } from "element-ui";
 import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
-import Ui from "./ui.js";
-import { prepareForUi } from "./ui.js";
+import { initialiseUi, finaliseUi } from "./ui.js";
 import jsonForNormalModel from "./normal.json";
 import jsonForCompositeModel from "./composite.json";
 
-Vue.use(Aside);
 Vue.use(Button);
-Vue.use(Container);
 Vue.use(Divider);
-Vue.use(InputNumber);
 Vue.use(Loading);
-Vue.use(Main);
-Vue.use(Option);
-Vue.use(Select);
-Vue.use(Slider);
 
 export default {
   name: "SimulationVuer",
   components: {
     PlotVuer,
+    SimulationVuerInput,
   },
   props: {
     apiLocation: {
@@ -198,15 +195,15 @@ export default {
       return;
     }
 
-    // Prepare ourselves for the UI by initialising some data.
+    // Initialise our UI.
 
-    prepareForUi(this);
+    initialiseUi(this);
   },
   mounted: function() {
-    // Finish mounting by creating the UI for the given simulation dataset.
+    // Finalise our UI.
 
     if (this.hasValidJson) {
-      this.ui = new Ui(this);
+      finaliseUi(this);
     }
   },
 };
@@ -219,50 +216,8 @@ export default {
   box-shadow: -3px 2px 4px #00000040;
 }
 >>> .el-divider {
-  margin: -8px 0 8px 0;
+  margin: -8px 0 8px 0 !important;
   width: 191px;
-}
->>> .el-input-number.scalar {
-  margin-top: -8px;
-  width: 0;
-  height: 0;
-}
->>> .el-input-number.scalar .el-input {
-  width: 60px;
-}
->>> .el-input-number.scalar .el-input__inner:focus {
-  border-color: #8300bf;
-}
->>> .el-select.discrete {
-  margin-bottom: 16px;
-}
->>> .el-slider {
-  width: 108px;
-  margin-top: -12px;
-  margin-left: 8px;
-}
->>> .el-slider__bar {
-  background-color: #8300bf;
-}
->>> .el-slider__button {
-  border-color: #8300bf;
-}
-.discrete {
-  margin-left: 8px;
-}
-.discrete >>> .el-input__inner {
-  font-family: Asap, sans-serif;
-}
-.discrete >>> .el-input__inner:focus,
-.discrete >>> .el-input.is-focus .el-input__inner {
-  border-color: #8300bf;
-}
-.discrete-popper .el-select-dropdown__item {
-  font-family: Asap, sans-serif;
-}
-.discrete-popper .el-select-dropdown__item.selected {
-  font-weight: normal;
-  color: #8300bf;
 }
 div.main {
   display: grid;
@@ -306,10 +261,6 @@ div.main-right.x9 {
 >>> div.main-right div.controls {
   height: 0;
 }
-div.plot-vuer {
-  display: grid;
-  width: 100%;
-}
 div.primary-button,
 div.secondary-button {
   display: flex;
@@ -341,11 +292,6 @@ div.secondary-button .el-button:hover {
 div.simulation-vuer {
   height: 100%;
 }
-div.sliders-and-fields {
-  display: grid;
-  grid-template-columns: 132px auto;
-  width: 191px;
-}
 p.default {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
@@ -354,12 +300,6 @@ p.default {
 }
 p.error {
   margin-left: 16px;
-}
-p.first-scalar,
-p.scalar {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  margin-bottom: 8px;
 }
 p.note {
   font-size: 12px;
@@ -373,31 +313,13 @@ p.input-parameters {
 p.title {
   line-height: 20px;
 }
-p.discrete {
-  margin-top: 0;
-  margin-bottom: 4px;
-}
-p.first-scalar {
-  margin-top: 0;
-}
-p.scalar {
-  margin-top: 6px;
-}
 span.error {
   font-weight: 500 /* Medium */;
 }
 </style>
-<style scoped src="../styles/purple/aside.css">
-</style>
 <style scoped src="../styles/purple/button.css">
 </style>
-<style scoped src="../styles/purple/container.css">
+<style scoped src="../styles/purple/divider.css">
 </style>
-<style scoped src="../styles/purple/input-number.css">
-</style>
-<style scoped src="../styles/purple/option.css">
-</style>
-<style scoped src="../styles/purple/select.css">
-</style>
-<style scoped src="../styles/purple/slider.css">
+<style scoped src="../styles/purple/loading.css">
 </style>
