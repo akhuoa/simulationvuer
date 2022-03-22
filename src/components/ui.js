@@ -6,7 +6,7 @@ export function initialiseUi(parent) {
   let index = -1;
   let isPreviousDiscrete = true;
 
-  parent.json.input.forEach((input) => {
+  parent.simulationUiInformation.input.forEach((input) => {
     let isDiscrete = input.possibleValues !== undefined;
 
     parent.firstScalarInput[++index] = !isDiscrete && isPreviousDiscrete;
@@ -16,13 +16,13 @@ export function initialiseUi(parent) {
 
   // Initialise some output-related data.
 
-  parent.json.output.data.forEach((data) => {
+  parent.simulationUiInformation.output.data.forEach((data) => {
     parent.simulationDataId[data.id] = data.name;
   });
 
   index = -1;
 
-  parent.json.output.plots.forEach((outputPlot) => {
+  parent.simulationUiInformation.output.plots.forEach((outputPlot) => {
     ++index;
 
     parent.layout[index] = {
@@ -49,13 +49,20 @@ export function initialiseUi(parent) {
 }
 
 export function finaliseUi(parent) {
-  // Configure the PlotVuer's.
+  // Finalise our UI, but only if we haven't already done so, we are mounted,
+  // and we have some valid simulation UI information.
 
-  parent.$refs.output.classList.add("x" + parent.json.output.plots.length);
+  if (!parent.hasFinalisedUi && parent.isMounted && parent.hasValidSimulationUiInformation) {
+    // Configure the PlotVuer's.
 
-  // Make sure that our UI is up to date.
+    parent.$refs.output.classList.add("x" + parent.simulationUiInformation.output.plots.length);
 
-  updateUi(parent);
+    // Make sure that our UI is up to date.
+
+    updateUi(parent);
+
+    parent.hasFinalisedUi = true;
+  }
 }
 
 export function updateUi(parent) {
@@ -66,7 +73,7 @@ export function updateUi(parent) {
   parent.$nextTick(() => {
     let index = -1;
 
-    parent.json.input.forEach((input) => {
+    parent.simulationUiInformation.input.forEach((input) => {
       parent.$children[++index].enabled = (input.enabled === undefined)?true:evaluateValue(parent, input.enabled);
     });
   });

@@ -11,7 +11,7 @@ function doEvaluateValue(value, from, to) {
 export function evaluateValue(parent, value) {
   let index = -1;
 
-  parent.json.input.forEach((input) => {
+  parent.simulationUiInformation.input.forEach((input) => {
     ++index;
 
     value = doEvaluateValue(value, input.id, parent.$children[index].vModel);
@@ -21,7 +21,7 @@ export function evaluateValue(parent, value) {
 }
 
 export function evaluateSimulationValue(parent, results, value, i) {
-  parent.json.output.data.forEach((data) => {
+  parent.simulationUiInformation.output.data.forEach((data) => {
     value = doEvaluateValue(value, data.id, results[parent.simulationDataId[data.id]][i]);
   });
 
