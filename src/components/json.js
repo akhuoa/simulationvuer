@@ -79,16 +79,19 @@ export function validJson(json) {
           type: "object",
         },
         minItems: 1,
+        required: true,
         type: "array",
       },
       output: {
         additionalProperties: false,
+        minItems: 1,
         properties: {
           data: {
             items: {
               additionalProperties: false,
               properties: {
                 id: {
+                  required: true,
                   type: "string",
                 },
                 name: {
@@ -98,6 +101,8 @@ export function validJson(json) {
               },
               type: "object",
             },
+            minItems: 1,
+            required: true,
             type: "array",
           },
           plots: {
