@@ -17,6 +17,9 @@ export function validJson(json) {
                   required: true,
                   type: "number",
                 },
+                enabled: {
+                  type: "string",
+                },
                 id: {
                   type: "string",
                 },

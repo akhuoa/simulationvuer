@@ -8,20 +8,20 @@ function doEvaluateValue(value, from, to) {
   return value;
 }
 
-export function evaluateValue(ui, value) {
-  ui.discreteElements.forEach((discreteElement) => {
-    value = doEvaluateValue(value, discreteElement.id, discreteElement.select.vModel);
-  });
+export function evaluateValue(parent, value) {
+  let index = -1;
 
-  ui.scalarElements.forEach((scalarElement) => {
-    value = doEvaluateValue(value, scalarElement.id, scalarElement.input_number.vModel);
+  parent.simulationUiInformation.input.forEach((input) => {
+    ++index;
+
+    value = doEvaluateValue(value, input.id, parent.$children[index].vModel);
   });
 
   return Function("return " + value + ";")();
 }
 
 export function evaluateSimulationValue(parent, results, value, i) {
-  parent.json.output.data.forEach((data) => {
+  parent.simulationUiInformation.output.data.forEach((data) => {
     value = doEvaluateValue(value, data.id, results[parent.simulationDataId[data.id]][i]);
   });
 
