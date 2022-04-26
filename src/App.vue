@@ -37,14 +37,14 @@ export default {
       },
       normalEntry: {
         dataset: "https://sparc.science/datasets/135?type=dataset",
-        datasetId: 135,
+        discoverId: 135,
         description: "CellML version of the Fabbri et al. 2017 mathematical model of the spontaneous electrical activity of a human sinoatrial node (SAN) pacemaker cell",
         name: "Computational analysis of the human sinus node action potential - Model development and effects of mutations",
         resource: "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml",
       },
       compositeEntry: {
         dataset: "https://sparc.science/datasets/157?type=dataset",
-        datasetId: 157,
+        discoverId: 157,
         description: "CellML version of the Fabbri et al. 2017 human sinoatrial node (SAN) cell model and an ODE-based version of the Gerstner & Kistler 2002 brain stem model combined to demonstrate the effect of brain stem activity on heart rate",
         name: "Fabbri-based composite SAN model",
         resource: "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml",
