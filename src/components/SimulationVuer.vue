@@ -178,58 +178,48 @@ export default {
     },
   },
   created: function() {
-    let url = document.createElement("a");
+    this.userMessage = "Retrieving UI information...";
+    this.showUserMessage = true;
 
-    url.href = this.entry.dataset;
+    // Retrieve the simulation UI file for the given dataset.
 
-    let datasetId = url.pathname.replace("/datasets/", "");
+    let xmlhttp = new XMLHttpRequest();
 
-    if (datasetId !== "/undefined") {
-      // Let people know that we are retrieving our UI information.
+    xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.entry.discoverId, true);
+    xmlhttp.setRequestHeader("Content-type", "application/json");
+    xmlhttp.onreadystatechange = () => {
+      if (xmlhttp.readyState === 4) {
+        // Keep track of the simulation UI information.
 
-      this.userMessage = "Retrieving UI information...";
-      this.showUserMessage = true;
+        this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
 
-      // Retrieve the simulation UI file for the given dataset.
+        // Make sure that the simulation UI information is valid.
 
-      let xmlhttp = new XMLHttpRequest();
+        this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
 
-      xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + datasetId, true);
-      xmlhttp.setRequestHeader("Content-type", "application/json");
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4) {
-          // Keep track of the simulation UI information.
+        if (!this.hasValidSimulationUiInformation) {
+          this.showUserMessage = false;
 
-          this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
-
-          // Make sure that the simulation UI information is valid.
-
-          this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
-
-          if (!this.hasValidSimulationUiInformation) {
-            this.showUserMessage = false;
-
-            return;
-          }
-
-          // Initialise our UI.
-
-          initialiseUi(this);
-
-          // Finalise our UI.
-          // Note: we try both here and in the mounded() function since we have no
-          //       idea how long it's going to take to retrieve the simulation UI
-          //       information.
-
-          this.$nextTick(() => {
-            finaliseUi(this);
-
-            this.showUserMessage = false;
-          });
+          return;
         }
-      };
-      xmlhttp.send();
-    }
+
+        // Initialise our UI.
+
+        initialiseUi(this);
+
+        // Finalise our UI.
+        // Note: we try both here and in the mounded() function since we have no
+        //       idea how long it's going to take to retrieve the simulation UI
+        //       information.
+
+        this.$nextTick(() => {
+          finaliseUi(this);
+
+          this.showUserMessage = false;
+        });
+      }
+    };
+    xmlhttp.send();
   },
   mounted: function() {
     // Finalise our UI.
