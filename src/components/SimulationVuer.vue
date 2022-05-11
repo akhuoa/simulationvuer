@@ -56,12 +56,37 @@ export default {
       required: true,
       type: String,
     },
-    entry: {
+    id: {
       required: true,
-      type: Object,
+      type: Number,
     },
   },
   data: function() {
+    let xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.open("GET", this.apiLocation + "dataset_info/using_pennsieve_identifier?identifier=" + this.id, true);
+    xmlhttp.setRequestHeader("Content-type", "application/json");
+    xmlhttp.onreadystatechange = () => {
+      if (xmlhttp.readyState === 4) {
+        let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
+        let isSedmlResource = false;
+        let resource = undefined;
+
+        datasetInfo.additionalLinks.forEach(function(el) {
+          if (el.description == "SED-ML file") {
+            isSedmlResource = true;
+            resource = el.uri;
+          } else if (!isSedmlResource && (el.description == "CellML file")) {
+            resource = el.uri;
+          }
+        });
+
+        this.name = datasetInfo.name;
+        this.resource = resource;
+      }
+    };
+    xmlhttp.send();
+
     return {
       errorMessage: "",
       firstScalarInput: [],
@@ -70,7 +95,8 @@ export default {
       isMounted: false,
       isSimulationValid: true,
       layout: [],
-      name: (this.entry !== undefined)?this.entry.name:"",
+      name: undefined,
+      resource: undefined,
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
@@ -84,14 +110,14 @@ export default {
       window.open("https://osparc.io/", "_blank");
     },
     viewDataset() {
-      window.open(this.entry.dataset, "_blank");
+      window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
     runSimulation() {
       this.userMessage = "Loading simulation results...";
       this.showUserMessage = true;
 
       let request = {
-        model_url: this.entry.resource,
+        model_url: this.resource,
         json_config: {},
       };
 
