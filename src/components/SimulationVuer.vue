@@ -131,7 +131,7 @@ export default {
 
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
+      xmlhttp.open("POST", this.apiLocation + "simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
@@ -185,7 +185,7 @@ export default {
 
     let xmlhttp = new XMLHttpRequest();
 
-    xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.entry.discoverId, true);
+    xmlhttp.open("GET", this.apiLocation + "simulation_ui_file/" + this.id, true);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
