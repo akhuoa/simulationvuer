@@ -3,7 +3,7 @@
     <p v-if="!hasValidSimulationUiInformation && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
     <div class="main" v-if="hasValidSimulationUiInformation">
       <div class="main-left">
-        <p class="default title">{{title}}</p>
+        <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div>
@@ -70,12 +70,12 @@ export default {
       isMounted: false,
       isSimulationValid: true,
       layout: [],
+      name: (this.entry !== undefined)?this.entry.name:"",
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
       simulationUiInformation: {},
       userMessage: "",
-      title: (this.entry !== undefined)?this.entry.name:"",
       ui: null,
     };
   },
@@ -326,17 +326,17 @@ p.default {
 p.error {
   margin-left: 16px;
 }
-p.note {
-  font-size: 12px;
-  line-height: 16px;
-}
-p.title,
+p.name,
 p.input-parameters {
   margin-top: 0;
   font-weight: 500 /* Medium */;
 }
-p.title {
+p.name {
   line-height: 20px;
+}
+p.note {
+  font-size: 12px;
+  line-height: 16px;
 }
 span.error {
   font-weight: 500 /* Medium */;
