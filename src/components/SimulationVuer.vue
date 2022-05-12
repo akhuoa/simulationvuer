@@ -59,32 +59,31 @@ export default {
   },
   data: function() {
     let xmlhttp = new XMLHttpRequest();
+    let name = undefined;
+    let resource = undefined;
 
-    xmlhttp.open("GET", process.env.VUE_APP_API_LOCATION + "dataset_info/using_pennsieve_identifier?identifier=" + this.id, true);
+    xmlhttp.open("GET", process.env.VUE_APP_API_LOCATION + "dataset_info/using_pennsieve_identifier?identifier=" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4) {
-        let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
-
-        if (datasetInfo !== undefined) {
-          let isSedmlResource = false;
-          let resource = undefined;
-
-          datasetInfo.additionalLinks.forEach(function(el) {
-            if (el.description == "SED-ML file") {
-              isSedmlResource = true;
-              resource = el.uri;
-            } else if (!isSedmlResource && (el.description == "CellML file")) {
-              resource = el.uri;
-            }
-          });
-
-          this.name = datasetInfo.name;
-          this.resource = resource;
-        }
-      }
-    };
     xmlhttp.send();
+
+    if (xmlhttp.status === 200) {
+      let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
+
+      if (datasetInfo !== undefined) {
+        name = datasetInfo.name;
+
+        let isSedmlResource = false;
+
+        datasetInfo.additionalLinks.forEach(function(el) {
+          if (el.description == "SED-ML file") {
+            isSedmlResource = true;
+            resource = el.uri;
+          } else if (!isSedmlResource && (el.description == "CellML file")) {
+            resource = el.uri;
+          }
+        });
+      }
+    }
 
     return {
       errorMessage: "",
@@ -94,8 +93,8 @@ export default {
       isMounted: false,
       isSimulationValid: true,
       layout: [],
-      name: undefined,
-      resource: undefined,
+      name: name,
+      resource: resource,
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
@@ -203,48 +202,52 @@ export default {
     },
   },
   created: function() {
-    this.userMessage = "Retrieving UI information...";
-    this.showUserMessage = true;
+    // Try to retrieve the UI information, but only if we have a resource.
 
-    // Retrieve the simulation UI file for the given dataset.
+    if (this.resource !== undefined) {
+      this.userMessage = "Retrieving UI information...";
+      this.showUserMessage = true;
 
-    let xmlhttp = new XMLHttpRequest();
+      // Retrieve the simulation UI file for the given dataset.
 
-    xmlhttp.open("GET", process.env.VUE_APP_API_LOCATION + "simulation_ui_file/" + this.id, true);
-    xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4) {
-        this.showUserMessage = false;
+      let xmlhttp = new XMLHttpRequest();
 
-        if (xmlhttp.status === 200) {
-          // Keep track of the simulation UI information.
+      xmlhttp.open("GET", process.env.VUE_APP_API_LOCATION + "simulation_ui_file/" + this.id, true);
+      xmlhttp.setRequestHeader("Content-type", "application/json");
+      xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4) {
+          this.showUserMessage = false;
 
-          this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
+          if (xmlhttp.status === 200) {
+            // Keep track of the simulation UI information.
 
-          // Make sure that the simulation UI information is valid.
+            this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
 
-          this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
+            // Make sure that the simulation UI information is valid.
 
-          if (!this.hasValidSimulationUiInformation) {
-            return;
+            this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
+
+            if (!this.hasValidSimulationUiInformation) {
+              return;
+            }
+
+            // Initialise our UI.
+
+            initialiseUi(this);
+
+            // Finalise our UI.
+            // Note: we try both here and in the mounded() function since we have no
+            //       idea how long it's going to take to retrieve the simulation UI
+            //       information.
+
+            this.$nextTick(() => {
+              finaliseUi(this);
+            });
           }
-
-          // Initialise our UI.
-
-          initialiseUi(this);
-
-          // Finalise our UI.
-          // Note: we try both here and in the mounded() function since we have no
-          //       idea how long it's going to take to retrieve the simulation UI
-          //       information.
-
-          this.$nextTick(() => {
-            finaliseUi(this);
-          });
         }
-      }
-    };
-    xmlhttp.send();
+      };
+      xmlhttp.send();
+    }
   },
   mounted: function() {
     // Finalise our UI.
