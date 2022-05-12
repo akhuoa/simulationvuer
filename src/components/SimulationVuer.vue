@@ -214,34 +214,34 @@ export default {
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
-        // Keep track of the simulation UI information.
+        this.showUserMessage = false;
 
-        this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
+        if (xmlhttp.status === 200) {
+          // Keep track of the simulation UI information.
 
-        // Make sure that the simulation UI information is valid.
+          this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
 
-        this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
+          // Make sure that the simulation UI information is valid.
 
-        if (!this.hasValidSimulationUiInformation) {
-          this.showUserMessage = false;
+          this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
 
-          return;
+          if (!this.hasValidSimulationUiInformation) {
+            return;
+          }
+
+          // Initialise our UI.
+
+          initialiseUi(this);
+
+          // Finalise our UI.
+          // Note: we try both here and in the mounded() function since we have no
+          //       idea how long it's going to take to retrieve the simulation UI
+          //       information.
+
+          this.$nextTick(() => {
+            finaliseUi(this);
+          });
         }
-
-        // Initialise our UI.
-
-        initialiseUi(this);
-
-        // Finalise our UI.
-        // Note: we try both here and in the mounded() function since we have no
-        //       idea how long it's going to take to retrieve the simulation UI
-        //       information.
-
-        this.$nextTick(() => {
-          finaliseUi(this);
-
-          this.showUserMessage = false;
-        });
       }
     };
     xmlhttp.send();
