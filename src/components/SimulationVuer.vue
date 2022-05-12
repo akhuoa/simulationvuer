@@ -65,20 +65,23 @@ export default {
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
         let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
-        let isSedmlResource = false;
-        let resource = undefined;
 
-        datasetInfo.additionalLinks.forEach(function(el) {
-          if (el.description == "SED-ML file") {
-            isSedmlResource = true;
-            resource = el.uri;
-          } else if (!isSedmlResource && (el.description == "CellML file")) {
-            resource = el.uri;
-          }
-        });
+        if (datasetInfo !== undefined) {
+          let isSedmlResource = false;
+          let resource = undefined;
 
-        this.name = datasetInfo.name;
-        this.resource = resource;
+          datasetInfo.additionalLinks.forEach(function(el) {
+            if (el.description == "SED-ML file") {
+              isSedmlResource = true;
+              resource = el.uri;
+            } else if (!isSedmlResource && (el.description == "CellML file")) {
+              resource = el.uri;
+            }
+          });
+
+          this.name = datasetInfo.name;
+          this.resource = resource;
+        }
       }
     };
     xmlhttp.send();
