@@ -3,7 +3,7 @@
     <p v-if="!hasValidSimulationUiInformation && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
     <div class="main" v-if="hasValidSimulationUiInformation">
       <div class="main-left">
-        <p class="default title">{{title}}</p>
+        <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div>
@@ -52,16 +52,39 @@ export default {
     SimulationVuerInput,
   },
   props: {
-    apiLocation: {
+    id: {
       required: true,
-      type: String,
-    },
-    entry: {
-      required: true,
-      type: Object,
+      type: Number,
     },
   },
   data: function() {
+    let xmlhttp = new XMLHttpRequest();
+    let name = undefined;
+    let resource = undefined;
+
+    xmlhttp.open("GET", process.env.VUE_APP_API_LOCATION + "dataset_info/using_pennsieve_identifier?identifier=" + this.id, false);
+    xmlhttp.setRequestHeader("Content-type", "application/json");
+    xmlhttp.send();
+
+    if (xmlhttp.status === 200) {
+      let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
+
+      if (datasetInfo !== undefined) {
+        name = datasetInfo.name;
+
+        let isSedmlResource = false;
+
+        datasetInfo.additionalLinks.forEach(function(el) {
+          if (el.description == "SED-ML file") {
+            isSedmlResource = true;
+            resource = el.uri;
+          } else if (!isSedmlResource && (el.description == "CellML file")) {
+            resource = el.uri;
+          }
+        });
+      }
+    }
+
     return {
       errorMessage: "",
       firstScalarInput: [],
@@ -70,12 +93,13 @@ export default {
       isMounted: false,
       isSimulationValid: true,
       layout: [],
+      name: name,
+      resource: resource,
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
       simulationUiInformation: {},
       userMessage: "",
-      title: (this.entry !== undefined)?this.entry.name:"",
       ui: null,
     };
   },
@@ -84,14 +108,14 @@ export default {
       window.open("https://osparc.io/", "_blank");
     },
     viewDataset() {
-      window.open(this.entry.dataset, "_blank");
+      window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
     runSimulation() {
       this.userMessage = "Loading simulation results...";
       this.showUserMessage = true;
 
       let request = {
-        model_url: this.entry.resource,
+        model_url: this.resource,
         json_config: {},
       };
 
@@ -131,7 +155,7 @@ export default {
 
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
+      xmlhttp.open("POST", process.env.VUE_APP_API_LOCATION + "simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
@@ -178,15 +202,9 @@ export default {
     },
   },
   created: function() {
-    let url = document.createElement("a");
+    // Try to retrieve the UI information, but only if we have a resource.
 
-    url.href = this.entry.dataset;
-
-    let datasetId = url.pathname.replace("/datasets/", "");
-
-    if (datasetId !== "/undefined") {
-      // Let people know that we are retrieving our UI information.
-
+    if (this.resource !== undefined) {
       this.userMessage = "Retrieving UI information...";
       this.showUserMessage = true;
 
@@ -194,38 +212,38 @@ export default {
 
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + datasetId, true);
+      xmlhttp.open("GET", process.env.VUE_APP_API_LOCATION + "simulation_ui_file/" + this.id, true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
-          // Keep track of the simulation UI information.
+          this.showUserMessage = false;
 
-          this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
+          if (xmlhttp.status === 200) {
+            // Keep track of the simulation UI information.
 
-          // Make sure that the simulation UI information is valid.
+            this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
 
-          this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
+            // Make sure that the simulation UI information is valid.
 
-          if (!this.hasValidSimulationUiInformation) {
-            this.showUserMessage = false;
+            this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
 
-            return;
+            if (!this.hasValidSimulationUiInformation) {
+              return;
+            }
+
+            // Initialise our UI.
+
+            initialiseUi(this);
+
+            // Finalise our UI.
+            // Note: we try both here and in the mounded() function since we have no
+            //       idea how long it's going to take to retrieve the simulation UI
+            //       information.
+
+            this.$nextTick(() => {
+              finaliseUi(this);
+            });
           }
-
-          // Initialise our UI.
-
-          initialiseUi(this);
-
-          // Finalise our UI.
-          // Note: we try both here and in the mounded() function since we have no
-          //       idea how long it's going to take to retrieve the simulation UI
-          //       information.
-
-          this.$nextTick(() => {
-            finaliseUi(this);
-
-            this.showUserMessage = false;
-          });
         }
       };
       xmlhttp.send();
@@ -336,17 +354,17 @@ p.default {
 p.error {
   margin-left: 16px;
 }
-p.note {
-  font-size: 12px;
-  line-height: 16px;
-}
-p.title,
+p.name,
 p.input-parameters {
   margin-top: 0;
   font-weight: 500 /* Medium */;
 }
-p.title {
+p.name {
   line-height: 20px;
+}
+p.note {
+  font-size: 12px;
+  line-height: 16px;
 }
 span.error {
   font-weight: 500 /* Medium */;
