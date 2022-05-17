@@ -14,7 +14,6 @@ To include the package in your script:
 
 ```javascript
 import { SimulationVuer } from '@abi-software/simulationvuer';
-import '@abi-software/simulationvuer/dist/simulationvuer.css';
 ```
 
 To register in a Vue component:
@@ -35,10 +34,10 @@ The above registers the SimulationVuer component into the global scope.
 You can now use the SimulationVuer in your Vue template as follows:
 
 ```html
-<SimulationVuer :apiLocation="apiLocation" />
+<SimulationVuer :apiLocation="apiLocation" :id=123 />
 ```
 
-where `apiLocation` is the URL to the API location.
+where `apiLocation` is the URL to the API location and `id` the id of the dataset.
 
 ## Project setup
 
