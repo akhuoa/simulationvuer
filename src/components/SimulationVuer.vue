@@ -66,7 +66,7 @@ export default {
     let name = undefined;
     let resource = undefined;
 
-    xmlhttp.open("GET", this.apiLocation + "dataset_info/using_pennsieve_identifier?identifier=" + this.id, false);
+    xmlhttp.open("GET", this.apiLocation + "/dataset_info/using_pennsieve_identifier?identifier=" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.send();
 
@@ -159,7 +159,7 @@ export default {
 
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "simulation", true);
+      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
@@ -216,7 +216,7 @@ export default {
 
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("GET", this.apiLocation + "simulation_ui_file/" + this.id, true);
+      xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
