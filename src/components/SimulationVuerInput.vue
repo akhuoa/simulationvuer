@@ -63,7 +63,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
 >>> .el-input-number.scalar {
   margin-top: -8px;
   width: 0;

@@ -268,7 +268,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
 >>> .el-button:hover {
   box-shadow: -3px 2px 4px #00000040;
 }
