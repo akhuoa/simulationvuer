@@ -62,39 +62,46 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
->>> .el-input-number.scalar {
+<style scoped lang="scss">
+@import "~element-ui/packages/theme-chalk/src/input-number";
+@import "~element-ui/packages/theme-chalk/src/option";
+@import "~element-ui/packages/theme-chalk/src/select";
+@import "~element-ui/packages/theme-chalk/src/slider";
+
+::v-deep .el-input-number.scalar {
   margin-top: -8px;
   width: 0;
 }
->>> .el-input-number.scalar .el-input {
+::v-deep .el-input-number.scalar .el-input {
   width: 60px;
 }
->>> .el-input-number.scalar .el-input__inner:focus {
+::v-deep .el-input-number.scalar .el-input__inner:focus {
   border-color: #8300bf;
 }
->>> .el-select.discrete {
+::v-deep .el-select.discrete {
   margin-bottom: 16px;
 }
->>> .el-slider {
+::v-deep .el-slider {
   width: 108px;
   margin-top: -12px;
   margin-left: 8px;
 }
->>> .el-slider__bar {
+::v-deep .el-slider__bar {
   background-color: #8300bf;
 }
->>> .el-slider__button {
+::v-deep .el-slider__button {
   border-color: #8300bf;
 }
 .discrete {
   margin-left: 8px;
 }
-.discrete >>> .el-input__inner {
-  font-family: Asap, sans-serif;
+.discrete {
+  ::v-deep .el-input__inner {
+    font-family: Asap, sans-serif;
+  }
 }
-.discrete >>> .el-input__inner:focus,
-.discrete >>> .el-input.is-focus .el-input__inner {
+.discrete ::v-deep .el-input__inner:focus,
+.discrete ::v-deep .el-input.is-focus .el-input__inner {
   border-color: #8300bf;
 }
 .discrete-popper .el-select-dropdown__item {
@@ -104,7 +111,7 @@ export default {
   font-weight: normal;
   color: #8300bf;
 }
-.scalar >>> .el-input__inner {
+.scalar ::v-deep .el-input__inner {
   text-align: center;
 }
 div.simulation-vuer {
@@ -139,11 +146,4 @@ p.scalar {
   margin-top: 6px;
 }
 </style>
-<style scoped src="../styles/purple/input-number.css">
-</style>
-<style scoped src="../styles/purple/option.css">
-</style>
-<style scoped src="../styles/purple/select.css">
-</style>
-<style scoped src="../styles/purple/slider.css">
-</style>
+

@@ -20,4 +20,12 @@ module.exports = {
       })
       .end()
   },
+  css: {
+    //Import variables into all stylesheets.
+    loaderOptions: {
+      sass: {
+        prependData: `@import '@/assets/styles';`
+      }
+    }
+  }
 }
