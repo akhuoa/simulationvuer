@@ -98,6 +98,7 @@ export default {
 .discrete {
   ::v-deep .el-input__inner {
     font-family: Asap, sans-serif;
+    font-size: 16px;
   }
 }
 .discrete ::v-deep .el-input__inner:focus,
