@@ -43,7 +43,7 @@ import { initialiseUi, finaliseUi } from "./ui.js";
 
 Vue.use(Button);
 Vue.use(Divider);
-Vue.use(Loading);
+Vue.use(Loading.directive);
 
 export default {
   name: "SimulationVuer",
@@ -267,12 +267,24 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-@import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
->>> .el-button:hover {
+<style scoped lang="scss">
+@import "~element-ui/packages/theme-chalk/src/button";
+@import "~element-ui/packages/theme-chalk/src/divider";
+@import "~element-ui/packages/theme-chalk/src/loading";
+
+::v-deep .el-loading-spinner {
+  .path {
+    stroke: $app-primary-color;
+  }
+  i, .el-loading-text {
+    color: $app-primary-color;
+  }
+}
+
+::v-deep .el-button:hover {
   box-shadow: -3px 2px 4px #00000040;
 }
->>> .el-divider {
+::v-deep .el-divider {
   margin: -8px 0 8px 0 !important;
   width: 191px;
 }
@@ -315,7 +327,7 @@ div.main-right.x8 {
 div.main-right.x9 {
   height: 11.111%;
 }
->>> div.main-right div.controls {
+::v-deep div.main-right div.controls {
   height: 0;
 }
 div.primary-button,
@@ -373,10 +385,4 @@ p.note {
 span.error {
   font-weight: 500 /* Medium */;
 }
-</style>
-<style scoped src="../styles/purple/button.css">
-</style>
-<style scoped src="../styles/purple/divider.css">
-</style>
-<style scoped src="../styles/purple/loading.css">
 </style>
