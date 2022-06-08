@@ -3,7 +3,7 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = {
   configureWebpack: config => {
       if (process.env.NODE_ENV === 'production') {
-        config.externals =  [ nodeExternals({allowlist: [/^element-ui/]}) ];
+        config.externals =  [ nodeExternals({allowlist: [/^element-ui/, "@abi-software/plotvuer"]}) ];
       }
   },
   chainWebpack: config => {
