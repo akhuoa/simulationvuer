@@ -272,6 +272,13 @@ export default {
 @import "~element-ui/packages/theme-chalk/src/divider";
 @import "~element-ui/packages/theme-chalk/src/loading";
 
+::v-deep .el-button:hover {
+  box-shadow: -3px 2px 4px #00000040;
+}
+::v-deep .el-divider {
+  margin: -8px 0 8px 0 !important;
+  width: 191px;
+}
 ::v-deep .el-loading-spinner {
   .path {
     stroke: $app-primary-color;
@@ -279,14 +286,6 @@ export default {
   i, .el-loading-text {
     color: $app-primary-color;
   }
-}
-
-::v-deep .el-button:hover {
-  box-shadow: -3px 2px 4px #00000040;
-}
-::v-deep .el-divider {
-  margin: -8px 0 8px 0 !important;
-  width: 191px;
 }
 div.main {
   display: grid;
