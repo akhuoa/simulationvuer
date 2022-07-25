@@ -40,6 +40,8 @@ import { Button, Divider, Loading } from "element-ui";
 import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
+import datasetInfo135 from "./res/datasetInfo135.json";
+import datasetInfo157 from "./res/datasetInfo157.json";
 
 Vue.use(Button);
 Vue.use(Divider);
@@ -108,6 +110,32 @@ export default {
     };
   },
   methods: {
+    retrieveAndBuildSimulationUi(simulationUiInformation) {
+      // Keep track of the simulation UI information.
+
+      this.simulationUiInformation = simulationUiInformation;
+
+      // Make sure that the simulation UI information is valid.
+
+      this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
+
+      if (!this.hasValidSimulationUiInformation) {
+        return;
+      }
+
+      // Initialise our UI.
+
+      initialiseUi(this);
+
+      // Finalise our UI.
+      // Note: we try both here and in the mounted() function since we have no
+      //       idea how long it's going to take to retrieve the simulation UI
+      //       information.
+
+      this.$nextTick(() => {
+        finaliseUi(this);
+      });
+    },
     goToOsparc() {
       window.open("https://osparc.io/", "_blank");
     },
@@ -209,48 +237,36 @@ export default {
     // Try to retrieve the UI information, but only if we have a resource.
 
     if (this.resource !== undefined) {
+      let production = false;
+
       this.userMessage = "Retrieving UI information...";
-      this.showUserMessage = true;
+      this.showUserMessage = production;
 
-      // Retrieve the simulation UI file for the given dataset.
+      // Retrieve and build the simulation UI.
 
-      let xmlhttp = new XMLHttpRequest();
+      if (production) {
+        let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
-      xmlhttp.setRequestHeader("Content-type", "application/json");
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4) {
-          this.showUserMessage = false;
+        xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            this.showUserMessage = false;
 
-          if (xmlhttp.status === 200) {
-            // Keep track of the simulation UI information.
-
-            this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
-
-            // Make sure that the simulation UI information is valid.
-
-            this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
-
-            if (!this.hasValidSimulationUiInformation) {
-              return;
+            if (xmlhttp.status === 200) {
+              this.retrieveAndBuildSimulationUi(JSON.parse(xmlhttp.responseText));
             }
-
-            // Initialise our UI.
-
-            initialiseUi(this);
-
-            // Finalise our UI.
-            // Note: we try both here and in the mounded() function since we have no
-            //       idea how long it's going to take to retrieve the simulation UI
-            //       information.
-
-            this.$nextTick(() => {
-              finaliseUi(this);
-            });
           }
-        }
-      };
-      xmlhttp.send();
+        };
+        xmlhttp.send();
+      } else {
+        let datasetInfos = {
+          135: datasetInfo135,
+          157: datasetInfo157,
+        };
+
+        this.retrieveAndBuildSimulationUi(datasetInfos[this.id]);
+      }
     }
   },
   mounted: function() {
