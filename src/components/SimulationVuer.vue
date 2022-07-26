@@ -67,7 +67,7 @@ export default {
     let xmlhttp = new XMLHttpRequest();
     let name = undefined;
 
-    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
+    xmlhttp.open("GET", this.apiLocation + "/dataset/" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
