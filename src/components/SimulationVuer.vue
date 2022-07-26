@@ -69,11 +69,16 @@ export default {
 
     xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.send();
+    xmlhttp.onreadystatechange = () => {
+      if (xmlhttp.readyState === 4) {
+        this.showUserMessage = false;
 
-    if (xmlhttp.status === 200) {
-      name = JSON.parse(xmlhttp.responseText).name;
-    }
+        if (xmlhttp.status === 200) {
+          name = JSON.parse(xmlhttp.responseText).name;
+        }
+      }
+    };
+    xmlhttp.send();
 
     return {
       errorMessage: "",
