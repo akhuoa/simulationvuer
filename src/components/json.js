@@ -163,6 +163,10 @@ export function validJson(json) {
           pointInterval: {
             type: "number",
           },
+          resource: {
+            required: true,
+            type: "string",
+          },
         },
         type: "object",
       },
@@ -362,6 +366,12 @@ export function validJson(json) {
   }
 
   // Make sure that the simulation information makes sense.
+
+  if (json.simulation.resource === "") {
+    console.warn("JSON: the simulation resource must not be empty.");
+
+    return false;
+  }
 
   if (json.simulation.endingPoint !== undefined) {
     if (json.simulation.pointInterval !== undefined) {
