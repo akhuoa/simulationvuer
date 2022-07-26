@@ -341,24 +341,26 @@ export function validJson(json) {
 
   // Make sure that the parameters information makes sense.
 
-  let parametersValid = json.parameters.every((parameter) => {
-    if (parameter.name === "") {
-      console.warn("JSON: the parameter name must not be empty.");
+  if (json.parameters !== undefined) {
+    let parametersValid = json.parameters.every((parameter) => {
+      if (parameter.name === "") {
+        console.warn("JSON: the parameter name must not be empty.");
 
+        return false;
+      }
+
+      if (parameter.value === "") {
+        console.warn("JSON: the parameter value must not be empty.");
+
+        return false;
+      }
+
+      return true;
+    });
+
+    if (!parametersValid) {
       return false;
     }
-
-    if (parameter.value === "") {
-      console.warn("JSON: the parameter value must not be empty.");
-
-      return false;
-    }
-
-    return true;
-  });
-
-  if (!parametersValid) {
-    return false;
   }
 
   // Make sure that the simulation information makes sense.
