@@ -1,0 +1,67 @@
+{
+  "input": [
+    {
+      "defaultValue": 0,
+      "id": "st",
+      "name": "Simulation type",
+      "possibleValues": [
+        {
+          "name": "0D",
+          "value": 0
+        },
+        {
+          "name": "1D",
+          "value": 1
+        },
+        {
+          "name": "2D",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "defaultValue": 1,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Parameter X",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 3,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Parameter X",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 5,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Parameter X",
+      "visible": "st == 2"
+    }
+  ],
+  "output": {
+    "data": [
+      {
+        "id": "x",
+        "name": "X"
+      },
+      {
+        "id": "y",
+        "name": "Y"
+      }
+    ],
+    "plots": [
+      {
+        "xAxisTitle": "X",
+        "xValue": "x",
+        "yAxisTitle": "Y",
+        "yValue": "y"
+      }
+    ]
+  },
+  "simulation": {
+    "resource": "Some resource..."
+  }
+}

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
     <el-select class="discrete" popper-class="discrete-popper" size="mini" v-if="isDiscrete" v-model="vModel" :disabled="!enabled" :popper-append-to-body="false" @change="updateUi()">
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
@@ -47,6 +47,7 @@ export default {
       enabled: true,
       isDiscrete: this.possibleValues !== undefined,
       labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":"scalar"),
+      visible: true,
       vModel: this.defaultValue,
     };
   },

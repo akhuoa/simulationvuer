@@ -53,7 +53,7 @@ export function finaliseUi(parent) {
 }
 
 export function updateUi(parent) {
-  // Enable/disable all the elements.
+  // Show/hide and enable/disable all the elements.
   // Note: we do this using $nextTick() to be ensure that the UI has been fully
   //       mounted.
 
@@ -61,7 +61,10 @@ export function updateUi(parent) {
     let index = -1;
 
     parent.simulationUiInfo.input.forEach((input) => {
-      parent.$children[++index].enabled = (input.enabled === undefined)?true:evaluateValue(parent, input.enabled);
+      ++index;
+
+      parent.$children[index].visible = (input.visible === undefined)?true:evaluateValue(parent, input.visible);
+      parent.$children[index].enabled = (input.enabled === undefined)?true:evaluateValue(parent, input.enabled);
     });
   });
 }

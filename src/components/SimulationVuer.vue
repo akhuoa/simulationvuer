@@ -7,7 +7,7 @@
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div>
-          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :firstScalarInput="firstScalarInput[index]" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" />
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" />
         </div>
         <div ref="input" />
         <div class="primary-button">
@@ -40,6 +40,7 @@ import { Button, Divider, Loading } from "element-ui";
 import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
+import simulationUiInfo4 from "./res/simulationUiInfo4.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
 
@@ -249,6 +250,7 @@ export default {
         xmlhttp.send();
       } else {
         let simulationUiInfos = {
+          4: simulationUiInfo4,
           135: simulationUiInfo135,
           157: simulationUiInfo157,
         };
