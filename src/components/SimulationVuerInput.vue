@@ -147,4 +147,3 @@ p.scalar {
   margin-top: 6px;
 }
 </style>
-

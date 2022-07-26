@@ -1,13 +1,13 @@
 <template>
   <div class="simulation-vuer" v-loading="showUserMessage" :element-loading-text="userMessage">
-    <p v-if="!hasValidSimulationUiInformation && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
-    <div class="main" v-if="hasValidSimulationUiInformation">
+    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <div class="main" v-if="hasValidSimulationUiInfo">
       <div class="main-left">
         <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div>
-          <SimulationVuerInput v-for="(input, index) in simulationUiInformation.input" :defaultValue="input.defaultValue" :firstScalarInput="firstScalarInput[index]" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" />
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :firstScalarInput="firstScalarInput[index]" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" />
         </div>
         <div ref="input" />
         <div class="primary-button">
@@ -22,7 +22,7 @@
         <p class="default note">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInformation.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!isSimulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -40,8 +40,8 @@ import { Button, Divider, Loading } from "element-ui";
 import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
-import datasetInfo135 from "./res/datasetInfo135.json";
-import datasetInfo157 from "./res/datasetInfo157.json";
+import simulationUiInfo135 from "./res/simulationUiInfo135.json";
+import simulationUiInfo157 from "./res/simulationUiInfo157.json";
 
 Vue.use(Button);
 Vue.use(Divider);
@@ -79,7 +79,7 @@ export default {
       errorMessage: "",
       firstScalarInput: [],
       hasFinalisedUi: false,
-      hasValidSimulationUiInformation: false,
+      hasValidSimulationUiInfo: false,
       isMounted: false,
       isSimulationValid: true,
       layout: [],
@@ -87,22 +87,22 @@ export default {
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
-      simulationUiInformation: {},
+      simulationUiInfo: {},
       userMessage: "",
       ui: null,
     };
   },
   methods: {
-    retrieveAndBuildSimulationUi(simulationUiInformation) {
+    retrieveAndBuildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
-      this.simulationUiInformation = simulationUiInformation;
+      this.simulationUiInfo = simulationUiInfo;
 
       // Make sure that the simulation UI information is valid.
 
-      this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
+      this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
 
-      if (!this.hasValidSimulationUiInformation) {
+      if (!this.hasValidSimulationUiInfo) {
         return;
       }
 
@@ -130,39 +130,39 @@ export default {
       this.showUserMessage = true;
 
       let request = {
-        model_url: this.simulationUiInformation.simulation.resource,
+        model_url: this.simulationUiInfo.simulation.resource,
         json_config: {},
       };
 
       // Specify the ending point and point interval, if we have some simulation
       // data.
 
-      if (   (this.simulationUiInformation.simulation.endingPoint !== undefined)
-          && (this.simulationUiInformation.simulation.pointInterval !== undefined)) {
+      if (   (this.simulationUiInfo.simulation.endingPoint !== undefined)
+          && (this.simulationUiInfo.simulation.pointInterval !== undefined)) {
         request.json_config.simulation = {
-          "Ending point": this.simulationUiInformation.simulation.endingPoint,
-          "Point interval": this.simulationUiInformation.simulation.pointInterval,
+          "Ending point": this.simulationUiInfo.simulation.endingPoint,
+          "Point interval": this.simulationUiInfo.simulation.pointInterval,
         };
       }
 
       // Specify the simulation parameters.
 
-      if (this.simulationUiInformation.parameters != undefined) {
+      if (this.simulationUiInfo.parameters != undefined) {
         request.json_config.parameters = {};
 
-        this.simulationUiInformation.parameters.forEach((parameter) => {
+        this.simulationUiInfo.parameters.forEach((parameter) => {
           request.json_config.parameters[parameter.name] = evaluateValue(this, parameter.value);
         });
       }
 
       // Specify what we want to retrieve.
 
-      if (this.simulationUiInformation.output.data !== undefined)  {
+      if (this.simulationUiInfo.output.data !== undefined)  {
         let index = -1;
 
         request.json_config.output = [];
 
-        this.simulationUiInformation.output.data.forEach((outputData) => {
+        this.simulationUiInfo.output.data.forEach((outputData) => {
           request.json_config.output[++index] = outputData.name;
         });
       }
@@ -188,7 +188,7 @@ export default {
               let index = -1;
               let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
 
-              this.simulationUiInformation.output.plots.forEach((outputPlot) => {
+              this.simulationUiInfo.output.plots.forEach((outputPlot) => {
                 let xValue = [];
                 let yValue = [];
 
@@ -244,14 +244,14 @@ export default {
         };
         xmlhttp.send();
       } else {
-        let datasetInfos = {
-          135: datasetInfo135,
-          157: datasetInfo157,
+        let simulationUiInfos = {
+          135: simulationUiInfo135,
+          157: simulationUiInfo157,
         };
-        let datasetInfo = datasetInfos[this.id];
+        let simulationUiInfo = simulationUiInfos[this.id];
 
-        if (datasetInfo !== undefined) {
-          this.retrieveAndBuildSimulationUi(datasetInfo);
+        if (simulationUiInfo !== undefined) {
+          this.retrieveAndBuildSimulationUi(simulationUiInfo);
         }
       }
     }
