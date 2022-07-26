@@ -1,26 +1,13 @@
 import { evaluateValue } from "./common.js";
 
 export function initialiseUi(parent) {
-  // Initialise some input-related data.
-
-  let index = -1;
-  let isPreviousDiscrete = true;
-
-  parent.simulationUiInfo.input.forEach((input) => {
-    let isDiscrete = input.possibleValues !== undefined;
-
-    parent.firstScalarInput[++index] = !isDiscrete && isPreviousDiscrete;
-
-    isPreviousDiscrete = isDiscrete;
-  });
-
   // Initialise some output-related data.
 
   parent.simulationUiInfo.output.data.forEach((data) => {
     parent.simulationDataId[data.id] = data.name;
   });
 
-  index = -1;
+  let index = -1;
 
   parent.simulationUiInfo.output.plots.forEach((outputPlot) => {
     ++index;

@@ -28,9 +28,6 @@ export default {
       required: true,
       type: Number,
     },
-    firstScalarInput: {
-      type: Boolean,
-    },
     maximumValue: {
       type: Number,
     },
@@ -49,7 +46,7 @@ export default {
     return {
       enabled: true,
       isDiscrete: this.possibleValues !== undefined,
-      labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":this.firstScalarInput?"first-scalar":"scalar"),
+      labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":"scalar"),
       vModel: this.defaultValue,
     };
   },
@@ -130,7 +127,6 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
-p.first-scalar,
 p.scalar {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -140,10 +136,7 @@ p.discrete {
   margin-top: 0;
   margin-bottom: 4px;
 }
-p.first-scalar {
-  margin-top: 0;
-}
 p.scalar {
-  margin-top: 6px;
+  margin-top: 0;
 }
 </style>

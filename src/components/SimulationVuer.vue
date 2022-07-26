@@ -82,7 +82,6 @@ export default {
 
     return {
       errorMessage: "",
-      firstScalarInput: [],
       hasFinalisedUi: false,
       hasValidSimulationUiInfo: false,
       isMounted: false,
