@@ -60,6 +60,7 @@
   ],
   "simulation": {
     "endingPoint": 3.0,
-    "pointInterval": 0.001
+    "pointInterval": 0.001,
+    "resource": "https://models.physiomeproject.org/workspace/486/rawfile/55879cbc485e2d4c41f3dc6d60424b849f94c4ee/HumanSAN_Fabbri_Fantini_Wilders_Severi_2017.cellml"
   }
 }

@@ -66,29 +66,13 @@ export default {
   data: function() {
     let xmlhttp = new XMLHttpRequest();
     let name = undefined;
-    let resource = undefined;
 
-    xmlhttp.open("GET", this.apiLocation + "/dataset_info/using_pennsieve_identifier?identifier=" + this.id, false);
+    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.send();
 
     if (xmlhttp.status === 200) {
-      let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
-
-      if (datasetInfo !== undefined) {
-        name = datasetInfo.name;
-
-        let isSedmlResource = false;
-
-        datasetInfo.additionalLinks.forEach(function(el) {
-          if (el.description == "SED-ML file") {
-            isSedmlResource = true;
-            resource = el.uri;
-          } else if (!isSedmlResource && (el.description == "CellML file")) {
-            resource = el.uri;
-          }
-        });
-      }
+      name = JSON.parse(xmlhttp.responseText).name;
     }
 
     return {
@@ -100,7 +84,6 @@ export default {
       isSimulationValid: true,
       layout: [],
       name: name,
-      resource: resource,
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
@@ -147,14 +130,15 @@ export default {
       this.showUserMessage = true;
 
       let request = {
-        model_url: this.resource,
+        model_url: this.simulationUiInformation.simulation.resource,
         json_config: {},
       };
 
       // Specify the ending point and point interval, if we have some simulation
       // data.
 
-      if (this.simulationUiInformation.simulation !== undefined) {
+      if (   (this.simulationUiInformation.simulation.endingPoint !== undefined)
+          && (this.simulationUiInformation.simulation.pointInterval !== undefined)) {
         request.json_config.simulation = {
           "Ending point": this.simulationUiInformation.simulation.endingPoint,
           "Point interval": this.simulationUiInformation.simulation.pointInterval,
@@ -234,9 +218,9 @@ export default {
     },
   },
   created: function() {
-    // Try to retrieve the UI information, but only if we have a resource.
+    // Try to retrieve the UI information, but only if we have a name.
 
-    if (this.resource !== undefined) {
+    if (this.name !== undefined) {
       let production = false;
 
       this.userMessage = "Retrieving UI information...";
@@ -264,8 +248,11 @@ export default {
           135: datasetInfo135,
           157: datasetInfo157,
         };
+        let datasetInfo = datasetInfos[this.id];
 
-        this.retrieveAndBuildSimulationUi(datasetInfos[this.id]);
+        if (datasetInfo !== undefined) {
+          this.retrieveAndBuildSimulationUi(datasetInfo);
+        }
       }
     }
   },
