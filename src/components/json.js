@@ -186,13 +186,13 @@ export function validJson(json) {
   let inputValid = json.input.every((input) => {
     if (input.id !== undefined) {
       if (input.id === "") {
-        console.warn("JSON: an input id must not be empty.");
+        console.warn("JSON: the input id must not be empty.");
 
         return false;
       }
 
       if (inputIdUsed[input.id]) {
-        console.warn("JSON: an input id must be unique (" + input.id + " is used more than once).");
+        console.warn("JSON: the input id must be unique (" + input.id + " is used more than once).");
 
         return false;
       }
@@ -201,7 +201,7 @@ export function validJson(json) {
     }
 
     if (input.name === "") {
-      console.warn("JSON: an input name must not be empty.");
+      console.warn("JSON: the input name must not be empty.");
 
       return false;
     }
@@ -247,7 +247,7 @@ export function validJson(json) {
 
     if (input.enabled !== undefined) {
       if (input.enabled === "") {
-        console.warn("JSON: an input enabled must not be empty.");
+        console.warn("JSON: the input enabled must not be empty.");
 
         return false;
       }
@@ -280,13 +280,13 @@ export function validJson(json) {
   let outputDataValid = json.output.data.every((outputData) => {
     if (outputData.id !== undefined) {
       if (outputData.id === "") {
-        console.warn("JSON: an output data id must not be empty.");
+        console.warn("JSON: the output data id must not be empty.");
 
         return false;
       }
 
       if (outputIdUsed[outputData.id]) {
-        console.warn("JSON: an output data id must be unique (" + outputData.id + " is used more than once).");
+        console.warn("JSON: the output data id must be unique (" + outputData.id + " is used more than once).");
 
         return false;
       }
@@ -295,7 +295,7 @@ export function validJson(json) {
     }
 
     if (outputData.name === "") {
-      console.warn("JSON: an output data name must not be empty.");
+      console.warn("JSON: the output data name must not be empty.");
 
       return false;
     }
@@ -309,25 +309,25 @@ export function validJson(json) {
 
   let outputPlotsValid = json.output.plots.every((outputPlot) => {
     if (outputPlot.xAxisTitle === "") {
-      console.warn("JSON: an output plot X axis title must not be empty.");
+      console.warn("JSON: the output plot X axis title must not be empty.");
 
       return false;
     }
 
     if (outputPlot.xValue === "") {
-      console.warn("JSON: an output plot X value must not be empty.");
+      console.warn("JSON: the output plot X value must not be empty.");
 
       return false;
     }
 
     if (outputPlot.yAxisTitle === "") {
-      console.warn("JSON: an output plot Y axis title must not be empty.");
+      console.warn("JSON: the output plot Y axis title must not be empty.");
 
       return false;
     }
 
     if (outputPlot.yValue === "") {
-      console.warn("JSON: an output plot Y value must not be empty.");
+      console.warn("JSON: the output plot Y value must not be empty.");
 
       return false;
     }
@@ -343,13 +343,13 @@ export function validJson(json) {
 
   let parametersValid = json.parameters.every((parameter) => {
     if (parameter.name === "") {
-      console.warn("JSON: a parameter name must not be empty.");
+      console.warn("JSON: the parameter name must not be empty.");
 
       return false;
     }
 
     if (parameter.value === "") {
-      console.warn("JSON: a parameter value must not be empty.");
+      console.warn("JSON: the parameter value must not be empty.");
 
       return false;
     }
