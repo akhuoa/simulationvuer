@@ -158,11 +158,9 @@ export function validJson(json) {
         additionalProperties: false,
         properties: {
           endingPoint: {
-            required: true,
             type: "number",
           },
           pointInterval: {
-            required: true,
             type: "number",
           },
         },
@@ -365,18 +363,28 @@ export function validJson(json) {
 
   // Make sure that the simulation information makes sense.
 
-  if (json.simulation !== undefined) {
-    if (json.simulation.endingPoint <= 0.0) {
-      console.warn("JSON: a simulation ending point must be greater than zero.");
+  if (json.simulation.endingPoint !== undefined) {
+    if (json.simulation.pointInterval !== undefined) {
+      if (json.simulation.endingPoint <= 0.0) {
+        console.warn("JSON: the simulation ending point (" + json.simulation.endingPoint + ") must be greater than zero.");
+
+        return false;
+      }
+
+      if (json.simulation.pointInterval <= 0.0) {
+        console.warn("JSON: the simulation point interval (" + json.simulation.pointInterval + ") must be greater than zero.");
+
+        return false;
+      }
+    } else {
+      console.warn("JSON: a simulation ending point is specified so a simulation point interval must also be specified.");
 
       return false;
     }
+  } else if (json.simulation.pointInterval !== undefined) {
+    console.warn("JSON: a simulation point interval is specified so a simulation ending point must also be specified.");
 
-    if (json.simulation.pointInterval <= 0.0) {
-      console.warn("JSON: a simulation point interval must be greater than zero.");
-
-      return false;
-    }
+    return false;
   }
 
   return true;
