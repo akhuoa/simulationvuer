@@ -46,6 +46,9 @@ export function validJson(json) {
                   required: true,
                   type: "array",
                 },
+                visible: {
+                  type: "string",
+                },
               },
             },
             {
@@ -71,6 +74,9 @@ export function validJson(json) {
                 },
                 name: {
                   required: true,
+                  type: "string",
+                },
+                visible: {
                   type: "string",
                 },
               },
@@ -264,6 +270,14 @@ export function validJson(json) {
 
       if ((input.defaultValue < input.minimumValue) || (input.defaultValue > input.maximumValue)) {
         console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
+
+        return false;
+      }
+    }
+
+    if (input.visible !== undefined) {
+      if (input.visible === "") {
+        console.warn("JSON: the input visible must not be empty.");
 
         return false;
       }
