@@ -21,11 +21,19 @@
     },
     {
       "defaultValue": 0,
-      "enabled": "(sm == 1) || (sm == 2)",
-      "id": "sl",
+      "id": "ssl",
       "maximumValue": 10,
       "minimumValue": 0,
-      "name": "Stimulation level"
+      "name": "Stimulation level",
+      "visible": "sm == 1"
+    },
+    {
+      "defaultValue": 0,
+      "id": "vsl",
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Stimulation level",
+      "visible": "sm == 2"
     }
   ],
   "output": {
@@ -55,7 +63,7 @@
     },
     {
       "name": "Rate_modulation_experiments/ACh",
-      "value": "(sm == 0) ? 0.0 : (sm === 1) ? (1.0 - 0.1 * sl) * 22.0e-6 : 22.0e-6 + 0.1 * sl * (38.0e-6 - 22.0e-6)"
+      "value": "(sm == 0) ? 0.0 : (sm === 1) ? (1.0 - 0.1 * ssl) * 22.0e-6 : 22.0e-6 + 0.1 * vsl * (38.0e-6 - 22.0e-6)"
     }
   ],
   "simulation": {

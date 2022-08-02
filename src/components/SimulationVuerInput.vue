@@ -1,12 +1,12 @@
 <template>
   <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
-    <el-select class="discrete" popper-class="discrete-popper" size="mini" v-if="isDiscrete" v-model="vModel" :disabled="!enabled" :popper-append-to-body="false" @change="updateUi()">
+    <el-select class="discrete" popper-class="discrete-popper" size="mini" v-if="isDiscrete" v-model="vModel" :popper-append-to-body="false" @change="updateUi()">
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
-      <el-slider v-model="vModel" :disabled="!enabled" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" @change="updateUi()" />
-      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="!enabled" :max="maximumValue" :min="minimumValue" @input="updateUi()" />
+      <el-slider v-model="vModel" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" @change="updateUi()" />
+      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" @input="updateUi()" />
     </div>
   </div>
 </template>
@@ -44,7 +44,6 @@ export default {
   },
   data: function() {
     return {
-      enabled: true,
       isDiscrete: this.possibleValues !== undefined,
       labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":"scalar"),
       visible: true,

@@ -17,9 +17,6 @@ export function validJson(json) {
                   required: true,
                   type: "number",
                 },
-                enabled: {
-                  type: "string",
-                },
                 id: {
                   type: "string",
                 },
@@ -57,9 +54,6 @@ export function validJson(json) {
                 defaultValue: {
                   required: true,
                   type: "number",
-                },
-                enabled: {
-                  type: "string",
                 },
                 id: {
                   type: "string",
@@ -248,14 +242,6 @@ export function validJson(json) {
 
       if (!values.includes(input.defaultValue)) {
         console.warn("JSON: the input default value (" + input.defaultValue + ") must be one of the possible values (" + values.join(", ") + ").");
-
-        return false;
-      }
-    }
-
-    if (input.enabled !== undefined) {
-      if (input.enabled === "") {
-        console.warn("JSON: the input enabled must not be empty.");
 
         return false;
       }

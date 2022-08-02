@@ -64,7 +64,6 @@ export function updateUi(parent) {
       ++index;
 
       parent.$children[index].visible = (input.visible === undefined)?true:evaluateValue(parent, input.visible);
-      parent.$children[index].enabled = (input.enabled === undefined)?true:evaluateValue(parent, input.enabled);
     });
   });
 }
