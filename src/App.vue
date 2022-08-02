@@ -40,7 +40,7 @@ export default {
         { id: 0, description: "Non-simulation dataset", },
         { id: 4, description: "Multi-scale rabbit cardiac electrophysiology models", },
         { id: 6, description: "SPARC Nerve Activity Predictor (SNAP)", },
-        { id: 7, description: "Multi-scale human cardiac electrophysiology models", },
+        { id: 17, description: "Multi-scale human cardiac electrophysiology models", },
         { id: 23, description: "A multi-scale model of cardiac electrophysiology", },
         { id: 30, description: "Small Enteric Neural Network Simulator", },
         { id: 78, description: "Kember Cardiac Nerve Model", },
