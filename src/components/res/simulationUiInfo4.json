@@ -20,24 +20,294 @@
       ]
     },
     {
-      "defaultValue": 1,
+      "defaultValue": 0,
       "maximumValue": 10,
       "minimumValue": 0,
-      "name": "Parameter X",
+      "name": "Na blocker",
       "visible": "st == 0"
     },
     {
-      "defaultValue": 3,
+      "defaultValue": 1,
       "maximumValue": 10,
       "minimumValue": 0,
-      "name": "Parameter X",
+      "name": "GKr ratio",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 300,
+      "maximumValue": 1000,
+      "minimumValue": 0,
+      "name": "Total simulation time",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 1",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 150,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 2",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 3",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 0,
+      "name": "cAMKII activity levels",
+      "possibleValues": [
+        {
+          "name": "WT",
+          "value": 0
+        },
+        {
+          "name": "OE",
+          "value": 1
+        },
+        {
+          "name": "KO",
+          "value": 2
+        }
+      ],
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 165,
+      "maximumValue": 300,
+      "minimumValue": 1,
+      "name": "Tissue width (# of cells)",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 165,
+      "maximumValue": 300,
+      "minimumValue": 1,
+      "name": "Tissue length (# of cells)",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 0,
+      "name": "Homogeneity",
+      "possibleValues": [
+        {
+          "name": "homogeneous",
+          "value": 0
+        },
+        {
+          "name": "heterogeneous",
+          "value": 1
+        }
+      ],
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 2,
+      "maximumValue": 5,
+      "minimumValue": 1,
+      "name": "# threads",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 0,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Na blocker",
       "visible": "st == 1"
     },
     {
-      "defaultValue": 5,
+      "defaultValue": 1,
       "maximumValue": 10,
       "minimumValue": 0,
-      "name": "Parameter X",
+      "name": "GKr ratio",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 300,
+      "maximumValue": 1000,
+      "minimumValue": 0,
+      "name": "Total simulation time",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 1",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 150,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 2",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 3",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 0,
+      "name": "cAMKII activity levels",
+      "possibleValues": [
+        {
+          "name": "WT",
+          "value": 0
+        },
+        {
+          "name": "OE",
+          "value": 1
+        },
+        {
+          "name": "KO",
+          "value": 2
+        }
+      ],
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 165,
+      "maximumValue": 300,
+      "minimumValue": 1,
+      "name": "Tissue width (# of cells)",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 165,
+      "maximumValue": 300,
+      "minimumValue": 1,
+      "name": "Tissue length (# of cells)",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 0,
+      "name": "Homogeneity",
+      "possibleValues": [
+        {
+          "name": "homogeneous",
+          "value": 0
+        },
+        {
+          "name": "heterogeneous",
+          "value": 1
+        }
+      ],
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 2,
+      "maximumValue": 5,
+      "minimumValue": 1,
+      "name": "# threads",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 0,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Na blocker",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 1,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "GKr ratio",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 8,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Total simulation time",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 1",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 150,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 2",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 3",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 0,
+      "name": "cAMKII activity levels",
+      "possibleValues": [
+        {
+          "name": "WT",
+          "value": 0
+        },
+        {
+          "name": "OE",
+          "value": 1
+        },
+        {
+          "name": "KO",
+          "value": 2
+        }
+      ],
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 65,
+      "maximumValue": 100,
+      "minimumValue": 1,
+      "name": "Tissue width (# of cells)",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 65,
+      "maximumValue": 100,
+      "minimumValue": 1,
+      "name": "Tissue length (# of cells)",
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 0,
+      "name": "Homogeneity",
+      "possibleValues": [
+        {
+          "name": "homogeneous",
+          "value": 0
+        },
+        {
+          "name": "heterogeneous",
+          "value": 1
+        }
+      ],
+      "visible": "st == 2"
+    },
+    {
+      "defaultValue": 2,
+      "maximumValue": 5,
+      "minimumValue": 1,
+      "name": "# threads",
       "visible": "st == 2"
     }
   ],
