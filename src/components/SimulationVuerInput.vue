@@ -130,16 +130,14 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
-p.scalar {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  margin-bottom: 8px;
-}
 p.discrete {
   margin-top: 0;
   margin-bottom: 4px;
 }
 p.scalar {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin-bottom: 8px;
   margin-top: 0;
 }
 </style>
