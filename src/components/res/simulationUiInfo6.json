@@ -1,0 +1,101 @@
+{
+  "input": [
+    {
+      "defaultValue": 0,
+      "name": "Nerve profile",
+      "possibleValues": [
+        {
+          "name": "Subject 1: cervical vagus",
+          "value": 0
+        },
+        {
+          "name": "Subject 2: cervical vagus",
+          "value": 1
+        },
+        {
+          "name": "Subject 2: gastric vagus",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "defaultValue": 0,
+      "maximumValue": 1,
+      "minimumValue": 0,
+      "name": "Starting tst (mA)",
+      "stepValue": 0.1
+    },
+    {
+      "defaultValue": 1,
+      "maximumValue": 1,
+      "minimumValue": 0,
+      "name": "Ending tst (mA)",
+      "stepValue": 0.1
+    },
+    {
+      "defaultValue": 0.01,
+      "maximumValue": 0.1,
+      "minimumValue": 0.01,
+      "name": "Step size tst (mA)",
+      "stepValue": 0.01
+    },
+    {
+      "defaultValue": 0.4,
+      "maximumValue": 1,
+      "minimumValue": 0.1,
+      "name": "Fixed Ist (ms)",
+      "stepValue": 0.1
+    },
+    {
+      "defaultValue": 0,
+      "maximumValue": 1,
+      "minimumValue": 0,
+      "name": "Starting Ist (mA)",
+      "stepValue": 0.1
+    },
+    {
+      "defaultValue": 1,
+      "maximumValue": 1,
+      "minimumValue": 0,
+      "name": "Ending Ist (mA)",
+      "stepValue": 0.1
+    },
+    {
+      "defaultValue": 0.01,
+      "maximumValue": 0.1,
+      "minimumValue": 0.01,
+      "name": "Step size Ist (mA)",
+      "stepValue": 0.01
+    },
+    {
+      "defaultValue": 0.6,
+      "maximumValue": 1,
+      "minimumValue": 0.1,
+      "name": "Fixed tst (ms)",
+      "stepValue": 0.1
+    }
+  ],
+  "output": {
+    "data": [
+      {
+        "id": "x",
+        "name": "X"
+      },
+      {
+        "id": "y",
+        "name": "Y"
+      }
+    ],
+    "plots": [
+      {
+        "xAxisTitle": "X",
+        "xValue": "x",
+        "yAxisTitle": "Y",
+        "yValue": "y"
+      }
+    ]
+  },
+  "simulation": {
+    "resource": "Some resource..."
+  }
+}
