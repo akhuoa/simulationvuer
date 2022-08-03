@@ -258,7 +258,7 @@ export function validJson(json) {
       }
 
       if ((input.defaultValue < input.minimumValue) || (input.defaultValue > input.maximumValue)) {
-        console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
+        console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal than the minimum value (" + input.minimumValue + ") and lower or equal than the maximum value (" + input.maximumValue + ").");
 
         return false;
       }
@@ -267,7 +267,7 @@ export function validJson(json) {
 
       if (input.stepValue !== undefined) {
         if ((input.stepValue <= 0) || (input.stepValue > range)) {
-          console.warn("JSON: the input step value (" + input.stepValue + ") must be greater than zero and lower or equal to the range value (" + range + ").");
+          console.warn("JSON: the input step value (" + input.stepValue + ") must be greater than zero and lower or equal than the range value (" + range + ").");
 
           return false;
         }
