@@ -123,6 +123,7 @@ div.sliders-and-fields {
   grid-template-columns: 132px auto;
   width: 191px;
   height: 26px;
+  margin-bottom: 4px;
 }
 p.default {
   font-family: Asap, sans-serif;
