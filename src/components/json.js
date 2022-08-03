@@ -70,6 +70,9 @@ export function validJson(json) {
                   required: true,
                   type: "string",
                 },
+                stepValue: {
+                  type: "number",
+                },
                 visible: {
                   type: "string",
                 },
@@ -258,6 +261,28 @@ export function validJson(json) {
         console.warn("JSON: the input default value (" + input.defaultValue + ") must be greater or equal to the minimum value (" + input.minimumValue + ") and lower or equal to the maximum value (" + input.maximumValue + ").");
 
         return false;
+      }
+
+      let range = input.maximumValue - input.minimumValue;
+
+      if (input.stepValue !== undefined) {
+        if ((input.stepValue <= 0) || (input.stepValue > range)) {
+          console.warn("JSON: the input step value (" + input.stepValue + ") must be greater than zero and lower or equal to the range value (" + range + ").");
+
+          return false;
+        }
+
+        if (!Number.isInteger(range / input.stepValue)) {
+          console.warn("JSON: the input step value (" + input.stepValue + ") must be a factor of the range value (" + range + ").");
+
+          return false;
+        }
+      } else {
+        if (!Number.isInteger(range)) {
+          console.warn("JSON: the (default) input step value (1) must be a factor of the range value (" + range + ").");
+
+          return false;
+        }
       }
     }
 

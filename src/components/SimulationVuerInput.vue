@@ -5,8 +5,8 @@
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
-      <el-slider v-model="vModel" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" @change="updateUi()" />
-      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" @input="updateUi()" />
+      <el-slider v-model="vModel" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" :step="stepValue" @change="updateUi()" />
+      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" :step="stepValue" :step-strictly="true" @input="updateUi()" />
     </div>
   </div>
 </template>
@@ -40,6 +40,9 @@ export default {
     },
     possibleValues: {
       type: Array,
+    },
+    stepValue: {
+      type: Number,
     },
   },
   data: function() {
