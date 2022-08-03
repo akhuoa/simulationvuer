@@ -43,6 +43,7 @@ import { initialiseUi, finaliseUi } from "./ui.js";
 import simulationUiInfo4 from "./res/simulationUiInfo4.json";
 import simulationUiInfo6 from "./res/simulationUiInfo6.json";
 import simulationUiInfo17 from "./res/simulationUiInfo17.json";
+import simulationUiInfo23 from "./res/simulationUiInfo23.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
 
@@ -255,6 +256,7 @@ export default {
           4: simulationUiInfo4,
           6: simulationUiInfo6,
           17: simulationUiInfo17,
+          23: simulationUiInfo23,
           135: simulationUiInfo135,
           157: simulationUiInfo157,
         };
