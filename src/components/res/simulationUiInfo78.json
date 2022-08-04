@@ -1,0 +1,46 @@
+{
+  "input": [
+    {
+      "defaultValue": 0.01,
+      "maximumValue": 0.05,
+      "minimumValue": 0.001,
+      "name": "Time step",
+      "stepValue": 0.001
+    },
+    {
+      "defaultValue": 1000,
+      "maximumValue": 3000,
+      "minimumValue": 0,
+      "name": "Max time"
+    },
+    {
+      "defaultValue": 0,
+      "maximumValue": 10,
+      "minimumValue": 0,
+      "name": "Forcing factor"
+    }
+  ],
+  "output": {
+    "data": [
+      {
+        "id": "x",
+        "name": "X"
+      },
+      {
+        "id": "y",
+        "name": "Y"
+      }
+    ],
+    "plots": [
+      {
+        "xAxisTitle": "X",
+        "xValue": "x",
+        "yAxisTitle": "Y",
+        "yValue": "y"
+      }
+    ]
+  },
+  "simulation": {
+    "resource": "Some resource..."
+  }
+}

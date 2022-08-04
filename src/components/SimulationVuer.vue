@@ -45,6 +45,7 @@ import simulationUiInfo6 from "./res/simulationUiInfo6.json";
 import simulationUiInfo17 from "./res/simulationUiInfo17.json";
 import simulationUiInfo23 from "./res/simulationUiInfo23.json";
 import simulationUiInfo30 from "./res/simulationUiInfo30.json";
+import simulationUiInfo78 from "./res/simulationUiInfo78.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
 
@@ -259,6 +260,7 @@ export default {
           17: simulationUiInfo17,
           23: simulationUiInfo23,
           30: simulationUiInfo30,
+          78: simulationUiInfo78,
           135: simulationUiInfo135,
           157: simulationUiInfo157,
         };
