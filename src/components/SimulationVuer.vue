@@ -9,7 +9,6 @@
         <div>
           <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
         </div>
-        <div ref="input" />
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
