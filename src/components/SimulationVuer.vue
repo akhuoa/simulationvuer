@@ -6,8 +6,10 @@
         <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div>
-          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+        <div class="input-frame">
+          <PerfectScrollbar ref="input" class="input" :options="perfectScollbarOptions">
+            <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+          </PerfectScrollbar>
         </div>
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
@@ -39,6 +41,8 @@ import { Button, Divider, Loading } from "element-ui";
 import { evaluateValue, evaluateSimulationValue } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
+import PerfectScrollbar from "vue2-perfect-scrollbar";
+import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 import simulationUiInfo4 from "./res/simulationUiInfo4.json";
 import simulationUiInfo6 from "./res/simulationUiInfo6.json";
 import simulationUiInfo17 from "./res/simulationUiInfo17.json";
@@ -51,6 +55,7 @@ import simulationUiInfo157 from "./res/simulationUiInfo157.json";
 Vue.use(Button);
 Vue.use(Divider);
 Vue.use(Loading.directive);
+Vue.use(PerfectScrollbar);
 
 export default {
   name: "SimulationVuer",
@@ -93,6 +98,9 @@ export default {
       isSimulationValid: true,
       layout: [],
       name: name,
+      perfectScollbarOptions: {
+        suppressScrollX: true,
+      },
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
@@ -295,7 +303,7 @@ export default {
 }
 ::v-deep .el-divider {
   margin: -8px 0 8px 0 !important;
-  width: 191px;
+  width: 202px;
 }
 ::v-deep .el-loading-spinner {
   .path {
@@ -305,9 +313,16 @@ export default {
     color: $app-primary-color;
   }
 }
+div.input {
+  padding: 4px;
+  height: 300px;
+}
+div.input-frame {
+  border: 1px solid #dcdfe6;
+}
 div.main {
   display: grid;
-  --mainLeftWidth: 224px;
+  --mainLeftWidth: 235px;
   grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
   height: 100%;
 }
@@ -351,7 +366,7 @@ div.primary-button,
 div.secondary-button {
   display: flex;
   justify-content: flex-end;
-  width: 191px;
+  width: 202px;
 }
 div.primary-button {
   margin-top: 14px;
@@ -386,6 +401,9 @@ p.default {
 }
 p.error {
   margin-left: 16px;
+}
+p.input-parameters {
+  margin-bottom: 8px;
 }
 p.name,
 p.input-parameters {
