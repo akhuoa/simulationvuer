@@ -41,6 +41,27 @@
       "visible": "st == 0"
     },
     {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 1",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 150,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 2",
+      "visible": "st == 0"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 3",
+      "visible": "st == 0"
+    },
+    {
       "defaultValue": 0,
       "name": "cAMKII activity levels",
       "possibleValues": [
@@ -93,6 +114,27 @@
       "maximumValue": 1000,
       "minimumValue": 0,
       "name": "Total simulation time",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 1",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 150,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 2",
+      "visible": "st == 1"
+    },
+    {
+      "defaultValue": 60,
+      "maximumValue": 200,
+      "minimumValue": 10,
+      "name": "Target heart rate for phase 3",
       "visible": "st == 1"
     },
     {
