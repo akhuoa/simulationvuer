@@ -45,7 +45,6 @@ import PerfectScrollbar from "vue2-perfect-scrollbar";
 import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 import simulationUiInfo4 from "./res/simulationUiInfo4.json";
 import simulationUiInfo17 from "./res/simulationUiInfo17.json";
-import simulationUiInfo23 from "./res/simulationUiInfo23.json";
 import simulationUiInfo78 from "./res/simulationUiInfo78.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
@@ -262,7 +261,6 @@ export default {
         let simulationUiInfos = {
           4: simulationUiInfo4,
           17: simulationUiInfo17,
-          23: simulationUiInfo23,
           78: simulationUiInfo78,
           135: simulationUiInfo135,
           157: simulationUiInfo157,

@@ -40,7 +40,6 @@ export default {
         { id: 0, description: "Non-simulation dataset", },
         { id: 4, description: "Multi-scale rabbit cardiac electrophysiology models", },
         { id: 17, description: "Multi-scale human cardiac electrophysiology models", },
-        { id: 23, description: "A multi-scale model of cardiac electrophysiology", },
         { id: 78, description: "Kember Cardiac Nerve Model", },
         { id: 135, description: "Computational analysis of the human sinus node action potential - Model development and effects of mutations", },
         { id: 157, description: "Fabbri-based composite SAN model", },
