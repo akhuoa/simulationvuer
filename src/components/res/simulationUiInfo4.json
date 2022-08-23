@@ -81,20 +81,6 @@
       "visible": "st == 0"
     },
     {
-      "defaultValue": 165,
-      "maximumValue": 300,
-      "minimumValue": 1,
-      "name": "Tissue width (# of cells)",
-      "visible": "st == 0"
-    },
-    {
-      "defaultValue": 165,
-      "maximumValue": 300,
-      "minimumValue": 1,
-      "name": "Tissue length (# of cells)",
-      "visible": "st == 0"
-    },
-    {
       "defaultValue": 0,
       "name": "Homogeneity",
       "possibleValues": [
@@ -107,13 +93,6 @@
           "value": 1
         }
       ],
-      "visible": "st == 0"
-    },
-    {
-      "defaultValue": 2,
-      "maximumValue": 5,
-      "minimumValue": 1,
-      "name": "# threads",
       "visible": "st == 0"
     },
     {
@@ -175,13 +154,6 @@
           "value": 2
         }
       ],
-      "visible": "st == 1"
-    },
-    {
-      "defaultValue": 165,
-      "maximumValue": 300,
-      "minimumValue": 1,
-      "name": "Tissue width (# of cells)",
       "visible": "st == 1"
     },
     {
