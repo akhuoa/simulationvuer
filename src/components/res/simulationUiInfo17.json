@@ -140,7 +140,7 @@
       "defaultValue": 2,
       "maximumValue": 5,
       "minimumValue": 1,
-      "name": "# threads",
+      "name": "Number of threads",
       "visible": "st == 1"
     },
     {
@@ -237,7 +237,7 @@
       "defaultValue": 2,
       "maximumValue": 5,
       "minimumValue": 1,
-      "name": "# threads",
+      "name": "Number of threads",
       "visible": "st == 2"
     }
   ],
