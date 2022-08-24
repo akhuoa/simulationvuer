@@ -220,7 +220,7 @@ export function validJson(json) {
     if (input.possibleValues !== undefined) {
       if (!input.possibleValues.every((possibleValue) => {
         if (possibleValue.name === "") {
-          console.warn("JSON: an input possible value must not have an empty name.");
+          console.warn("JSON: an input possible value must not be empty.");
 
           return false;
         }
