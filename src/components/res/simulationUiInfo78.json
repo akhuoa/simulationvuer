@@ -41,5 +41,11 @@
     ]
   },
   "simulation": {
+    "solvers": [
+      {
+        "name": "simcore/services/comp/kember-cardiac-model",
+        "version": "1.0.0"
+      }
+    ]
   }
 }

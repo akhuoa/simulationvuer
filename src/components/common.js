@@ -1,3 +1,5 @@
+export const OPENCOR_SOLVER_NAME = "simcore/services/comp/opencor";
+
 function doEvaluateValue(value, from, to) {
   if (from !== undefined) {
     let re = new RegExp(`\\b${ from }\\b`, 'g');

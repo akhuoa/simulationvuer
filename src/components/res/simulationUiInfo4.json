@@ -304,5 +304,22 @@
     ]
   },
   "simulation": {
+    "solvers": [
+      {
+        "if": "st == 0",
+        "name": "simcore/services/comp/rabbit-ss-0d-cardiac-model",
+        "version": "1.0.1"
+      },
+      {
+        "if": "st == 1",
+        "name": "simcore/services/comp/rabbit-ss-1d-cardiac-model",
+        "version": "1.0.1"
+      },
+      {
+        "if": "st == 2",
+        "name": "simcore/services/comp/rabbit-ss-2d-cardiac-model",
+        "version": "1.0.1"
+      }
+    ]
   }
 }

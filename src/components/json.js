@@ -1,4 +1,5 @@
 import { Validator } from "jsonschema";
+import { OPENCOR_SOLVER_NAME } from "./common.js";
 
 export function validJson(json) {
   // Check the JSON against our schema.
@@ -175,6 +176,28 @@ export function validJson(json) {
               },
             },
             type: "object",
+          },
+          solvers: {
+            items: {
+              additionalProperties: false,
+              properties: {
+                if: {
+                  type: "string",
+                },
+                name: {
+                  required: true,
+                  type: "string",
+                },
+                version: {
+                  required: true,
+                  type: "string",
+                },
+              },
+              type: "object",
+            },
+            minItems: 1,
+            required: true,
+            type: "array",
           },
         },
         type: "object",
@@ -397,6 +420,42 @@ export function validJson(json) {
   }
 
   // Make sure that the simulation information makes sense.
+
+  let needOpencorSettings = false;
+
+  if (!json.simulation.solvers.every((solver) => {
+    if (solver.if !== undefined) {
+      if (solver.if === "") {
+        console.warn("JSON: a simulation solver if must not be empty.");
+
+        return false;
+      }
+    }
+
+    if (solver.name === "") {
+      console.warn("JSON: a simulation solver name must not be empty.");
+
+      return false;
+    }
+
+    needOpencorSettings = needOpencorSettings || (solver.name === OPENCOR_SOLVER_NAME);
+
+    if (solver.version === "") {
+      console.warn("JSON: a simulation solver version must not be empty.");
+
+      return false;
+    }
+
+    return true;
+  })) {
+    return false;
+  }
+
+  if (needOpencorSettings && (json.simulation.opencor === undefined)) {
+    console.warn("JSON: the simulation solver for OpenCOR is specified so simulation OpenCOR settings must also be specified.");
+
+    return false;
+  }
 
   if (json.simulation.opencor !== undefined) {
     if (json.simulation.opencor.resource === "") {

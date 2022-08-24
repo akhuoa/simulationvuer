@@ -304,5 +304,22 @@
     ]
   },
   "simulation": {
+    "solvers": [
+      {
+        "if": "st == 0",
+        "name": "simcore/services/comp/human-gb-0d-cardiac-model",
+        "version": "1.0.1"
+      },
+      {
+        "if": "st == 1",
+        "name": "simcore/services/comp/human-gb-1d-cardiac-model",
+        "version": "1.0.1"
+      },
+      {
+        "if": "st == 2",
+        "name": "simcore/services/comp/human-gb-2d-cardiac-model",
+        "version": "1.0.1"
+      }
+    ]
   }
 }
