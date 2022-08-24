@@ -160,15 +160,21 @@ export function validJson(json) {
       simulation: {
         additionalProperties: false,
         properties: {
-          endingPoint: {
-            type: "number",
-          },
-          pointInterval: {
-            type: "number",
-          },
-          resource: {
-            required: true,
-            type: "string",
+          opencor: {
+            additionalProperties: false,
+            properties: {
+              endingPoint: {
+                type: "number",
+              },
+              pointInterval: {
+                type: "number",
+              },
+              resource: {
+                required: true,
+                type: "string",
+              },
+            },
+            type: "object",
           },
         },
         type: "object",
@@ -392,34 +398,36 @@ export function validJson(json) {
 
   // Make sure that the simulation information makes sense.
 
-  if (json.simulation.resource === "") {
-    console.warn("JSON: the simulation resource must not be empty.");
-
-    return false;
-  }
-
-  if (json.simulation.endingPoint !== undefined) {
-    if (json.simulation.pointInterval !== undefined) {
-      if (json.simulation.endingPoint <= 0.0) {
-        console.warn("JSON: the simulation ending point (" + json.simulation.endingPoint + ") must be greater than zero.");
-
-        return false;
-      }
-
-      if (json.simulation.pointInterval <= 0.0) {
-        console.warn("JSON: the simulation point interval (" + json.simulation.pointInterval + ") must be greater than zero.");
-
-        return false;
-      }
-    } else {
-      console.warn("JSON: a simulation ending point is specified so a simulation point interval must also be specified.");
+  if (json.simulation.opencor !== undefined) {
+    if (json.simulation.opencor.resource === "") {
+      console.warn("JSON: the simulation OpenCOR resource must not be empty.");
 
       return false;
     }
-  } else if (json.simulation.pointInterval !== undefined) {
-    console.warn("JSON: a simulation point interval is specified so a simulation ending point must also be specified.");
 
-    return false;
+    if (json.simulation.opencor.endingPoint !== undefined) {
+      if (json.simulation.opencor.pointInterval !== undefined) {
+        if (json.simulation.opencor.endingPoint <= 0.0) {
+          console.warn("JSON: the simulation OpenCOR ending point (" + json.simulation.opencor.endingPoint + ") must be greater than zero.");
+
+          return false;
+        }
+
+        if (json.simulation.opencor.pointInterval <= 0.0) {
+          console.warn("JSON: the simulation OpenCOR point interval (" + json.simulation.opencor.pointInterval + ") must be greater than zero.");
+
+          return false;
+        }
+      } else {
+        console.warn("JSON: a simulation OpenCOR ending point is specified so a simulation OpenCOR point interval must also be specified.");
+
+        return false;
+      }
+    } else if (json.simulation.opencor.pointInterval !== undefined) {
+      console.warn("JSON: a simulation OpenCOR point interval is specified so a simulation OpenCOR ending point must also be specified.");
+
+      return false;
+    }
   }
 
   return true;

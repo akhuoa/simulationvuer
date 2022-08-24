@@ -148,18 +148,18 @@ export default {
       this.showUserMessage = true;
 
       let request = {
-        model_url: this.simulationUiInfo.simulation.resource,
+        model_url: this.simulationUiInfo.simulation.opencor.resource,
         json_config: {},
       };
 
       // Specify the ending point and point interval, if we have some simulation
       // data.
 
-      if (   (this.simulationUiInfo.simulation.endingPoint !== undefined)
-          && (this.simulationUiInfo.simulation.pointInterval !== undefined)) {
+      if (   (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
+          && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
         request.json_config.simulation = {
-          "Ending point": this.simulationUiInfo.simulation.endingPoint,
-          "Point interval": this.simulationUiInfo.simulation.pointInterval,
+          "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
+          "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
         };
       }
 

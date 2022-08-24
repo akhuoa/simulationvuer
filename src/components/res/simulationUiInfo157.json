@@ -67,6 +67,8 @@
     }
   ],
   "simulation": {
-    "resource": "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml"
+    "opencor": {
+      "resource": "https://models.physiomeproject.org/workspace/698/rawfile/f3fc911063ac72ed44e84c0c5af28df41c25d452/fabbri_et_al_based_composite_SAN_model.sedml"
+    }
   }
 }
