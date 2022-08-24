@@ -14,8 +14,8 @@
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
         </div>
-        <div class="secondary-button">
-          <el-button size="mini" @click="goToOsparc()">Go to oSPARC</el-button>
+        <div class="secondary-button" v-if="uuid">
+          <el-button size="mini" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
         <div class="secondary-button">
           <el-button size="mini" @click="viewDataset()">View dataset</el-button>
@@ -72,15 +72,19 @@ export default {
   data: function() {
     let xmlhttp = new XMLHttpRequest();
     let name = undefined;
+    let uuid = undefined;
 
-    xmlhttp.open("GET", this.apiLocation + "/dataset/" + this.id, false);
+    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id + "/nodebug", false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
         this.showUserMessage = false;
 
         if (xmlhttp.status === 200) {
-          name = JSON.parse(xmlhttp.responseText).name;
+          let datasetInfo = JSON.parse(xmlhttp.responseText);
+
+          name = datasetInfo.name;
+          uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
         }
       }
     };
@@ -103,6 +107,7 @@ export default {
       simulationUiInfo: {},
       userMessage: "",
       ui: null,
+      uuid: uuid,
     };
   },
   methods: {
@@ -132,8 +137,8 @@ export default {
         finaliseUi(this);
       });
     },
-    goToOsparc() {
-      window.open("https://osparc.io/", "_blank");
+    runOnOsparc() {
+      window.open(`https://osparc.io/study/${this.uuid}`, "_blank");
     },
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
