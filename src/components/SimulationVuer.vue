@@ -143,17 +143,21 @@ export default {
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
-    opencorSimulationRequest() {
+    opencorSimulationRequest(solverName, solverVersion) {
       let request = {
-        model_url: this.simulationUiInfo.simulation.opencor.resource,
-        json_config: {},
+        solver_name: solverName,
+        solver_version: solverVersion,
+        opencor: {
+          model_url: this.simulationUiInfo.simulation.opencor.resource,
+          json_config: {},
+        },
       };
 
       // Specify the ending point and point interval, if we have some.
 
       if (   (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
           && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
-        request.json_config.simulation = {
+        request.opencor.json_config.simulation = {
           "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
           "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
         };
@@ -162,10 +166,10 @@ export default {
       // Specify the parameters, if any.
 
       if (this.simulationUiInfo.parameters !== undefined) {
-        request.json_config.parameters = {};
+        request.opencor.json_config.parameters = {};
 
         this.simulationUiInfo.parameters.forEach((parameter) => {
-          request.json_config.parameters[parameter.name] = evaluateValue(this, parameter.value);
+          request.opencor.json_config.parameters[parameter.name] = evaluateValue(this, parameter.value);
         });
       }
 
@@ -174,10 +178,10 @@ export default {
       if (this.simulationUiInfo.output.data !== undefined)  {
         let index = -1;
 
-        request.json_config.output = [];
+        request.opencor.json_config.output = [];
 
         this.simulationUiInfo.output.data.forEach((outputData) => {
-          request.json_config.output[++index] = outputData.name;
+          request.opencor.json_config.output[++index] = outputData.name;
         });
       }
 
@@ -204,6 +208,15 @@ export default {
         ];
       });
     },
+    osparcSimulationRequest(solverName, solverVersion) {
+      let request = {
+        solver_name: solverName,
+        solver_version: solverVersion,
+        osparc: {},
+      };
+
+      return request;
+    },
     runSimulation() {
       // Retrieve the solver to be used for the simulation.
 
@@ -229,9 +242,9 @@ export default {
       let isOpencorSimulation = solverName === OPENCOR_SOLVER_NAME;
       let request = undefined;
 
-      if (isOpencorSimulation) {
-        request = this.opencorSimulationRequest();
-      }
+      request = isOpencorSimulation?
+                  this.opencorSimulationRequest(solverName, solverVersion):
+                  this.osparcSimulationRequest(solverName, solverVersion);
 
       // Run the simulation.
 
