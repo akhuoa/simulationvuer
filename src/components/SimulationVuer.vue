@@ -37,7 +37,7 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { Button, Divider, Loading } from "element-ui";
-import { evaluateValue, evaluateSimulationValue } from "./common.js";
+import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 import PerfectScrollbar from "vue2-perfect-scrollbar";
@@ -143,17 +143,13 @@ export default {
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
-    runSimulation() {
-      this.userMessage = "Loading simulation results...";
-      this.showUserMessage = true;
-
+    opencorSimulationRequest() {
       let request = {
         model_url: this.simulationUiInfo.simulation.opencor.resource,
         json_config: {},
       };
 
-      // Specify the ending point and point interval, if we have some simulation
-      // data.
+      // Specify the ending point and point interval, if we have some.
 
       if (   (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
           && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
@@ -163,9 +159,9 @@ export default {
         };
       }
 
-      // Specify the simulation parameters.
+      // Specify the parameters, if any.
 
-      if (this.simulationUiInfo.parameters != undefined) {
+      if (this.simulationUiInfo.parameters !== undefined) {
         request.json_config.parameters = {};
 
         this.simulationUiInfo.parameters.forEach((parameter) => {
@@ -173,7 +169,7 @@ export default {
         });
       }
 
-      // Specify what we want to retrieve.
+      // Specify what we want to retrieve, if anything.
 
       if (this.simulationUiInfo.output.data !== undefined)  {
         let index = -1;
@@ -183,6 +179,58 @@ export default {
         this.simulationUiInfo.output.data.forEach((outputData) => {
           request.json_config.output[++index] = outputData.name;
         });
+      }
+
+      return request;
+    },
+    retrieveAndPostProcessOpencorSimulation(response) {
+      let index = -1;
+      let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
+
+      this.simulationUiInfo.output.plots.forEach((outputPlot) => {
+        let xValue = [];
+        let yValue = [];
+
+        for (let i = 0; i < iMax; ++i) {
+          xValue[i] = evaluateSimulationValue(this, response.results, outputPlot.xValue, i);
+          yValue[i] = evaluateSimulationValue(this, response.results, outputPlot.yValue, i);
+        }
+
+        this.simulationData[++index] = [
+          {
+            x: xValue,
+            y: yValue,
+          },
+        ];
+      });
+    },
+    runSimulation() {
+      // Retrieve the solver to be used for the simulation.
+
+      let solverName = undefined;
+      let solverVersion = undefined;
+
+      this.simulationUiInfo.simulation.solvers.forEach((solver) => {
+        if ((solver.if === undefined) || evaluateValue(this, solver.if)) {
+          solverName = solver.name;
+          solverVersion = solver.version;
+        }
+      });
+
+      if ((solverName === undefined) || (solverVersion === undefined)) {
+        console.warn("SIMULATION: no solver name and/or solver version specified.");
+
+        return;
+      }
+
+      this.userMessage = "Loading simulation results...";
+      this.showUserMessage = true;
+
+      let isOpencorSimulation = solverName === OPENCOR_SOLVER_NAME;
+      let request = undefined;
+
+      if (isOpencorSimulation) {
+        request = this.opencorSimulationRequest();
       }
 
       // Run the simulation.
@@ -201,27 +249,9 @@ export default {
             this.isSimulationValid = response.status === "ok";
 
             if (this.isSimulationValid) {
-              // Retrieve and post-process the simulation data.
-
-              let index = -1;
-              let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
-
-              this.simulationUiInfo.output.plots.forEach((outputPlot) => {
-                let xValue = [];
-                let yValue = [];
-
-                for (let i = 0; i < iMax; ++i) {
-                  xValue[i] = evaluateSimulationValue(this, response.results, outputPlot.xValue, i);
-                  yValue[i] = evaluateSimulationValue(this, response.results, outputPlot.yValue, i);
-                }
-
-                this.simulationData[++index] = [
-                  {
-                    x: xValue,
-                    y: yValue,
-                  },
-                ];
-              });
+              if (isOpencorSimulation) {
+                this.retrieveAndPostProcessOpencorSimulation(response);
+              }
             } else {
               this.errorMessage = response.description;
             }
