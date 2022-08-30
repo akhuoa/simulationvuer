@@ -2,6 +2,7 @@
   "input": [
     {
       "defaultValue": 0.01,
+      "id": "dt",
       "maximumValue": 0.05,
       "minimumValue": 0.001,
       "name": "Time step",
@@ -9,12 +10,14 @@
     },
     {
       "defaultValue": 1000,
+      "id": "T",
       "maximumValue": 3000,
       "minimumValue": 0,
       "name": "Max time"
     },
     {
       "defaultValue": 0,
+      "id": "forcing_factor",
       "maximumValue": 10,
       "minimumValue": 0,
       "name": "Forcing factor"
@@ -40,6 +43,20 @@
       }
     ]
   },
+  "parameters": [
+    {
+      "name": "dt",
+      "value": "dt"
+    },
+    {
+      "name": "T",
+      "value": "T"
+    },
+    {
+      "name": "forcing_factor",
+      "value": "forcing_factor"
+    }
+  ],
   "simulation": {
     "solvers": [
       {
