@@ -48,6 +48,8 @@ import simulationUiInfo17 from "./res/simulationUiInfo17.json";
 import simulationUiInfo78 from "./res/simulationUiInfo78.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
+import { RESULTS_4_VM, RESULTS_4_CAI } from "./res/results4.js";
+import { RESULTS_17_VM, RESULTS_17_CAI } from "./res/results17.js";
 import { RESULTS_78 } from "./res/results78.js";
 
 Vue.use(Button);
@@ -224,11 +226,44 @@ export default {
         ];
       });
     },
+    doRetrieveAndPostProcessOsparcSimulation(csvData) {
+      let i = -2; // Note: not -1 because we want to skip the header line.
+      let xValue = [];
+      let yValue = [];
+
+      csvData.split("\n").forEach((line) => {
+        let values = line.split(",");
+
+        ++i;
+
+        if (i >= 0) {
+          xValue[i] = values[0];
+          yValue[i] = values[1];
+        }
+      });
+
+      return [
+        {
+          x: xValue,
+          y: yValue,
+        }
+      ];
+    },
     retrieveAndPostProcessOsparcSimulation(solverName) {
       if (solverName == "simcore/services/comp/rabbit-ss-0d-cardiac-model") {
         // Dataset 4.
+
+        this.simulationData = [
+          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_4_VM),
+          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_4_CAI),
+        ];
       } else if (solverName == "simcore/services/comp/human-gb-0d-cardiac-model") {
         // Dataset 17.
+
+        this.simulationData = [
+          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_17_VM),
+          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_17_CAI),
+        ];
       } else {
         // Dataset 78.
 

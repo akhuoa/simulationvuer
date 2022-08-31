@@ -78,6 +78,10 @@
       {
         "id": "vm",
         "name": "1"
+      },
+      {
+        "id": "cai",
+        "name": "2"
       }
     ],
     "plots": [
@@ -86,6 +90,12 @@
         "xValue": "time",
         "yAxisTitle": "Membrane potential (mV)",
         "yValue": "vm"
+      },
+      {
+        "xAxisTitle": "Time (s)",
+        "xValue": "time",
+        "yAxisTitle": "Cytosolic calcium (mM)",
+        "yValue": "cai"
       }
     ]
   },
