@@ -223,6 +223,8 @@ export default {
         ];
       });
     },
+    retrieveAndPostProcessOsparcSimulation(solverName) {
+    },
     runSimulation() {
       // Retrieve the solver to be used for the simulation.
 
@@ -252,34 +254,44 @@ export default {
 
       // Run the simulation.
 
-      let xmlhttp = new XMLHttpRequest();
+      if (isOpencorSimulation) {
+        let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
-      xmlhttp.setRequestHeader("Content-type", "application/json");
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4) {
-          this.showUserMessage = false;
+        xmlhttp.open("POST", this.apiLocation + "/simulation", true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            this.showUserMessage = false;
 
-          if (xmlhttp.status === 200) {
-            let response = JSON.parse(xmlhttp.responseText);
+            if (xmlhttp.status === 200) {
+              let response = JSON.parse(xmlhttp.responseText);
 
-            this.isSimulationValid = response.status === "ok";
+              this.isSimulationValid = response.status === "ok";
 
-            if (this.isSimulationValid) {
-              if (isOpencorSimulation) {
-                this.retrieveAndPostProcessOpencorSimulation(response);
+              if (this.isSimulationValid) {
+                if (isOpencorSimulation) {
+                  this.retrieveAndPostProcessOpencorSimulation(response);
+                }
+              } else {
+                this.errorMessage = response.description;
               }
             } else {
-              this.errorMessage = response.description;
-            }
-          } else {
-            this.isSimulationValid = false;
+              this.isSimulationValid = false;
 
-            this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
+              this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
+            }
           }
-        }
-      };
-      xmlhttp.send(JSON.stringify(request));
+        };
+        xmlhttp.send(JSON.stringify(request));
+      } else {
+        let that = this;
+
+        setTimeout(function() {
+          that.showUserMessage = false;
+
+          that.retrieveAndPostProcessOsparcSimulation(solverName);
+        }, 3000+Math.floor(1500*Math.random()));
+      }
     },
   },
   created: function() {
