@@ -48,6 +48,7 @@ import simulationUiInfo17 from "./res/simulationUiInfo17.json";
 import simulationUiInfo78 from "./res/simulationUiInfo78.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
+import { RESULTS_78 } from "./res/results78.js";
 
 Vue.use(Button);
 Vue.use(Divider);
@@ -224,6 +225,51 @@ export default {
       });
     },
     retrieveAndPostProcessOsparcSimulation(solverName) {
+      if (solverName == "simcore/services/comp/rabbit-ss-0d-cardiac-model") {
+        // Dataset 4.
+      } else if (solverName == "simcore/services/comp/human-gb-0d-cardiac-model") {
+        // Dataset 17.
+      } else {
+        // Dataset 78.
+
+        let i = -2; // Note: not -1 because we want to skip the header line.
+        let timeValue = [];
+        let rateValue = [];
+        let demandValue = [];
+        let sympatheticEfferentValue = [];
+
+        RESULTS_78.split("\n").forEach((line) => {
+          let values = line.split(",");
+
+          if (++i >= 0) {
+            timeValue[i] = values[0];
+            rateValue[i] = values[1];
+            demandValue[i] = values[2];
+            sympatheticEfferentValue[i] = values[3];
+          }
+        });
+
+        this.simulationData = [
+          [
+            {
+              x: timeValue,
+              y: rateValue,
+            },
+          ],
+          [
+            {
+              x: timeValue,
+              y: demandValue,
+            },
+          ],
+          [
+            {
+              x: timeValue,
+              y: sympatheticEfferentValue,
+            },
+          ],
+        ];
+      }
     },
     runSimulation() {
       // Retrieve the solver to be used for the simulation.
