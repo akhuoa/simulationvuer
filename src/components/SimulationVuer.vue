@@ -289,7 +289,7 @@ export default {
       let production = false;
 
       this.userMessage = "Retrieving UI information...";
-      this.showUserMessage = production;
+      this.showUserMessage = true;
 
       // Retrieve and build the simulation UI.
 
@@ -309,18 +309,22 @@ export default {
         };
         xmlhttp.send();
       } else {
-        let simulationUiInfos = {
-          4: simulationUiInfo4,
-          17: simulationUiInfo17,
-          78: simulationUiInfo78,
-          135: simulationUiInfo135,
-          157: simulationUiInfo157,
-        };
-        let simulationUiInfo = simulationUiInfos[this.id];
+        let that = this;
 
-        if (simulationUiInfo !== undefined) {
-          this.retrieveAndBuildSimulationUi(simulationUiInfo);
-        }
+        setTimeout(function() {
+          let simulationUiInfos = {
+            4: simulationUiInfo4,
+            17: simulationUiInfo17,
+            78: simulationUiInfo78,
+            135: simulationUiInfo135,
+            157: simulationUiInfo157,
+          };
+          let simulationUiInfo = simulationUiInfos[that.id];
+
+          that.showUserMessage = false;
+
+          that.retrieveAndBuildSimulationUi(simulationUiInfo);
+        }, 1000+Math.floor(500*Math.random()));
       }
     }
   },
