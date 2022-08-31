@@ -286,20 +286,20 @@
   "output": {
     "data": [
       {
-        "id": "x",
-        "name": "X"
+        "id": "time",
+        "name": "0"
       },
       {
-        "id": "y",
-        "name": "Y"
+        "id": "vm",
+        "name": "1"
       }
     ],
     "plots": [
       {
-        "xAxisTitle": "X",
-        "xValue": "x",
-        "yAxisTitle": "Y",
-        "yValue": "y"
+        "xAxisTitle": "Time (s)",
+        "xValue": "time",
+        "yAxisTitle": "Membrane potential (mV)",
+        "yValue": "vm"
       }
     ]
   },
