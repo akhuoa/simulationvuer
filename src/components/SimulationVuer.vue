@@ -20,6 +20,7 @@
         <div class="secondary-button">
           <el-button size="mini" @click="viewDataset()">View dataset</el-button>
         </div>
+        <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
         <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
