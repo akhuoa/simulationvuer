@@ -12,13 +12,13 @@
           </PerfectScrollbar>
         </div>
         <div class="primary-button">
-          <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
+          <el-button type="primary" size="mini" @click="runSimulation()">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
           <el-button size="mini" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
         <div class="secondary-button">
-          <el-button size="mini" @click="viewDataset()">View dataset</el-button>
+          <el-button size="mini" @click="viewDataset()">View Dataset</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
