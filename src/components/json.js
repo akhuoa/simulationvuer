@@ -184,6 +184,9 @@ export function validJson(json) {
                 if: {
                   type: "string",
                 },
+                input: {
+                  type: "string",
+                },
                 name: {
                   required: true,
                   type: "string",
@@ -427,6 +430,14 @@ export function validJson(json) {
     if (solver.if !== undefined) {
       if (solver.if === "") {
         console.warn("JSON: a simulation solver if must not be empty.");
+
+        return false;
+      }
+    }
+
+    if (solver.input !== undefined) {
+      if (solver.input === "") {
+        console.warn("JSON: a simulation solver input must not be empty.");
 
         return false;
       }
