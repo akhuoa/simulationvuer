@@ -48,9 +48,6 @@ import simulationUiInfo17 from "./res/simulationUiInfo17.json";
 import simulationUiInfo78 from "./res/simulationUiInfo78.json";
 import simulationUiInfo135 from "./res/simulationUiInfo135.json";
 import simulationUiInfo157 from "./res/simulationUiInfo157.json";
-import { RESULTS_4_VM, RESULTS_4_CAI } from "./res/results4.js";
-import { RESULTS_17_VM, RESULTS_17_CAI } from "./res/results17.js";
-import { RESULTS_78 } from "./res/results78.js";
 
 Vue.use(Button);
 Vue.use(Divider);
@@ -250,6 +247,8 @@ export default {
       ];
     },
     retrieveAndPostProcessOsparcSimulation(solverName) {
+      solverName;
+/*
       if (solverName == "simcore/services/comp/rabbit-ss-0d-cardiac-model") {
         // Dataset 4.
 
@@ -305,6 +304,7 @@ export default {
           ],
         ];
       }
+*/
     },
     runSimulation() {
       // Retrieve the solver to be used for the simulation.
