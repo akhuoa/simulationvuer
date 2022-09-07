@@ -79,8 +79,6 @@ export default {
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
-        this.showUserMessage = false;
-
         if (xmlhttp.status === 200) {
           let datasetInfo = JSON.parse(xmlhttp.responseText);
 
