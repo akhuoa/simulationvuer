@@ -12,7 +12,7 @@
           </PerfectScrollbar>
         </div>
         <div class="primary-button">
-          <el-button type="primary" size="mini" @click="runSimulation()">Run Simulation</el-button>
+          <el-button type="primary" size="mini" @click="startSimulation()">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
           <el-button size="mini" @click="runOnOsparc()">Run on oSPARC</el-button>
@@ -200,17 +200,48 @@ export default {
 
       return request;
     },
-    retrieveAndPostProcessOpencorSimulation(response) {
+    processSimulationResults(results) {
+      // Convert, if needed, the results to a JSON format that is compatible
+      // with our OpenCOR results.
+
+      if (typeof(results) === "string") {
+        const SPACES = / +/g;
+
+        let lines = results.trim().split("\n");
+        let iMax = lines[0].trim().split(SPACES).length;
+
+        results = {};
+
+        for (let i = 0; i < iMax; ++i) {
+          results[i] = [];
+        }
+
+        let i = -1;
+
+        lines.forEach((line) => {
+          ++i;
+
+          let j = -1;
+          let values = line.trim().split(SPACES);
+
+          values.forEach((value) => {
+            results[++j][i] = Number(value);
+          });
+        });
+      }
+
+      // Get the results ready for plotting.
+
       let index = -1;
-      let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
+      let iMax = results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
 
       this.simulationUiInfo.output.plots.forEach((outputPlot) => {
         let xValue = [];
         let yValue = [];
 
         for (let i = 0; i < iMax; ++i) {
-          xValue[i] = evaluateSimulationValue(this, response.results, outputPlot.xValue, i);
-          yValue[i] = evaluateSimulationValue(this, response.results, outputPlot.yValue, i);
+          xValue[i] = evaluateSimulationValue(this, results, outputPlot.xValue, i);
+          yValue[i] = evaluateSimulationValue(this, results, outputPlot.yValue, i);
         }
 
         this.simulationData[++index] = [
@@ -221,90 +252,55 @@ export default {
         ];
       });
     },
-    doRetrieveAndPostProcessOsparcSimulation(csvData) {
-      let i = -2; // Note: not -1 because we want to skip the header line.
-      let xValue = [];
-      let yValue = [];
+    checkSimulation(data) {
+      // Check the simulation.
 
-      csvData.split("\n").forEach((line) => {
-        let values = line.split(",");
+      let xmlhttp = new XMLHttpRequest();
 
-        ++i;
+      xmlhttp.open("POST", this.apiLocation + "/check_simulation", true);
+      xmlhttp.setRequestHeader("Content-type", "application/json");
+      xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4) {
+          if (xmlhttp.status === 200) {
+            let response = JSON.parse(xmlhttp.responseText);
 
-        if (i >= 0) {
-          xValue[i] = values[0];
-          yValue[i] = values[1];
-        }
-      });
+            this.isSimulationValid = response.status === "ok";
 
-      return [
-        {
-          x: xValue,
-          y: yValue,
-        }
-      ];
-    },
-    retrieveAndPostProcessOsparcSimulation(solverName) {
-      solverName;
-/*
-      if (solverName == "simcore/services/comp/rabbit-ss-0d-cardiac-model") {
-        // Dataset 4.
+            if (this.isSimulationValid) {
+              if (response.results !== undefined) {
+                // The simulation is finished, so process its results.
 
-        this.simulationData = [
-          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_4_VM),
-          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_4_CAI),
-        ];
-      } else if (solverName == "simcore/services/comp/human-gb-0d-cardiac-model") {
-        // Dataset 17.
+                this.showUserMessage = false;
 
-        this.simulationData = [
-          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_17_VM),
-          this.doRetrieveAndPostProcessOsparcSimulation(RESULTS_17_CAI),
-        ];
-      } else {
-        // Dataset 78.
+                this.processSimulationResults(response.results);
+              } else {
+                // The simulation is not yet finished, so check again in a
+                // second.
 
-        let i = -2; // Note: not -1 because we want to skip the header line.
-        let timeValue = [];
-        let rateValue = [];
-        let demandValue = [];
-        let sympatheticEfferentValue = [];
+                let that = this;
 
-        RESULTS_78.split("\n").forEach((line) => {
-          let values = line.split(",");
-
-          if (++i >= 0) {
-            timeValue[i] = values[0];
-            rateValue[i] = values[1];
-            demandValue[i] = values[2];
-            sympatheticEfferentValue[i] = values[3];
+                setTimeout(function() {
+                  that.checkSimulation(data);
+                }, 1000);
+              }
+            } else {
+              this.showUserMessage = false;
+              this.errorMessage = response.description;
+            }
+          } else {
+            this.isSimulationValid = false;
+            this.showUserMessage = false;
+            this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
           }
-        });
-
-        this.simulationData = [
-          [
-            {
-              x: timeValue,
-              y: rateValue,
-            },
-          ],
-          [
-            {
-              x: timeValue,
-              y: demandValue,
-            },
-          ],
-          [
-            {
-              x: timeValue,
-              y: sympatheticEfferentValue,
-            },
-          ],
-        ];
-      }
-*/
+        }
+      };
+      xmlhttp.send(JSON.stringify({
+        solver_id: data.solver_id,
+        solver_version: data.solver_version,
+        job_id: data.job_id,
+      }));
     },
-    runSimulation() {
+    startSimulation() {
       // Retrieve the solver to be used for the simulation.
 
       let solverName = undefined;
@@ -323,46 +319,36 @@ export default {
         return;
       }
 
+      // Start the simulation.
+
       this.userMessage = "Loading simulation results...";
       this.showUserMessage = true;
 
-      let isOpencorSimulation = solverName === OPENCOR_SOLVER_NAME;
-      let request = undefined;
-
-      request = this.retrieveRequest(solverName, solverVersion, isOpencorSimulation);
-
-      // Run the simulation.
-
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
+      xmlhttp.open("POST", this.apiLocation + "/start_simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
-          this.showUserMessage = false;
-
           if (xmlhttp.status === 200) {
             let response = JSON.parse(xmlhttp.responseText);
 
             this.isSimulationValid = response.status === "ok";
 
             if (this.isSimulationValid) {
-              if (isOpencorSimulation) {
-                this.retrieveAndPostProcessOpencorSimulation(response);
-              } else {
-                this.retrieveAndPostProcessOsparcSimulation(solverName);
-              }
+              this.checkSimulation(response.data);
             } else {
+              this.showUserMessage = false;
               this.errorMessage = response.description;
             }
           } else {
             this.isSimulationValid = false;
-
+            this.showUserMessage = false;
             this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
           }
         }
       };
-      xmlhttp.send(JSON.stringify(request));
+      xmlhttp.send(JSON.stringify(this.retrieveRequest(solverName, solverVersion, solverName === OPENCOR_SOLVER_NAME)));
     },
   },
   created: function() {
