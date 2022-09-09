@@ -2,42 +2,49 @@
   "input": [
     {
       "defaultValue": 0,
+      "id": "Na",
       "maximumValue": 10,
       "minimumValue": 0,
       "name": "Na blocker"
     },
     {
       "defaultValue": 1,
+      "id": "GKr",
       "maximumValue": 10,
       "minimumValue": 0,
       "name": "GKr ratio"
     },
     {
       "defaultValue": 300,
+      "id": "TotalSimulationTime",
       "maximumValue": 1000,
       "minimumValue": 0,
       "name": "Total simulation time"
     },
     {
       "defaultValue": 60,
+      "id": "TargetHeartRatePhase1",
       "maximumValue": 200,
       "minimumValue": 10,
       "name": "Target heart rate for phase 1"
     },
     {
       "defaultValue": 150,
+      "id": "TargetHeartRatePhase2",
       "maximumValue": 200,
       "minimumValue": 10,
       "name": "Target heart rate for phase 2"
     },
     {
       "defaultValue": 60,
+      "id": "TargetHeartRatePhase3",
       "maximumValue": 200,
       "minimumValue": 10,
       "name": "Target heart rate for phase 3"
     },
     {
       "defaultValue": 0,
+      "id": "cAMKII",
       "name": "cAMKII activity levels",
       "possibleValues": [
         {
@@ -56,6 +63,7 @@
     },
     {
       "defaultValue": 0,
+      "id": "Homogeneity",
       "name": "Homogeneity",
       "possibleValues": [
         {
@@ -99,6 +107,40 @@
       }
     ]
   },
+  "parameters": [
+    {
+      "name": "Na",
+      "value": "Na"
+    },
+    {
+      "name": "GKr",
+      "value": "GKr"
+    },
+    {
+      "name": "TotalSimulationTime",
+      "value": "TotalSimulationTime"
+    },
+    {
+      "name": "TargetHeartRatePhase1",
+      "value": "TargetHeartRatePhase1"
+    },
+    {
+      "name": "TargetHeartRatePhase2",
+      "value": "TargetHeartRatePhase2"
+    },
+    {
+      "name": "TargetHeartRatePhase3",
+      "value": "TargetHeartRatePhase3"
+    },
+    {
+      "name": "cAMKII",
+      "value": "(cAMKII == 0)?'WT':(cAMKII == 1)?'OE':'KO'"
+    },
+    {
+      "name": "Homogeneity",
+      "value": "(Homogeneity == 0)?'homogeneous':'heterogeneous'"
+    }
+  ],
   "simulation": {
     "solvers": [
       {
