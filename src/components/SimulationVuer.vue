@@ -142,13 +142,10 @@ export default {
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
-    retrieveRequest(solverName, solverVersion, isOpencorSimulation) {
-      let request = {
-        solver_name: solverName,
-        solver_version: solverVersion,
-      };
-
+    retrieveRequest(request) {
       // Settings specific to OpenCOR/oSPARC.
+
+      let isOpencorSimulation = request.solver.name === OPENCOR_SOLVER_NAME;
 
       if (isOpencorSimulation) {
         request.opencor = {
@@ -294,26 +291,20 @@ export default {
           }
         }
       };
-      xmlhttp.send(JSON.stringify({
-        solver_id: data.solver_id,
-        solver_version: data.solver_version,
-        job_id: data.job_id,
-      }));
+      xmlhttp.send(JSON.stringify(data));
     },
     startSimulation() {
       // Retrieve the solver to be used for the simulation.
 
-      let solverName = undefined;
-      let solverVersion = undefined;
+      let solver = undefined;
 
-      this.simulationUiInfo.simulation.solvers.forEach((solver) => {
-        if ((solver.if === undefined) || evaluateValue(this, solver.if)) {
-          solverName = solver.name;
-          solverVersion = solver.version;
+      this.simulationUiInfo.simulation.solvers.forEach((crtSolver) => {
+        if ((crtSolver.if === undefined) || evaluateValue(this, crtSolver.if)) {
+          solver = crtSolver;
         }
       });
 
-      if ((solverName === undefined) || (solverVersion === undefined)) {
+      if (solver === undefined) {
         console.warn("SIMULATION: no solver name and/or solver version specified.");
 
         return;
@@ -348,7 +339,9 @@ export default {
           }
         }
       };
-      xmlhttp.send(JSON.stringify(this.retrieveRequest(solverName, solverVersion, solverName === OPENCOR_SOLVER_NAME)));
+      xmlhttp.send(JSON.stringify(this.retrieveRequest({
+        solver: solver
+      })));
     },
   },
   created: function() {
