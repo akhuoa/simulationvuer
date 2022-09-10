@@ -116,11 +116,28 @@ export default {
       this.simulationUiInfo = simulationUiInfo;
 
       // Make sure that the simulation UI information is valid.
+      // Note: we support the case where datasets 135 and 157 have not yet been
+      //       republished.
 
       this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
 
       if (!this.hasValidSimulationUiInfo) {
-        return;
+          let newSimulationUiInfo = undefined;
+
+          if (this.id == 135) {
+            newSimulationUiInfo = simulationUiInfo135;
+          } else if (this.id == 157) {
+            newSimulationUiInfo = simulationUiInfo157;
+          }
+
+        if (newSimulationUiInfo !== undefined) {
+          this.simulationUiInfo = newSimulationUiInfo;
+          this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
+        }
+
+        if (!this.hasValidSimulationUiInfo) {
+          return;
+        }
       }
 
       // Initialise our UI.
@@ -311,51 +328,57 @@ export default {
       }
 
       // Start the simulation.
+      // Note: we use this.$nextTick() so that the user message is shown before
+      //       we get to post our HTTP request.
 
       this.userMessage = "Loading simulation results...";
       this.showUserMessage = true;
 
-      let xmlhttp = new XMLHttpRequest();
+      this.$nextTick(() => {
+        let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/start_simulation", true);
-      xmlhttp.setRequestHeader("Content-type", "application/json");
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4) {
-          if (xmlhttp.status === 200) {
-            let response = JSON.parse(xmlhttp.responseText);
+        xmlhttp.open("POST", this.apiLocation + "/start_simulation", true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              let response = JSON.parse(xmlhttp.responseText);
 
-            this.isSimulationValid = response.status === "ok";
+              this.isSimulationValid = response.status === "ok";
 
-            if (this.isSimulationValid) {
-              this.checkSimulation(response.data);
+              if (this.isSimulationValid) {
+                this.checkSimulation(response.data);
+              } else {
+                this.showUserMessage = false;
+                this.errorMessage = response.description;
+              }
             } else {
+              this.isSimulationValid = false;
               this.showUserMessage = false;
-              this.errorMessage = response.description;
+              this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
             }
-          } else {
-            this.isSimulationValid = false;
-            this.showUserMessage = false;
-            this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
           }
-        }
-      };
-      xmlhttp.send(JSON.stringify(this.retrieveRequest({
-        solver: solver
-      })));
+        };
+        xmlhttp.send(JSON.stringify(this.retrieveRequest({
+          solver: solver
+        })));
+      });
     },
   },
   created: function() {
     // Try to retrieve the UI information, but only if we have a name.
 
     if (this.name !== undefined) {
-      let production = false;
-
       this.userMessage = "Retrieving UI information...";
       this.showUserMessage = true;
 
       // Retrieve and build the simulation UI.
+      // Note: we use this.$nextTick() so that the user message is shown before
+      //       we get to post our HTTP request.
+      // Note: we support the case where datasets 4, 17, and 78 have not yet
+      //       been republished.
 
-      if (production) {
+      this.$nextTick(() => {
         let xmlhttp = new XMLHttpRequest();
 
         xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
@@ -364,30 +387,25 @@ export default {
           if (xmlhttp.readyState === 4) {
             this.showUserMessage = false;
 
+            let simulationUiInfo = undefined;
+
             if (xmlhttp.status === 200) {
-              this.retrieveAndBuildSimulationUi(JSON.parse(xmlhttp.responseText));
+              simulationUiInfo = JSON.parse(xmlhttp.responseText);
+            } else if (this.id == 4) {
+              simulationUiInfo = simulationUiInfo4;
+            } else if (this.id == 17) {
+              simulationUiInfo = simulationUiInfo17;
+            } else if (this.id == 78) {
+              simulationUiInfo = simulationUiInfo78;
+            }
+
+            if (simulationUiInfo !== undefined) {
+              this.retrieveAndBuildSimulationUi(simulationUiInfo);
             }
           }
         };
         xmlhttp.send();
-      } else {
-        let that = this;
-
-        setTimeout(function() {
-          let simulationUiInfos = {
-            4: simulationUiInfo4,
-            17: simulationUiInfo17,
-            78: simulationUiInfo78,
-            135: simulationUiInfo135,
-            157: simulationUiInfo157,
-          };
-          let simulationUiInfo = simulationUiInfos[that.id];
-
-          that.showUserMessage = false;
-
-          that.retrieveAndBuildSimulationUi(simulationUiInfo);
-        }, 1000+Math.floor(500*Math.random()));
-      }
+      });
     }
   },
   mounted: function() {
