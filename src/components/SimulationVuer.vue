@@ -202,7 +202,7 @@ export default {
       // with our OpenCOR results.
 
       if (typeof(results) === "string") {
-        const SPACES = / +/g;
+        const SPACES = /[ \t]+/g;
 
         let lines = results.trim().split("\n");
         let iMax = lines[0].trim().split(SPACES).length;
