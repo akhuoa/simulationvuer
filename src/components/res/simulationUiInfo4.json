@@ -137,6 +137,14 @@
       "value": "(cAMKII == 0)?'WT':(cAMKII == 1)?'OE':'KO'"
     },
     {
+      "name": "tissue_size_tw",
+      "value": "1"
+    },
+    {
+      "name": "tissue_size_tl",
+      "value": "1"
+    },
+    {
       "name": "Homogeneity",
       "value": "(Homogeneity == 0)?'homogeneous':'heterogeneous'"
     }
