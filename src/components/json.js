@@ -214,6 +214,7 @@ export function validJson(json) {
             type: "array",
           },
         },
+        required: true,
         type: "object",
       },
     },
