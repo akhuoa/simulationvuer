@@ -327,7 +327,8 @@ export default {
         return;
       }
 
-      // Start the simulation.
+      // Start the simulation (after resetting our previous simulation data, in
+      // case there were sonme).
       // Note: we use this.$nextTick() so that the user message is shown before
       //       we get to post our HTTP request.
 
@@ -335,6 +336,8 @@ export default {
       this.showUserMessage = true;
 
       this.$nextTick(() => {
+        this.simulationData = [];
+
         let xmlhttp = new XMLHttpRequest();
 
         xmlhttp.open("POST", this.apiLocation + "/start_simulation", true);
