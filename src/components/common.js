@@ -1,3 +1,5 @@
+export const OPENCOR_SOLVER_NAME = "simcore/services/comp/opencor";
+
 function doEvaluateValue(value, from, to) {
   if (from !== undefined) {
     let re = new RegExp(`\\b${ from }\\b`, 'g');
@@ -11,17 +13,17 @@ function doEvaluateValue(value, from, to) {
 export function evaluateValue(parent, value) {
   let index = -1;
 
-  parent.simulationUiInformation.input.forEach((input) => {
+  parent.simulationUiInfo.input.forEach((input) => {
     ++index;
 
-    value = doEvaluateValue(value, input.id, parent.$children[index].vModel);
+    value = doEvaluateValue(value, input.id, parent.$refs.input.$children[index].vModel);
   });
 
   return Function("return " + value + ";")();
 }
 
 export function evaluateSimulationValue(parent, results, value, i) {
-  parent.simulationUiInformation.output.data.forEach((data) => {
+  parent.simulationUiInfo.output.data.forEach((data) => {
     value = doEvaluateValue(value, data.id, results[parent.simulationDataId[data.id]][i]);
   });
 

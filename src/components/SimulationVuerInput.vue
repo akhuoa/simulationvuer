@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
-    <el-select class="discrete" popper-class="discrete-popper" size="mini" v-if="isDiscrete" v-model="vModel" :disabled="!enabled" :popper-append-to-body="false" @change="updateUi()">
+    <el-select class="discrete" popper-class="discrete-popper" size="mini" v-if="isDiscrete" v-model="vModel" :popper-append-to-body="false" @change="updateUi()">
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
-      <el-slider v-model="vModel" :disabled="!enabled" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" @change="updateUi()" />
-      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :disabled="!enabled" :max="maximumValue" :min="minimumValue" @input="updateUi()" />
+      <el-slider v-model="vModel" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" :step="stepValue" @change="updateUi()" />
+      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" :step="stepValue" :step-strictly="true" @input="updateUi()" />
     </div>
   </div>
 </template>
@@ -28,9 +28,6 @@ export default {
       required: true,
       type: Number,
     },
-    firstScalarInput: {
-      type: Boolean,
-    },
     maximumValue: {
       type: Number,
     },
@@ -44,18 +41,21 @@ export default {
     possibleValues: {
       type: Array,
     },
+    stepValue: {
+      type: Number,
+    },
   },
   data: function() {
     return {
-      enabled: true,
       isDiscrete: this.possibleValues !== undefined,
-      labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":this.firstScalarInput?"first-scalar":"scalar"),
+      labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":"scalar"),
+      visible: true,
       vModel: this.defaultValue,
     };
   },
   methods: {
     updateUi: function() {
-      updateUi(this.$parent);
+      updateUi(this.$parent.$parent);
     },
   },
 };
@@ -123,6 +123,7 @@ div.sliders-and-fields {
   grid-template-columns: 132px auto;
   width: 191px;
   height: 26px;
+  margin-bottom: 4px;
 }
 p.default {
   font-family: Asap, sans-serif;
@@ -130,21 +131,14 @@ p.default {
   margin: 16px 0;
   text-align: start;
 }
-p.first-scalar,
-p.scalar {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  margin-bottom: 8px;
-}
 p.discrete {
   margin-top: 0;
   margin-bottom: 4px;
 }
-p.first-scalar {
+p.scalar {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin-bottom: 8px;
   margin-top: 0;
 }
-p.scalar {
-  margin-top: 6px;
-}
 </style>
-

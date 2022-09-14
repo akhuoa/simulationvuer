@@ -1,28 +1,29 @@
 <template>
   <div class="simulation-vuer" v-loading="showUserMessage" :element-loading-text="userMessage">
-    <p v-if="!hasValidSimulationUiInformation && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
-    <div class="main" v-if="hasValidSimulationUiInformation">
+    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <div class="main" v-if="hasValidSimulationUiInfo">
       <div class="main-left">
         <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div>
-          <SimulationVuerInput v-for="(input, index) in simulationUiInformation.input" :defaultValue="input.defaultValue" :firstScalarInput="firstScalarInput[index]" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" />
+        <div class="input-frame">
+          <PerfectScrollbar ref="input" class="input" :options="perfectScollbarOptions">
+            <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+          </PerfectScrollbar>
         </div>
-        <div ref="input" />
         <div class="primary-button">
-          <el-button type="primary" size="mini" @click="runSimulation()">Run simulation</el-button>
+          <el-button type="primary" size="mini" @click="startSimulation()">Run Simulation</el-button>
+        </div>
+        <div class="secondary-button" v-if="uuid">
+          <el-button size="mini" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
         <div class="secondary-button">
-          <el-button size="mini" @click="goToOsparc()">Go to oSPARC</el-button>
+          <el-button size="mini" @click="viewDataset()">View Dataset</el-button>
         </div>
-        <div class="secondary-button">
-          <el-button size="mini" @click="viewDataset()">View dataset</el-button>
-        </div>
-        <p class="default note">Additional parameters are available on oSPARC</p>
+        <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInformation.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!isSimulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -37,13 +38,16 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/plotvuer.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { Button, Divider, Loading } from "element-ui";
-import { evaluateValue, evaluateSimulationValue } from "./common.js";
+import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
+import PerfectScrollbar from "vue2-perfect-scrollbar";
+import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 
 Vue.use(Button);
 Vue.use(Divider);
 Vue.use(Loading.directive);
+Vue.use(PerfectScrollbar);
 
 export default {
   name: "SimulationVuer",
@@ -64,193 +68,311 @@ export default {
   data: function() {
     let xmlhttp = new XMLHttpRequest();
     let name = undefined;
-    let resource = undefined;
+    let uuid = undefined;
 
-    xmlhttp.open("GET", this.apiLocation + "/dataset_info/using_pennsieve_identifier?identifier=" + this.id, false);
+    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id + "/nodebug", false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.send();
+    xmlhttp.onreadystatechange = () => {
+      if (xmlhttp.readyState === 4) {
+        if (xmlhttp.status === 200) {
+          let datasetInfo = JSON.parse(xmlhttp.responseText);
 
-    if (xmlhttp.status === 200) {
-      let datasetInfo = JSON.parse(xmlhttp.responseText).result[0];
-
-      if (datasetInfo !== undefined) {
-        name = datasetInfo.name;
-
-        let isSedmlResource = false;
-
-        datasetInfo.additionalLinks.forEach(function(el) {
-          if (el.description == "SED-ML file") {
-            isSedmlResource = true;
-            resource = el.uri;
-          } else if (!isSedmlResource && (el.description == "CellML file")) {
-            resource = el.uri;
-          }
-        });
+          name = datasetInfo.name;
+          uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
+        }
       }
-    }
+    };
+    xmlhttp.send();
 
     return {
       errorMessage: "",
-      firstScalarInput: [],
       hasFinalisedUi: false,
-      hasValidSimulationUiInformation: false,
+      hasValidSimulationUiInfo: false,
       isMounted: false,
       isSimulationValid: true,
       layout: [],
       name: name,
-      resource: resource,
+      perfectScollbarOptions: {
+        suppressScrollX: true,
+      },
       showUserMessage: false,
       simulationData: [],
       simulationDataId: {},
-      simulationUiInformation: {},
+      simulationUiInfo: {},
       userMessage: "",
       ui: null,
+      uuid: uuid,
     };
   },
   methods: {
-    goToOsparc() {
-      window.open("https://osparc.io/", "_blank");
+    retrieveAndBuildSimulationUi(simulationUiInfo) {
+      // Keep track of the simulation UI information.
+
+      this.simulationUiInfo = simulationUiInfo;
+
+      // Make sure that the simulation UI information is valid.
+
+      this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
+
+      if (!this.hasValidSimulationUiInfo) {
+        return;
+      }
+
+      // Initialise our UI.
+
+      initialiseUi(this);
+
+      // Finalise our UI.
+      // Note: we try both here and in the mounted() function since we have no
+      //       idea how long it's going to take to retrieve the simulation UI
+      //       information.
+
+      this.$nextTick(() => {
+        finaliseUi(this);
+      });
+    },
+    runOnOsparc() {
+      window.open(`https://osparc.io/study/${this.uuid}`, "_blank");
     },
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
-    runSimulation() {
-      this.userMessage = "Loading simulation results...";
-      this.showUserMessage = true;
+    retrieveRequest(request) {
+      // Settings specific to OpenCOR/oSPARC.
 
-      let request = {
-        model_url: this.resource,
-        json_config: {},
-      };
+      let isOpencorSimulation = request.solver.name === OPENCOR_SOLVER_NAME;
 
-      // Specify the ending point and point interval, if we have some simulation
-      // data.
+      if (isOpencorSimulation) {
+        request.opencor = {
+          model_url: this.simulationUiInfo.simulation.opencor.resource,
+          json_config: {},
+        };
+      } else {
+        request.osparc = {};
+      }
 
-      if (this.simulationUiInformation.simulation !== undefined) {
-        request.json_config.simulation = {
-          "Ending point": this.simulationUiInformation.simulation.endingPoint,
-          "Point interval": this.simulationUiInformation.simulation.pointInterval,
+      // Specify the ending point and point interval, if we have some.
+
+      if (   isOpencorSimulation
+          && (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
+          && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
+        request.opencor.json_config.simulation = {
+          "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
+          "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
         };
       }
 
-      // Specify the simulation parameters.
+      // Specify the parameters, if any.
 
-      if (this.simulationUiInformation.parameters != undefined) {
-        request.json_config.parameters = {};
+      if (this.simulationUiInfo.parameters !== undefined) {
+        let parameters = {};
 
-        this.simulationUiInformation.parameters.forEach((parameter) => {
-          request.json_config.parameters[parameter.name] = evaluateValue(this, parameter.value);
+        this.simulationUiInfo.parameters.forEach((parameter) => {
+          parameters[parameter.name] = evaluateValue(this, parameter.value);
         });
+
+        if (isOpencorSimulation) {
+          request.opencor.json_config.parameters = parameters;
+        } else {
+          request.osparc.job_inputs = parameters;
+        }
       }
 
-      // Specify what we want to retrieve.
+      // Specify what we want to retrieve, if anything.
 
-      if (this.simulationUiInformation.output.data !== undefined)  {
+      if (isOpencorSimulation && (this.simulationUiInfo.output.data !== undefined))  {
         let index = -1;
 
-        request.json_config.output = [];
+        request.opencor.json_config.output = [];
 
-        this.simulationUiInformation.output.data.forEach((outputData) => {
-          request.json_config.output[++index] = outputData.name;
+        this.simulationUiInfo.output.data.forEach((outputData) => {
+          request.opencor.json_config.output[++index] = outputData.name;
         });
       }
 
-      // Run the simulation.
+      return request;
+    },
+    processSimulationResults(results) {
+      // Convert, if needed, the results to a JSON format that is compatible
+      // with our OpenCOR results.
+
+      if (typeof(results) === "string") {
+        const SPACES = /[ \t]+/g;
+
+        let lines = results.trim().split("\n");
+        let iMax = lines[0].trim().split(SPACES).length;
+
+        results = {};
+
+        for (let i = 0; i < iMax; ++i) {
+          results[i] = [];
+        }
+
+        let i = -1;
+
+        lines.forEach((line) => {
+          ++i;
+
+          let j = -1;
+          let values = line.trim().split(SPACES);
+
+          values.forEach((value) => {
+            results[++j][i] = Number(value);
+          });
+        });
+      }
+
+      // Get the results ready for plotting.
+
+      let index = -1;
+      let iMax = results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
+
+      this.simulationUiInfo.output.plots.forEach((outputPlot) => {
+        let xValue = [];
+        let yValue = [];
+
+        for (let i = 0; i < iMax; ++i) {
+          xValue[i] = evaluateSimulationValue(this, results, outputPlot.xValue, i);
+          yValue[i] = evaluateSimulationValue(this, results, outputPlot.yValue, i);
+        }
+
+        this.simulationData[++index] = [
+          {
+            x: xValue,
+            y: yValue,
+          },
+        ];
+      });
+    },
+    checkSimulation(data) {
+      // Check the simulation.
 
       let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/simulation", true);
+      xmlhttp.open("POST", this.apiLocation + "/check_simulation", true);
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
-          this.showUserMessage = false;
-
           if (xmlhttp.status === 200) {
             let response = JSON.parse(xmlhttp.responseText);
 
             this.isSimulationValid = response.status === "ok";
 
             if (this.isSimulationValid) {
-              // Retrieve and post-process the simulation data.
+              if (response.results !== undefined) {
+                // The simulation is finished, so process its results.
 
-              let index = -1;
-              let iMax = response.results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
+                this.showUserMessage = false;
 
-              this.simulationUiInformation.output.plots.forEach((outputPlot) => {
-                let xValue = [];
-                let yValue = [];
+                this.processSimulationResults(response.results);
+              } else {
+                // The simulation is not yet finished, so check again in a
+                // second.
 
-                for (let i = 0; i < iMax; ++i) {
-                  xValue[i] = evaluateSimulationValue(this, response.results, outputPlot.xValue, i);
-                  yValue[i] = evaluateSimulationValue(this, response.results, outputPlot.yValue, i);
-                }
+                let that = this;
 
-                this.simulationData[++index] = [
-                  {
-                    x: xValue,
-                    y: yValue,
-                  },
-                ];
-              });
+                setTimeout(function() {
+                  that.checkSimulation(data);
+                }, 1000);
+              }
             } else {
+              this.showUserMessage = false;
               this.errorMessage = response.description;
             }
           } else {
             this.isSimulationValid = false;
-
+            this.showUserMessage = false;
             this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
           }
         }
       };
-      xmlhttp.send(JSON.stringify(request));
+      xmlhttp.send(JSON.stringify(data));
+    },
+    startSimulation() {
+      // Retrieve the solver to be used for the simulation.
+
+      let solver = undefined;
+
+      this.simulationUiInfo.simulation.solvers.forEach((crtSolver) => {
+        if ((crtSolver.if === undefined) || evaluateValue(this, crtSolver.if)) {
+          solver = crtSolver;
+        }
+      });
+
+      if (solver === undefined) {
+        console.warn("SIMULATION: no solver name and/or solver version specified.");
+
+        return;
+      }
+
+      // Start the simulation (after resetting our previous simulation data, in
+      // case there were sonme).
+      // Note: we use this.$nextTick() so that the user message is shown before
+      //       we get to post our HTTP request.
+
+      this.userMessage = "Loading simulation results...";
+      this.showUserMessage = true;
+
+      this.$nextTick(() => {
+        this.simulationData = [];
+
+        let xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("POST", this.apiLocation + "/start_simulation", true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              let response = JSON.parse(xmlhttp.responseText);
+
+              this.isSimulationValid = response.status === "ok";
+
+              if (this.isSimulationValid) {
+                this.checkSimulation(response.data);
+              } else {
+                this.showUserMessage = false;
+                this.errorMessage = response.description;
+              }
+            } else {
+              this.isSimulationValid = false;
+              this.showUserMessage = false;
+              this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
+            }
+          }
+        };
+        xmlhttp.send(JSON.stringify(this.retrieveRequest({
+          solver: solver
+        })));
+      });
     },
   },
   created: function() {
-    // Try to retrieve the UI information, but only if we have a resource.
+    // Try to retrieve the UI information, but only if we have a name.
 
-    if (this.resource !== undefined) {
+    if (this.name !== undefined) {
       this.userMessage = "Retrieving UI information...";
       this.showUserMessage = true;
 
-      // Retrieve the simulation UI file for the given dataset.
+      // Retrieve and build the simulation UI.
+      // Note: we use this.$nextTick() so that the user message is shown before
+      //       we get to post our HTTP request.
 
-      let xmlhttp = new XMLHttpRequest();
+      this.$nextTick(() => {
+        let xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
-      xmlhttp.setRequestHeader("Content-type", "application/json");
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4) {
-          this.showUserMessage = false;
+        xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            this.showUserMessage = false;
 
-          if (xmlhttp.status === 200) {
-            // Keep track of the simulation UI information.
-
-            this.simulationUiInformation = JSON.parse(xmlhttp.responseText);
-
-            // Make sure that the simulation UI information is valid.
-
-            this.hasValidSimulationUiInformation = validJson(this.simulationUiInformation);
-
-            if (!this.hasValidSimulationUiInformation) {
-              return;
+            if (xmlhttp.status === 200) {
+              this.retrieveAndBuildSimulationUi(JSON.parse(xmlhttp.responseText));
             }
-
-            // Initialise our UI.
-
-            initialiseUi(this);
-
-            // Finalise our UI.
-            // Note: we try both here and in the mounded() function since we have no
-            //       idea how long it's going to take to retrieve the simulation UI
-            //       information.
-
-            this.$nextTick(() => {
-              finaliseUi(this);
-            });
           }
-        }
-      };
-      xmlhttp.send();
+        };
+        xmlhttp.send();
+      });
     }
   },
   mounted: function() {
@@ -272,6 +394,13 @@ export default {
 @import "~element-ui/packages/theme-chalk/src/divider";
 @import "~element-ui/packages/theme-chalk/src/loading";
 
+::v-deep .el-button:hover {
+  box-shadow: -3px 2px 4px #00000040;
+}
+::v-deep .el-divider {
+  margin: -8px 0 8px 0 !important;
+  width: 202px;
+}
 ::v-deep .el-loading-spinner {
   .path {
     stroke: $app-primary-color;
@@ -280,17 +409,16 @@ export default {
     color: $app-primary-color;
   }
 }
-
-::v-deep .el-button:hover {
-  box-shadow: -3px 2px 4px #00000040;
+div.input {
+  padding: 4px;
+  height: 300px;
 }
-::v-deep .el-divider {
-  margin: -8px 0 8px 0 !important;
-  width: 191px;
+div.input-frame {
+  border: 1px solid #dcdfe6;
 }
 div.main {
   display: grid;
-  --mainLeftWidth: 224px;
+  --mainLeftWidth: 235px;
   grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
   height: 100%;
 }
@@ -334,7 +462,7 @@ div.primary-button,
 div.secondary-button {
   display: flex;
   justify-content: flex-end;
-  width: 191px;
+  width: 202px;
 }
 div.primary-button {
   margin-top: 14px;
@@ -369,6 +497,9 @@ p.default {
 }
 p.error {
   margin-left: 16px;
+}
+p.input-parameters {
+  margin-bottom: 8px;
 }
 p.name,
 p.input-parameters {

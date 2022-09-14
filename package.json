@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "0.5.9",
+  "version": "0.6.3",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve --mode static",
@@ -12,7 +12,8 @@
     "@abi-software/plotvuer": "^0.2.45",
     "element-ui": "^2.14.1",
     "jsonschema": "^1.4.0",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue2-perfect-scrollbar": "^1.5.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
