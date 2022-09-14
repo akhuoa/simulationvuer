@@ -138,15 +138,19 @@
     },
     {
       "name": "tissue_size_tw",
-      "value": "1"
+      "value": "165"
     },
     {
       "name": "tissue_size_tl",
-      "value": "1"
+      "value": "165"
     },
     {
       "name": "Homogeneity",
       "value": "(Homogeneity == 0)?'homogeneous':'heterogeneous'"
+    },
+    {
+      "name": "num_threads",
+      "value": "4"
     }
   ],
   "simulation": {
