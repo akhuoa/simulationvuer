@@ -43,11 +43,6 @@ import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 import PerfectScrollbar from "vue2-perfect-scrollbar";
 import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
-import simulationUiInfo4 from "./res/simulationUiInfo4.json";
-import simulationUiInfo17 from "./res/simulationUiInfo17.json";
-import simulationUiInfo78 from "./res/simulationUiInfo78.json";
-import simulationUiInfo135 from "./res/simulationUiInfo135.json";
-import simulationUiInfo157 from "./res/simulationUiInfo157.json";
 
 Vue.use(Button);
 Vue.use(Divider);
@@ -116,28 +111,11 @@ export default {
       this.simulationUiInfo = simulationUiInfo;
 
       // Make sure that the simulation UI information is valid.
-      // Note: we support the case where datasets 135 and 157 have not yet been
-      //       republished.
 
       this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
 
       if (!this.hasValidSimulationUiInfo) {
-          let newSimulationUiInfo = undefined;
-
-          if (this.id == 135) {
-            newSimulationUiInfo = simulationUiInfo135;
-          } else if (this.id == 157) {
-            newSimulationUiInfo = simulationUiInfo157;
-          }
-
-        if (newSimulationUiInfo !== undefined) {
-          this.simulationUiInfo = newSimulationUiInfo;
-          this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
-        }
-
-        if (!this.hasValidSimulationUiInfo) {
-          return;
-        }
+        return;
       }
 
       // Initialise our UI.
@@ -378,8 +356,6 @@ export default {
       // Retrieve and build the simulation UI.
       // Note: we use this.$nextTick() so that the user message is shown before
       //       we get to post our HTTP request.
-      // Note: we support the case where datasets 4, 17, and 78 have not yet
-      //       been republished.
 
       this.$nextTick(() => {
         let xmlhttp = new XMLHttpRequest();
@@ -390,20 +366,8 @@ export default {
           if (xmlhttp.readyState === 4) {
             this.showUserMessage = false;
 
-            let simulationUiInfo = undefined;
-
             if (xmlhttp.status === 200) {
-              simulationUiInfo = JSON.parse(xmlhttp.responseText);
-            } else if (this.id == 4) {
-              simulationUiInfo = simulationUiInfo4;
-            } else if (this.id == 17) {
-              simulationUiInfo = simulationUiInfo17;
-            } else if (this.id == 78) {
-              simulationUiInfo = simulationUiInfo78;
-            }
-
-            if (simulationUiInfo !== undefined) {
-              this.retrieveAndBuildSimulationUi(simulationUiInfo);
+              this.retrieveAndBuildSimulationUi(JSON.parse(xmlhttp.responseText));
             }
           }
         };
