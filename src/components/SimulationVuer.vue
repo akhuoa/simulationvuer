@@ -6,11 +6,9 @@
         <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div class="input-frame">
-          <PerfectScrollbar ref="input" class="input" :options="perfectScollbarOptions">
-            <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
-          </PerfectScrollbar>
-        </div>
+        <PerfectScrollbar ref="input" class="input" :options="perfectScollbarOptions">
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+        </PerfectScrollbar>
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="startSimulation()">Run Simulation</el-button>
         </div>
@@ -410,11 +408,9 @@ export default {
   }
 }
 div.input {
+  border: 1px solid #dcdfe6;
   padding: 4px;
   height: 300px;
-}
-div.input-frame {
-  border: 1px solid #dcdfe6;
 }
 div.main {
   display: grid;
