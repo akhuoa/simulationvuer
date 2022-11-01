@@ -13,6 +13,14 @@ export function initialiseUi(parent) {
     ++index;
 
     parent.layout[index] = {
+      margin: {
+        t: 5,
+        l: 55,
+        r: 55,
+        b: 90,
+        pad: 4
+      },
+      dragmode: "pan",
       xaxis: {
         title: {
           text: outputPlot.xAxisTitle,
