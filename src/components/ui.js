@@ -48,15 +48,6 @@ export function finaliseUi(parent) {
 
     updateUi(parent);
 
-    // Make sure that the (vertical) scrollbar's thumb is of the right length.
-    // Note: it may indeed be of the incorrect length if we hid some components
-    //       in updateUi().
-
-    parent.$nextTick(() => {
-      parent.$refs.input.$el.scroll(0, 1);
-      parent.$refs.input.$el.scroll(0, -1);
-    });
-
     parent.hasFinalisedUi = true;
   }
 }
@@ -72,7 +63,7 @@ export function updateUi(parent) {
     parent.simulationUiInfo.input.forEach((input) => {
       ++index;
 
-      parent.$refs.input.$children[index].visible = (input.visible === undefined)?true:evaluateValue(parent, input.visible);
+      parent.$children[index].visible = (input.visible === undefined)?true:evaluateValue(parent, input.visible);
     });
   });
 }

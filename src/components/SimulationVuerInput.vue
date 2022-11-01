@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     updateUi: function() {
-      updateUi(this.$parent.$parent);
+      updateUi(this.$parent);
     },
   },
 };
