@@ -6,10 +6,8 @@
         <p class="default name">{{name}}</p>
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
-        <div class="input-frame">
-          <PerfectScrollbar ref="input" class="input" :options="perfectScollbarOptions">
-            <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
-          </PerfectScrollbar>
+        <div class="input scrollbar">
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
         </div>
         <div class="primary-button">
           <el-button type="primary" size="mini" @click="startSimulation()">Run Simulation</el-button>
@@ -41,13 +39,10 @@ import { Button, Divider, Loading } from "element-ui";
 import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
-import PerfectScrollbar from "vue2-perfect-scrollbar";
-import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 
 Vue.use(Button);
 Vue.use(Divider);
 Vue.use(Loading.directive);
-Vue.use(PerfectScrollbar);
 
 export default {
   name: "SimulationVuer",
@@ -399,7 +394,7 @@ export default {
 }
 ::v-deep .el-divider {
   margin: -8px 0 8px 0 !important;
-  width: 202px;
+  width: 210px;
 }
 ::v-deep .el-loading-spinner {
   .path {
@@ -410,15 +405,13 @@ export default {
   }
 }
 div.input {
+  border: 1px solid #dcdfe6;
   padding: 4px;
   height: 300px;
 }
-div.input-frame {
-  border: 1px solid #dcdfe6;
-}
 div.main {
   display: grid;
-  --mainLeftWidth: 235px;
+  --mainLeftWidth: 243px;
   grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
   height: 100%;
 }
@@ -462,7 +455,7 @@ div.primary-button,
 div.secondary-button {
   display: flex;
   justify-content: flex-end;
-  width: 202px;
+  width: 210px;
 }
 div.primary-button {
   margin-top: 14px;
@@ -485,6 +478,24 @@ div.secondary-button .el-button,
 div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
+}
+div.scrollbar {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+div.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  right: -8px;
+  background-color: #f5f5f5;
+}
+div.scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  background-color: #979797;
+}
+div.scrollbar::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #f5f5f5;
 }
 div.simulation-vuer {
   height: 100%;

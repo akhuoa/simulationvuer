@@ -16,7 +16,7 @@ export function evaluateValue(parent, value) {
   parent.simulationUiInfo.input.forEach((input) => {
     ++index;
 
-    value = doEvaluateValue(value, input.id, parent.$refs.input.$children[index].vModel);
+    value = doEvaluateValue(value, input.id, parent.$children[index].vModel);
   });
 
   return Function("return " + value + ";")();
