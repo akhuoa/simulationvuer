@@ -65,7 +65,7 @@ export default {
     let name = undefined;
     let uuid = undefined;
 
-    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id + "/nodebug", false);
+    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
       if (xmlhttp.readyState === 4) {
