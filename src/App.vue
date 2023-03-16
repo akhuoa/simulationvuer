@@ -38,11 +38,9 @@ export default {
       apiLocation: process.env.VUE_APP_API_LOCATION,
       datasets: [
         { id: 0, description: "Non-simulation dataset", },
-        { id: 4, description: "Multi-scale rabbit cardiac electrophysiology models", },
-        { id: 17, description: "Multi-scale human cardiac electrophysiology models", },
-        { id: 78, description: "Kember Cardiac Nerve Model", },
         { id: 135, description: "Computational analysis of the human sinus node action potential - Model development and effects of mutations", },
         { id: 157, description: "Fabbri-based composite SAN model", },
+        { id: 308, description: "Kember Cardiac Nerve Model", },
       ],
       id: 0,
       ready: [],
