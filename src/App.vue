@@ -41,6 +41,8 @@ export default {
         { id: 135, description: "Computational analysis of the human sinus node action potential - Model development and effects of mutations", },
         { id: 157, description: "Fabbri-based composite SAN model", },
         { id: 308, description: "Kember Cardiac Nerve Model", },
+        { id: 318, description: "Multi-scale rabbit cardiac electrophysiology models", },
+        { id: 320, description: "Multi-scale human cardiac electrophysiology models", },
       ],
       id: 0,
       ready: [],
