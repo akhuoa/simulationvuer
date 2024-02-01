@@ -7,21 +7,21 @@
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div class="input scrollbar">
-          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" ref="simInput" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
         </div>
         <div class="primary-button">
-          <el-button type="primary" size="mini" @click="startSimulation()">Run Simulation</el-button>
+          <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
-          <el-button size="mini" @click="runOnOsparc()">Run on oSPARC</el-button>
+          <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
         <div class="secondary-button">
-          <el-button size="mini" @click="viewDataset()">View Dataset</el-button>
+          <el-button size="small" @click="viewDataset()">View Dataset</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :layout-input="layout[index]" :dataInput="simulationData[index]" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :metadata="plotMetadata" :layout-input="layout[index]" :data-source="{data: simulationData[index]}" :plotType="'plotly-only'" />
       </div>
       <div class="main-right" v-show="!isSimulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -31,24 +31,24 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { PlotVuer } from "@abi-software/plotvuer";
-import "@abi-software/plotvuer/dist/plotvuer.css";
+// import "@abi-software/plotvuer/dist/plotvuer.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
-import { Button, Divider, Loading } from "element-ui";
+// import { Button, Divider, Loading } from "element-ui";
+import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 
-Vue.use(Button);
-Vue.use(Divider);
-Vue.use(Loading.directive);
 
 export default {
   name: "SimulationVuer",
   components: {
     PlotVuer,
     SimulationVuerInput,
+    ElButton,
+    ElDivider,
+    ElLoading,
   },
   props: {
     apiLocation: {
@@ -64,7 +64,6 @@ export default {
     let xmlhttp = new XMLHttpRequest();
     let name = undefined;
     let uuid = undefined;
-
     xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
@@ -80,6 +79,13 @@ export default {
     xmlhttp.send();
 
     return {
+      plotMetadata: {
+        version: "1.1.0",
+        type: "plot",
+        attrs: {
+          style: "timeseries"
+        }
+      },
       errorMessage: "",
       hasFinalisedUi: false,
       hasValidSimulationUiInfo: false,
@@ -235,6 +241,7 @@ export default {
           {
             x: xValue,
             y: yValue,
+            type: "scatter",
           },
         ];
       });
@@ -385,23 +392,21 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import "~element-ui/packages/theme-chalk/src/button";
-@import "~element-ui/packages/theme-chalk/src/divider";
-@import "~element-ui/packages/theme-chalk/src/loading";
 
-::v-deep .el-button:hover {
+
+:deep( .el-button:hover) {
   box-shadow: -3px 2px 4px #00000040;
 }
-::v-deep .el-divider {
+:deep( .el-divider) {
   margin: -8px 0 8px 0 !important;
   width: 210px;
 }
-::v-deep .el-loading-spinner {
+:deep( .el-loading-spinner) {
   .path {
-    stroke: $app-primary-color;
+    stroke: #8300BF;
   }
   i, .el-loading-text {
-    color: $app-primary-color;
+    color: #8300BF;
   }
 }
 div.input {
@@ -448,7 +453,7 @@ div.main-right.x8 {
 div.main-right.x9 {
   height: 11.111%;
 }
-::v-deep div.main-right div.controls {
+:deep( div.main-right div.controls) {
   height: 0;
 }
 div.primary-button,

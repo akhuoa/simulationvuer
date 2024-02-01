@@ -1,28 +1,29 @@
 <template>
   <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
-    <el-select class="discrete" popper-class="discrete-popper" size="mini" v-if="isDiscrete" v-model="vModel" :popper-append-to-body="false" @change="updateUi()">
+    <el-select class="discrete" popper-class="discrete-popper" size="small" v-if="isDiscrete" v-model="vModel" :popper-append-to-body="false" @change="updateUi()">
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
       <el-slider v-model="vModel" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" :step="stepValue" @change="updateUi()" />
-      <el-input-number class="scalar" size="mini" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" :step="stepValue" :step-strictly="true" @input="updateUi()" />
+      <el-input-number class="scalar" size="small" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" :step="stepValue" :step-strictly="true" @input="updateUi()" />
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { InputNumber, Option, Select, Slider } from "element-ui";
+// import { InputNumber, Option, Select, Slider } from "element-ui";
+import { ElInputNumber, ElOption, ElSelect, ElSlider } from "element-plus";
 import { updateUi } from "./ui.js";
-
-Vue.use(InputNumber);
-Vue.use(Option);
-Vue.use(Select);
-Vue.use(Slider);
 
 export default {
   name: "SimulationVuerInput",
+  components: {
+    ElInputNumber,
+    ElOption,
+    ElSelect,
+    ElSlider,
+  },
   props: {
     defaultValue: {
       required: true,
@@ -63,46 +64,42 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import "~element-ui/packages/theme-chalk/src/input-number";
-@import "~element-ui/packages/theme-chalk/src/option";
-@import "~element-ui/packages/theme-chalk/src/select";
-@import "~element-ui/packages/theme-chalk/src/slider";
 
-::v-deep .el-input-number.scalar {
+:deep( .el-input-number.scalar ){
   margin-top: -8px;
   width: 0;
 }
-::v-deep .el-input-number.scalar .el-input {
+:deep( .el-input-number.scalar .el-input ){
   width: 60px;
 }
-::v-deep .el-input-number.scalar .el-input__inner:focus {
+:deep( .el-input-number.scalar .el-input__inner:focus ){
   border-color: #8300bf;
 }
-::v-deep .el-select.discrete {
+:deep( .el-select.discrete ){
   margin-bottom: 16px;
 }
-::v-deep .el-slider {
+:deep( .el-slider ){
   width: 108px;
   margin-top: -12px;
   margin-left: 8px;
 }
-::v-deep .el-slider__bar {
+:deep( .el-slider__bar ){
   background-color: #8300bf;
 }
-::v-deep .el-slider__button {
+:deep( .el-slider__button ){
   border-color: #8300bf;
 }
 .discrete {
   margin-left: 8px;
 }
 .discrete {
-  ::v-deep .el-input__inner {
+  :deep( .el-input__inner ){
     font-family: Asap, sans-serif;
     font-size: 16px;
   }
 }
-.discrete ::v-deep .el-input__inner:focus,
-.discrete ::v-deep .el-input.is-focus .el-input__inner {
+.discrete :deep( .el-input__inner:focus),
+.discrete :deep( .el-input.is-focus .el-input__inner) {
   border-color: #8300bf;
 }
 .discrete-popper .el-select-dropdown__item {
@@ -112,7 +109,7 @@ export default {
   font-weight: normal;
   color: #8300bf;
 }
-.scalar ::v-deep .el-input__inner {
+.scalar :deep( .el-input__inner ){
   text-align: center;
 }
 div.simulation-vuer {

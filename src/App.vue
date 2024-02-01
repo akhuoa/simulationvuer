@@ -2,7 +2,7 @@
   <div id="app">
     <div class="app">
       <h1>SimulationVuer</h1>
-      <el-radio-group v-model="id" size="mini">
+      <el-radio-group v-model="id" size="small">
         <el-radio-button :class="className(dataset.id)" v-for="dataset in datasets" v-bind:key="dataset.id" :label="dataset.id" />
       </el-radio-group>
     </div>
@@ -21,17 +21,15 @@
 </template>
 
 <script>
-import Vue from "vue";
 import SimulationVuer from "./components/SimulationVuer.vue";
-import { RadioButton, RadioGroup } from "element-ui";
-
-Vue.use(RadioButton);
-Vue.use(RadioGroup);
+import { ElRadioButton, ElRadioGroup } from "element-plus";
 
 export default {
   name: "App",
   components: {
     SimulationVuer,
+    ElRadioButton,
+    ElRadioGroup,
   },
   data: function () {
     return {
