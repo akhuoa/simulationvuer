@@ -41,13 +41,15 @@ export default defineConfig(({ command, mode }) => {
         fileName: "simulationvuer",
       },
       rollupOptions: {
-        external: ["vue"],
+        external: ["vue", "@abi-software/svg-sprite", "@abi-software/plotvuer"],
         output: {
           globals: {
             vue: "Vue",
+            "@abi-software/svg-sprite": "@abi-software/svg-sprite",
+            "@abi-software/plotvuer": "@abi-software/plotvuer"
           },
         },
-      },
+      }, 
     },
     resolve: {
       alias: {
