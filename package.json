@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "0.7.0-vue-3-alpha.0",
+  "version": "0.7.0-vue-3-alpha.1",
   "private": false,
   "scripts": {
     "serve": "vite serve --host",
