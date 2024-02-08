@@ -33,7 +33,7 @@ export default {
   },
   data: function () {
     return {
-      apiLocation: process.env.VUE_APP_API_LOCATION,
+      apiLocation: import.meta.env.VITE_API_LOCATION,
       datasets: [
         { id: 0, description: "Non-simulation dataset", },
         { id: 4, description: "Multi-scale rabbit cardiac electrophysiology models", },
