@@ -1,7 +1,7 @@
 <template>
   <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
-    <el-select class="discrete" popper-class="discrete-popper" size="small" v-if="isDiscrete" v-model="vModel" :popper-append-to-body="false" @change="updateUi()">
+    <el-select class="discrete" popper-class="discrete-popper" size="small" v-if="isDiscrete" v-model="vModel" :teleport=false @change="updateUi()">
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
@@ -12,7 +12,6 @@
 </template>
 
 <script>
-// import { InputNumber, Option, Select, Slider } from "element-ui";
 import { ElInputNumber, ElOption, ElSelect, ElSlider } from "element-plus";
 import { updateUi } from "./ui.js";
 

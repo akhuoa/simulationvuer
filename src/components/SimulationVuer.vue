@@ -32,9 +32,8 @@
 
 <script>
 import { PlotVuer } from "@abi-software/plotvuer";
-// import "@abi-software/plotvuer/dist/plotvuer.css";
+import "@abi-software/plotvuer/dist/style.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
-// import { Button, Divider, Loading } from "element-ui";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";

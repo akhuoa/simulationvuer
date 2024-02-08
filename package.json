@@ -7,7 +7,7 @@
     "build-bundle": "vite build"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^0.4.0-vue-3-alpha.4",
+    "@abi-software/plotvuer": "^0.4.0-vue-3-alpha.5",
     "element-plus": "^2.5.3",
     "jsonschema": "^1.4.0",
     "unplugin-vue-components": "^0.26.0",
@@ -48,7 +48,17 @@
     "not dead"
   ],
   "description": "SimulationVuer is a [Vue](https://vuejs.org/) component to configure and run a [CellML](https://cellml.org/)-based model of some biological process, and to visualise the results of that simulation.",
-  "main": "./dist/simulationvuer.common.js",
+  "type": "module",
+  "main": "./dist/simulationvuer.umd.cjs",
+  "module": "./dist/simulationvuer.js",
+  "exports": {
+    ".": {
+      "import": "./dist/simulationvuer.js",
+      "require": "./dist/simulationvuer.umd.cjs"
+    },
+    "./dist/style.css": "./dist/style.css",
+    "./src/*": "./src/*"
+  },
   "files": [
     "data/*",
     "dist/*",
