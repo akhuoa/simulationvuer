@@ -1,8 +1,20 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
+import * as VueRouter from 'vue-router'
 import App from './App.vue'
+import ElementPlus from 'element-plus'
 
-Vue.config.productionTip = false
 
-new Vue({
-  render: h => h(App),
-}).$mount('#app')
+const routes = [
+  { path: '/'},
+]
+
+const router = VueRouter.createRouter({
+  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+  history: VueRouter.createWebHashHistory(),
+  routes,
+})
+
+const app = createApp(App)
+app.use(router)
+app.use(ElementPlus)
+app.mount('#app')
