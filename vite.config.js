@@ -1,38 +1,27 @@
 import path from "path";
 import { resolve } from "node:path";
 const pathSrc = path.resolve(__dirname, "./src");
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import Components from "unplugin-vue-components/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const config = {
-    // css: {
-    //     preprocessorOptions: {
-    //       scss: {
-    //         additionalData: `@use '${pathSrc}\\assets\\styles' as *;`
-    //       },
-    //     },
-    // },
     plugins: [
-        vue(),
-        Components({
-          // allow auto load markdown components under `./src/components/`
-          extensions: ['vue', 'md'],
-          // allow auto import and register components used in markdown
-          include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-          resolvers: [
-            ElementPlusResolver({
-              importStyle: 'sass',
-            }),
-          ],
-          dts: 'src/components.d.ts',
-        }),
-    
-        // https://github.com/antfu/unocss
-        // see unocss.config.ts for config
+      vue(),
+      Components({
+        // Allow auto load markdown components under `./src/components/`.
+        extensions: ["vue", "md"],
+        // Allow auto import and register components used in markdown.
+        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+        resolvers: [
+          ElementPlusResolver({
+            importStyle: "sass",
+          }),
+        ],
+        dts: "src/components.d.ts",
+      }),
     ],
     build: {
       lib: {
@@ -46,28 +35,26 @@ export default defineConfig(({ command, mode }) => {
           globals: {
             vue: "Vue",
             "@abi-software/svg-sprite": "@abi-software/svg-sprite",
-            "@abi-software/plotvuer": "@abi-software/plotvuer"
+            "@abi-software/plotvuer": "@abi-software/plotvuer",
           },
         },
-      }, 
+      },
     },
     resolve: {
       alias: {
-        '~/': `${pathSrc}/`,
+        "~/": `${pathSrc}/`,
       },
     },
   };
 
-  if (command === 'serve') {
-    config.server =  {
+  if (command === "serve") {
+    config.server = {
       port: 8081,
     };
     config.define = {
-      'process.env.HTTP_PROXY': 8081,
-      global: 'globalThis',
-      // If you want to exposes all env variables, which is not recommended
-      // 'process.env': env
+      "process.env.HTTP_PROXY": 8081,
+      global: "globalThis",
     };
-  };
+  }
   return config;
-})
+});

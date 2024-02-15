@@ -3,13 +3,12 @@ import * as VueRouter from 'vue-router'
 import App from './App.vue'
 import ElementPlus from 'element-plus'
 
-
 const routes = [
   { path: '/'},
 ]
 
 const router = VueRouter.createRouter({
-  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+  // Provide the history implementation to use. We are using the hash history for simplicity here.
   history: VueRouter.createWebHashHistory(),
   routes,
 })
