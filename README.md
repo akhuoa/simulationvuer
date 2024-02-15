@@ -2,6 +2,9 @@
 
 SimulationVuer is a [Vue](https://vuejs.org/) component to configure and run a [CellML](https://cellml.org/)-based model of some biological process, and to visualise the results of that simulation.
 
+## Vue 3 note
+Simulationvuer is now being developed in Vue 3 only, if vue 2 is required, use the [vue 2 branch](https://github.com/ABI-Software/simulationvuer/tree/vue2) (unsupported)
+
 ## How to use
 
 To install the package to your Vue application:
