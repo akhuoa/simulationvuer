@@ -39,7 +39,6 @@ import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./c
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 
-
 export default {
   name: "SimulationVuer",
   components: {
@@ -63,6 +62,7 @@ export default {
     let xmlhttp = new XMLHttpRequest();
     let name = undefined;
     let uuid = undefined;
+
     xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
     xmlhttp.setRequestHeader("Content-type", "application/json");
     xmlhttp.onreadystatechange = () => {
@@ -391,7 +391,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 
 :deep( .el-button:hover) {
   box-shadow: -3px 2px 4px #00000040;
