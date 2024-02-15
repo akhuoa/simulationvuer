@@ -66,9 +66,3 @@ npm run serve
 ```bash
 npm run build-bundle
 ```
-
-#### Lint and fix files
-
-```bash
-npm run lint
-```
