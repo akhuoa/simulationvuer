@@ -7,7 +7,7 @@
     "build-bundle": "vite build"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^0.4.0-vue-3-alpha.7",
+    "@abi-software/plotvuer": "^0.4.0-vue-3-alpha.10",
     "element-plus": "^2.5.3",
     "jsonschema": "^1.4.0",
     "unplugin-vue-components": "^0.26.0",

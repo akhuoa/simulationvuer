@@ -21,7 +21,14 @@
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :metadata="plotMetadata" :layout-input="layout[index]" :data-source="{data: simulationData[index]}" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" 
+          :key="`output-${index}`"
+          :metadata="plotMetadata(index)"
+          :data-source="{data: simulationData[index]}"
+          :plotLayout="layout[index]"
+          :plotType="'plotly-only'"
+          :selectorUi="false"
+        />
       </div>
       <div class="main-right" v-show="!isSimulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -78,13 +85,6 @@ export default {
     xmlhttp.send();
 
     return {
-      plotMetadata: {
-        version: "1.1.0",
-        type: "plot",
-        attrs: {
-          style: "timeseries"
-        }
-      },
       errorMessage: "",
       hasFinalisedUi: false,
       hasValidSimulationUiInfo: false,
@@ -105,6 +105,17 @@ export default {
     };
   },
   methods: {
+    plotMetadata(index) {
+      return {
+        version: "1.1.0",
+        type: "plot",
+        attrs: {
+          style: "timeseries",
+          layout: this.layout[index],
+        }
+      };
+    },
+
     retrieveAndBuildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
