@@ -13,12 +13,20 @@ export function initialiseUi(parent) {
     ++index;
 
     parent.layout[index] = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      autosize: true,
       margin: {
-        t: 5,
+        t: 25,
         l: 55,
-        r: 55,
-        b: 90,
+        r: 25,
+        b: 30,
         pad: 4
+      },
+      loading: false,
+      options: {
+        responsive: true,
+        scrollZoom: true
       },
       dragmode: "pan",
       xaxis: {

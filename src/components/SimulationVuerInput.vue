@@ -1,7 +1,7 @@
 <template>
   <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
-    <el-select class="discrete" popper-class="discrete-popper" size="small" v-if="isDiscrete" v-model="vModel" :teleport=false @change="updateUi()">
+    <el-select class="discrete" popper-class="discrete-popper" size="small" v-if="isDiscrete" v-model="vModel" :teleported=false @change="updateUi()">
       <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
@@ -66,7 +66,7 @@ export default {
 
 :deep( .el-input-number.scalar ){
   margin-top: -8px;
-  width: 0;
+  width: 45px;
 }
 :deep( .el-input-number.scalar .el-input ){
   width: 60px;
@@ -90,6 +90,7 @@ export default {
 }
 .discrete {
   margin-left: 8px;
+  width: 160px;
 }
 .discrete {
   :deep( .el-input__inner ){
@@ -104,12 +105,17 @@ export default {
 .discrete-popper .el-select-dropdown__item {
   font-family: Asap, sans-serif;
 }
-.discrete-popper .el-select-dropdown__item.selected {
+.discrete-popper .el-select-dropdown__item .is-selected {
   font-weight: normal;
   color: #8300bf;
 }
 .scalar :deep( .el-input__inner ){
   text-align: center;
+}
+
+.scalar :deep(.el-input__wrapper){
+  padding-left: 4px;
+  padding-right: 4px;
 }
 div.simulation-vuer {
   height: 100%;

@@ -140,6 +140,14 @@ export default {
 
       this.$nextTick(() => {
         finaliseUi(this);
+
+        this.simulationData.forEach((data, index) => {
+          this.simulationData[index] = [{
+            x: [],
+            y: [],
+            type: "scatter",
+          }];   
+        });
       });
     },
     runOnOsparc() {
@@ -402,6 +410,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+
+.simulation-vuer {
+  --el-color-primary: #8300BF;
+  --el-color-primary-light-7: #DAB3EC;
+  --el-color-primary-light-8: #E6CCF2
+  --el-color-primary-light-9: #F3E6F9;
+}
 
 :deep( .el-button:hover) {
   box-shadow: -3px 2px 4px #00000040;
