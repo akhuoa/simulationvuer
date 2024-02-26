@@ -7,7 +7,16 @@
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div class="input scrollbar">
-          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" ref="simInput" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input"
+            ref="simInput"
+            :defaultValue="input.defaultValue"
+            :key="`input-${index}`"
+            :name="input.name"
+            :maximumValue="input.maximumValue"
+            :minimumValue="input.minimumValue"
+            :possibleValues="input.possibleValues"
+            :stepValue="input.stepValue"
+          />
         </div>
         <div class="primary-button">
           <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
@@ -21,7 +30,7 @@
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" 
+        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots"
           :key="`output-${index}`"
           :metadata="plotMetadata(index)"
           :data-source="{data: simulationData[index]}"
@@ -112,10 +121,9 @@ export default {
         attrs: {
           style: "timeseries",
           layout: this.layout[index],
-        }
+        },
       };
     },
-
     retrieveAndBuildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
@@ -146,7 +154,7 @@ export default {
             x: [],
             y: [],
             type: "scatter",
-          }];   
+          }];
         });
       });
     },
@@ -414,7 +422,7 @@ export default {
 .simulation-vuer {
   --el-color-primary: #8300BF;
   --el-color-primary-light-7: #DAB3EC;
-  --el-color-primary-light-8: #E6CCF2
+  --el-color-primary-light-8: #E6CCF2;
   --el-color-primary-light-9: #F3E6F9;
 }
 

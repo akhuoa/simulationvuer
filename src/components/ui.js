@@ -13,20 +13,20 @@ export function initialiseUi(parent) {
     ++index;
 
     parent.layout[index] = {
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(0,0,0,0)',
+      paper_bgcolor: "rgba(0, 0, 0, 0)",
+      plot_bgcolor: "rgba(0, 0, 0, 0)",
       autosize: true,
       margin: {
         t: 25,
         l: 55,
         r: 25,
         b: 30,
-        pad: 4
+        pad: 4,
       },
       loading: false,
       options: {
         responsive: true,
-        scrollZoom: true
+        scrollZoom: true,
       },
       dragmode: "pan",
       xaxis: {
@@ -43,7 +43,7 @@ export function initialiseUi(parent) {
           font: {
             size: 10,
           },
-        }
+        },
       },
     };
 
@@ -79,7 +79,7 @@ export function updateUi(parent) {
     parent.simulationUiInfo.input.forEach((input) => {
       ++index;
 
-      parent.$refs.simInput[index].visible = (input.visible === undefined)?true:evaluateValue(parent, input.visible);
+      parent.$refs.simInput[index].visible = (input.visible === undefined) ? true : evaluateValue(parent, input.visible);
     });
   });
 }

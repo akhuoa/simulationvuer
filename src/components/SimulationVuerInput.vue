@@ -105,7 +105,7 @@ export default {
 .discrete-popper .el-select-dropdown__item {
   font-family: Asap, sans-serif;
 }
-.discrete-popper .el-select-dropdown__item .is-selected {
+.discrete-popper .el-select-dropdown__item.is-selected {
   font-weight: normal;
   color: #8300bf;
 }
