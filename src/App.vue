@@ -84,7 +84,7 @@ export default {
 .first-dataset > .el-radio-button__inner {
   border-left: 1px solid #8300bf !important;
 }
-.el-radio-button__orig-radio:checked+.el-radio-button__inner {
+.el-radio-button__original-radio:checked+.el-radio-button__inner {
   background-color: #8300bf;
   border-color: #8300bf;
   color: white;

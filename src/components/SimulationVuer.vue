@@ -7,7 +7,16 @@
         <el-divider></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div class="input scrollbar">
-          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input" ref="simInput" :defaultValue="input.defaultValue" :key="`input-${index}`" :name="input.name" :maximumValue="input.maximumValue" :minimumValue="input.minimumValue" :possibleValues="input.possibleValues" :stepValue="input.stepValue" />
+          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input"
+            ref="simInput"
+            :defaultValue="input.defaultValue"
+            :key="`input-${index}`"
+            :name="input.name"
+            :maximumValue="input.maximumValue"
+            :minimumValue="input.minimumValue"
+            :possibleValues="input.possibleValues"
+            :stepValue="input.stepValue"
+          />
         </div>
         <div class="primary-button">
           <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
@@ -21,7 +30,14 @@
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots" :key="`output-${index}`" :metadata="plotMetadata" :layout-input="layout[index]" :data-source="{data: simulationData[index]}" :plotType="'plotly-only'" />
+        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots"
+          :key="`output-${index}`"
+          :metadata="plotMetadata(index)"
+          :data-source="{data: simulationData[index]}"
+          :plotLayout="layout[index]"
+          :plotType="'plotly-only'"
+          :selectorUi="false"
+        />
       </div>
       <div class="main-right" v-show="!isSimulationValid">
         <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
@@ -78,13 +94,6 @@ export default {
     xmlhttp.send();
 
     return {
-      plotMetadata: {
-        version: "1.1.0",
-        type: "plot",
-        attrs: {
-          style: "timeseries"
-        }
-      },
       errorMessage: "",
       hasFinalisedUi: false,
       hasValidSimulationUiInfo: false,
@@ -105,6 +114,16 @@ export default {
     };
   },
   methods: {
+    plotMetadata(index) {
+      return {
+        version: "1.1.0",
+        type: "plot",
+        attrs: {
+          style: "timeseries",
+          layout: this.layout[index],
+        },
+      };
+    },
     retrieveAndBuildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
@@ -129,6 +148,14 @@ export default {
 
       this.$nextTick(() => {
         finaliseUi(this);
+
+        this.simulationData.forEach((data, index) => {
+          this.simulationData[index] = [{
+            x: [],
+            y: [],
+            type: "scatter",
+          }];
+        });
       });
     },
     runOnOsparc() {
@@ -391,6 +418,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+
+.simulation-vuer {
+  --el-color-primary: #8300BF;
+  --el-color-primary-light-7: #DAB3EC;
+  --el-color-primary-light-8: #E6CCF2;
+  --el-color-primary-light-9: #F3E6F9;
+}
 
 :deep( .el-button:hover) {
   box-shadow: -3px 2px 4px #00000040;
