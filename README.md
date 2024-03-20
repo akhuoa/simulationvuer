@@ -79,3 +79,14 @@ npm run build-bundle
 
 SimulationVuer is now being developed as a Vue 3 component only.
 The [Vue 2 version of SimulationVuer](https://github.com/ABI-Software/simulationvuer/tree/vue2) is not maintained anymore.
+
+## Documentation
+
+The documentation is developed with `vitepress` and `vuese`. Documentation pages are in the `docs` folder.
+
+### To run in local development mode
+```bash
+npm run docs:watch
+```
+
+This will start the documentation server with `vitepress` on port `:5173` and watch the components changes.
