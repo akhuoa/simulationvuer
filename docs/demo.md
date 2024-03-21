@@ -14,11 +14,11 @@
 </div>
 
 <script setup>
-import { defineClientComponent } from 'vitepress'
-import './demo-styles.css'
+import { defineClientComponent } from "vitepress";
+import "./demo-styles.css";
 
 const SimulationVuer = defineClientComponent(() => {
-  return import('../src/components/SimulationVuer.vue')
+  return import("../src/components/SimulationVuer.vue");
 })
 </script>
 
@@ -44,7 +44,7 @@ export default {
   </div>
 
   <script>
-    import { SimulationVuer } from '@abi-software/simulationvuer';
+    import { SimulationVuer } from "@abi-software/simulationvuer";
 
     export default {
       components: { SimulationVuer },
