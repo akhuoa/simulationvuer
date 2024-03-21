@@ -11,6 +11,6 @@ hero:
       text: Demo
       link: /demo
     - theme: alt
-      text: SimulationVuer
+      text: API References
       link: /components/SimulationVuer
 ---

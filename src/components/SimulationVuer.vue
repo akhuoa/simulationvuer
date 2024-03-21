@@ -55,6 +55,9 @@ import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./c
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 
+/**
+ * SimulationVuer
+ */
 export default {
   name: "SimulationVuer",
   components: {
@@ -65,10 +68,16 @@ export default {
     ElLoading,
   },
   props: {
+    /**
+     * The API to use for simulation.
+     */
     apiLocation: {
       required: true,
       type: String,
     },
+    /**
+     * The dataset ID to retrieve data from API for simulation.
+     */
     id: {
       required: true,
       type: Number,
@@ -114,6 +123,12 @@ export default {
     };
   },
   methods: {
+    /**
+     * @vuese
+     * Function to generate plot metadata based on `index` number
+     * of simulationUiInfo's output plots.
+     * @arg index
+     */
     plotMetadata(index) {
       return {
         version: "1.1.0",
@@ -124,6 +139,13 @@ export default {
         },
       };
     },
+    /**
+     * @vuese
+     * Function to build simulation UI
+     * with the response of simulation UI file request, simulationUiInfo,
+     * when the component is created.
+     * @arg simulationUiInfo
+     */
     retrieveAndBuildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
@@ -158,12 +180,27 @@ export default {
         });
       });
     },
+    /**
+     * @vuese
+     * Function to open the "oSPARC" link in new tab with `uuid` of the model
+     * when user click "Run on oSPARC" button.
+     */
     runOnOsparc() {
       window.open(`https://osparc.io/study/${this.uuid}`, "_blank");
     },
+    /**
+     * @vuese
+     * Function to open the dataset of the model `id` on SPARC Portal in new tab
+     * when user click "View Dataset".
+     */
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
+    /**
+     * @vuese
+     * Function to transform the request specific to OpenCOR/oSPARC for `startSimulation`.
+     * @arg request
+     */
     retrieveRequest(request) {
       // Settings specific to OpenCOR/oSPARC.
 
@@ -219,6 +256,11 @@ export default {
 
       return request;
     },
+    /**
+     * @vuese
+     * Function to process the simulation results from `checkSimulation` API response.
+     * @arg results
+     */
     processSimulationResults(results) {
       // Convert, if needed, the results to a JSON format that is compatible
       // with our OpenCOR results.
@@ -272,6 +314,11 @@ export default {
         ];
       });
     },
+    /**
+     * @vuese
+     * Function to check the simulation with API response data from `startSimulation`.
+     * @arg data
+     */
     checkSimulation(data) {
       // Check the simulation.
 
@@ -316,6 +363,10 @@ export default {
       };
       xmlhttp.send(JSON.stringify(data));
     },
+    /**
+     * @vuese
+     * Function to start simulation when user click "Run Simulation" button.
+     */
     startSimulation() {
       // Retrieve the solver to be used for the simulation.
 

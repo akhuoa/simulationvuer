@@ -23,6 +23,7 @@ function generateMarkdown(file) {
 
   try {
     const parserResult = parser(fileContent)
+    parserResult.name = 'SimulationVuer' // Because there has another name prop in component
     const r = new Render(parserResult)
     const renderResult = r.render()
     const markdownResult = r.renderMarkdown()
