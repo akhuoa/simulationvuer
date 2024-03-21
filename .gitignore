@@ -24,7 +24,7 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-# API Docs
+# API docs
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs/components

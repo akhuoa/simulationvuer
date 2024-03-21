@@ -2,7 +2,6 @@ import { defineConfig } from 'vitepress'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
-// Version number
 const versionNumber = process.env.npm_package_version
 
 // https://vitepress.dev/reference/site-config
@@ -61,9 +60,9 @@ export default defineConfig({
     },
     plugins: [
       Components({
-        // allow auto load markdown components under `./src/components/`
+        // Allow auto load markdown components under `./src/components/`.
         extensions: ['vue'],
-        // allow auto import and register components used in markdown
+        // Allow auto import and register the components used in markdown.
         include: [/\.vue$/, /\.vue\?vue/],
         resolvers: [
           ElementPlusResolver({
@@ -71,9 +70,6 @@ export default defineConfig({
           }),
         ],
       }),
-
-      // https://github.com/antfu/unocss
-      // see unocss.config.ts for config
     ]
   }
 })
