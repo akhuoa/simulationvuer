@@ -41,7 +41,7 @@ jobs:
         run: |
           touch docs/.env
           echo VITE_API_LOCATION=${{ vars.VITE_API_LOCATION }} >> docs/.env
-          cat .env
+          cat docs/.env
 
       - name: Build with VitePress
         run: |
