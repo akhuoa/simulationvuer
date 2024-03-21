@@ -44,7 +44,7 @@ jobs:
       - name: Create env file for docs
         run: |
           touch docs/.env
-          echo VITE_API_LOCATION=${{ vars.VITE_API_LOCATION }} >> docs/.env
+          echo VITE_API_LOCATION=$VITE_API_LOCATION >> docs/.env
           cat docs/.env
 
       - name: Build with VitePress
