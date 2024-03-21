@@ -26,7 +26,7 @@ const SimulationVuer = defineClientComponent(() => {
 export default {
   data: function() {
     return {
-      apiLocation: process.env.API_LOCATION,
+      apiLocation: import.meta.env.VITE_API_LOCATION,
       id: 157,
     };
   }
