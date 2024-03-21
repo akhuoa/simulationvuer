@@ -3,7 +3,7 @@ name: Deploy Docs to Pages
 on:
   # Runs on pushes targeting the `docs` branch and `main` branch.
   push:
-    branches: ["docs", "main"]
+    branches: ["docs", "docs-preview", "main"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,6 +36,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Create env file for docs
+        run: |
+          touch docs/.env
+          echo VITE_API_LOCATION=${{ vars.VITE_API_LOCATION }} >> docs/.env
+          cat .env
 
       - name: Build with VitePress
         run: |
