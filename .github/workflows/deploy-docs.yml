@@ -37,12 +37,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Create env file for docs
-        run: |
-          touch docs/.env
-          echo "VITE_API_LOCATION=$VITE_API_LOCATION" >> docs/.env
-          echo "VITE_API_LOCATION: $VITE_API_LOCATION"
-
       - name: Build with VitePress
         run: |
           npm run docs:build
