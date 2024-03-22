@@ -4,7 +4,7 @@
   padding-bottom: 75%;
   border: 1px solid var(--vp-c-divider);
   position: relative;
-  z-index: 1; /* just for demo, to prevent tooltips go out of container */
+  z-index: 1; /* Just for the demo, to prevent tooltips from going out of the container. */
 }
 
 .demo-map-container-inner {

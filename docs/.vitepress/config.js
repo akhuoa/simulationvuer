@@ -2,7 +2,6 @@ import { defineConfig } from 'vitepress'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
-// Version number
 const versionNumber = process.env.npm_package_version
 
 // https://vitepress.dev/reference/site-config
@@ -15,26 +14,19 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       {
-        text: 'SimulationVuer',
-        items: [
-          { text: 'Live Demo', link: '/demo' },
-          { text: 'API References', link: '/components/SimulationVuer' },
-        ]
+        text: 'API Reference',
+        link: '/components/SimulationVuer'
       }
     ],
 
     sidebar: [
       {
-        text: 'Live Demos',
-        items: [
-          { text: 'SimulationVuer Demo', link: '/demo' }
-        ]
+        text: 'Live Demo',
+        link: '/demo'
       },
       {
-        text: 'API References',
-        items: [
-          { text: 'SimulationVuer', link: '/components/SimulationVuer' },
-        ]
+        text: 'API Reference',
+        link: '/components/SimulationVuer'
       },
       {
         text: 'Version',
@@ -61,9 +53,9 @@ export default defineConfig({
     },
     plugins: [
       Components({
-        // allow auto load markdown components under `./src/components/`
+        // Allow auto load markdown components under `./src/components/`.
         extensions: ['vue'],
-        // allow auto import and register components used in markdown
+        // Allow auto import and register the components used in markdown.
         include: [/\.vue$/, /\.vue\?vue/],
         resolvers: [
           ElementPlusResolver({
@@ -71,9 +63,6 @@ export default defineConfig({
           }),
         ],
       }),
-
-      // https://github.com/antfu/unocss
-      // see unocss.config.ts for config
     ]
   }
 })

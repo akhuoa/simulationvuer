@@ -1,4 +1,4 @@
-/* Modify content styles for desktop view */
+/* Modify content styles for the desktop view. */
 @media (min-width: 1280px) {
   .VPContent .VPDoc.has-aside {
     & .content-container {
@@ -12,7 +12,7 @@
 
       & table thead {
         position: sticky;
-        top: 64px; /* navigation height */
+        top: 64px; /* Navigation height. */
 
         & th {
           background-color: var(--vp-c-gray-1);
@@ -30,7 +30,7 @@
           text-wrap: nowrap;
         }
 
-        /* Description column */
+        /* Description column. */
         th:nth-child(2),
         td:nth-child(2) {
           width: 40%;

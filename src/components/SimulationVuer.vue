@@ -69,14 +69,14 @@ export default {
   },
   props: {
     /**
-     * The API to use for simulation.
+     * The the URL to the API location.
      */
     apiLocation: {
       required: true,
       type: String,
     },
     /**
-     * The dataset ID to retrieve data from API for simulation.
+     * The ID of the simulation-based dataset.
      */
     id: {
       required: true,
@@ -125,9 +125,8 @@ export default {
   methods: {
     /**
      * @vuese
-     * Function to generate plot metadata based on `index` number
-     * of simulationUiInfo's output plots.
-     * @arg index
+     * Generate the metadata associated with the plot which `index` is given.
+     * @arg `index`
      */
     plotMetadata(index) {
       return {
@@ -141,12 +140,10 @@ export default {
     },
     /**
      * @vuese
-     * Function to build simulation UI
-     * with the response of simulation UI file request, simulationUiInfo,
-     * when the component is created.
-     * @arg simulationUiInfo
+     * Build the simulation UI using `simulationUiInfo`, a JSON object that describes the contents of the simulation UI.
+     * @arg `simulationUiInfo`
      */
-    retrieveAndBuildSimulationUi(simulationUiInfo) {
+    buildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
       this.simulationUiInfo = simulationUiInfo;
@@ -182,24 +179,27 @@ export default {
     },
     /**
      * @vuese
-     * Function to open the "oSPARC" link in new tab with `uuid` of the model
-     * when user click "Run on oSPARC" button.
+     * Run the simulation-based dataset directly on oSPARC. Not all simulation-based datasets can be run directly on
+     * oSPARC, but for those that can the simulation UI shows a `Run on oSPARC` button which, when clicked, calls this
+     * method.
      */
     runOnOsparc() {
       window.open(`https://osparc.io/study/${this.uuid}`, "_blank");
     },
     /**
      * @vuese
-     * Function to open the dataset of the model `id` on SPARC Portal in new tab
-     * when user click "View Dataset".
+     * View the simulation-based dataset on the SPARC portal. The simulation UI has a `View Dataset` button which, when
+     * clicked, calls this method.
      */
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
     /**
      * @vuese
-     * Function to transform the request specific to OpenCOR/oSPARC for `startSimulation`.
-     * @arg request
+     * Finish creating the `request` that is going to be used by `startSimulation` to ask oSPARC to start the
+     * simulation. `request` is a JSON object that initially contains the solver to be used by oSPARC and to which
+     * additional is added.
+     * @arg `request`
      */
     retrieveRequest(request) {
       // Settings specific to OpenCOR/oSPARC.
@@ -258,8 +258,9 @@ export default {
     },
     /**
      * @vuese
-     * Function to process the simulation results from `checkSimulation` API response.
-     * @arg results
+     * Process the simulation results retrieved by `checkSimulation`. The simulation results are post-processed, if
+     * needed, and then readied for use by `PlotVuer`.
+     * @arg `results`
      */
     processSimulationResults(results) {
       // Convert, if needed, the results to a JSON format that is compatible
@@ -316,8 +317,10 @@ export default {
     },
     /**
      * @vuese
-     * Function to check the simulation with API response data from `startSimulation`.
-     * @arg data
+     * Check the progress of the simulation using the given `data`, a JSON object that contains the simulation job ID,
+     * as well as the solver name and version. This method is first called by `startSimulation` and then every second by
+     * itself until the simulation is finished.
+     * @arg `data`
      */
     checkSimulation(data) {
       // Check the simulation.
@@ -365,7 +368,8 @@ export default {
     },
     /**
      * @vuese
-     * Function to start simulation when user click "Run Simulation" button.
+     * Start the simulation associated with the simulation-based dataset. The simulation UI has a `Run Simulation`
+     * button which, when clicked, calls this method.
      */
     startSimulation() {
       // Retrieve the solver to be used for the simulation.
@@ -446,7 +450,7 @@ export default {
             this.showUserMessage = false;
 
             if (xmlhttp.status === 200) {
-              this.retrieveAndBuildSimulationUi(JSON.parse(xmlhttp.responseText));
+              this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
             }
           }
         };

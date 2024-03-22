@@ -14,11 +14,11 @@
 </div>
 
 <script setup>
-import { defineClientComponent } from 'vitepress'
-import './demo-styles.css'
+import { defineClientComponent } from "vitepress";
+import "./demo-styles.css";
 
 const SimulationVuer = defineClientComponent(() => {
-  return import('../src/components/SimulationVuer.vue')
+  return import("../src/components/SimulationVuer.vue");
 })
 </script>
 
@@ -27,7 +27,7 @@ export default {
   data: function() {
     return {
       apiLocation: import.meta.env.VITE_API_LOCATION,
-      id: 157,
+      id: 135,
     };
   }
 }
@@ -39,19 +39,19 @@ export default {
   <div class="your-outer-container">
     <SimulationVuer
       :apiLocation="apiLocation"
-      :id="dataset.id"
+      :id="id"
     />
   </div>
 
   <script>
-    import { SimulationVuer } from '@abi-software/simulationvuer';
+    import { SimulationVuer } from "@abi-software/simulationvuer";
 
     export default {
       components: { SimulationVuer },
       data: function () {
         return {
           apiLocation: API_LOCATION,
-          id: 157,
+          id: 135,
         }
       }
     }
