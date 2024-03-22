@@ -14,26 +14,19 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       {
-        text: 'SimulationVuer',
-        items: [
-          { text: 'Live Demo', link: '/demo' },
-          { text: 'API References', link: '/components/SimulationVuer' },
-        ]
+        text: 'API Reference',
+        link: '/components/SimulationVuer'
       }
     ],
 
     sidebar: [
       {
-        text: 'Live Demos',
-        items: [
-          { text: 'SimulationVuer Demo', link: '/demo' }
-        ]
+        text: 'Live Demo',
+        link: '/demo'
       },
       {
-        text: 'API References',
-        items: [
-          { text: 'SimulationVuer', link: '/components/SimulationVuer' },
-        ]
+        text: 'API Reference',
+        link: '/components/SimulationVuer'
       },
       {
         text: 'Version',
