@@ -8,9 +8,9 @@ hero:
   tagline: SimulationVuer is a Vue component used in the SPARC portal to run some simulation-based datasets.
   actions:
     - theme: brand
-      text: Demo
-      link: /demo
-    - theme: alt
       text: API Reference
       link: /components/SimulationVuer
+    - theme: alt
+      text: Demo
+      link: /demo
 ---

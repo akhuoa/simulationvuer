@@ -6,7 +6,7 @@ const versionNumber = process.env.npm_package_version
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "SimulationVuer Docs",
+  title: "SimulationVuer",
   description: "API documentation for SimulationVuer",
   base: '/simulationvuer/',
   themeConfig: {
