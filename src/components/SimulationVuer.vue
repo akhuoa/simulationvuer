@@ -55,6 +55,9 @@ import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./c
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 
+/**
+ * SimulationVuer
+ */
 export default {
   name: "SimulationVuer",
   components: {
@@ -65,10 +68,16 @@ export default {
     ElLoading,
   },
   props: {
+    /**
+     * The the URL to the API location.
+     */
     apiLocation: {
       required: true,
       type: String,
     },
+    /**
+     * The ID of the simulation-based dataset.
+     */
     id: {
       required: true,
       type: Number,
@@ -114,6 +123,11 @@ export default {
     };
   },
   methods: {
+    /**
+     * @vuese
+     * Generate the metadata associated with the plot which `index` is given.
+     * @arg `index`
+     */
     plotMetadata(index) {
       return {
         version: "1.1.0",
@@ -124,7 +138,12 @@ export default {
         },
       };
     },
-    retrieveAndBuildSimulationUi(simulationUiInfo) {
+    /**
+     * @vuese
+     * Build the simulation UI using `simulationUiInfo`, a JSON object that describes the contents of the simulation UI.
+     * @arg `simulationUiInfo`
+     */
+    buildSimulationUi(simulationUiInfo) {
       // Keep track of the simulation UI information.
 
       this.simulationUiInfo = simulationUiInfo;
@@ -158,12 +177,30 @@ export default {
         });
       });
     },
+    /**
+     * @vuese
+     * Run the simulation-based dataset directly on oSPARC. Not all simulation-based datasets can be run directly on
+     * oSPARC, but for those that can the simulation UI shows a `Run on oSPARC` button which, when clicked, calls this
+     * method.
+     */
     runOnOsparc() {
       window.open(`https://osparc.io/study/${this.uuid}`, "_blank");
     },
+    /**
+     * @vuese
+     * View the simulation-based dataset on the SPARC portal. The simulation UI has a `View Dataset` button which, when
+     * clicked, calls this method.
+     */
     viewDataset() {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
+    /**
+     * @vuese
+     * Finish creating the `request` that is going to be used by `startSimulation` to ask oSPARC to start the
+     * simulation. `request` is a JSON object that initially contains the solver to be used by oSPARC and to which
+     * additional is added.
+     * @arg `request`
+     */
     retrieveRequest(request) {
       // Settings specific to OpenCOR/oSPARC.
 
@@ -219,6 +256,12 @@ export default {
 
       return request;
     },
+    /**
+     * @vuese
+     * Process the simulation results retrieved by `checkSimulation`. The simulation results are post-processed, if
+     * needed, and then readied for use by `PlotVuer`.
+     * @arg `results`
+     */
     processSimulationResults(results) {
       // Convert, if needed, the results to a JSON format that is compatible
       // with our OpenCOR results.
@@ -272,6 +315,13 @@ export default {
         ];
       });
     },
+    /**
+     * @vuese
+     * Check the progress of the simulation using the given `data`, a JSON object that contains the simulation job ID,
+     * as well as the solver name and version. This method is first called by `startSimulation` and then every second by
+     * itself until the simulation is finished.
+     * @arg `data`
+     */
     checkSimulation(data) {
       // Check the simulation.
 
@@ -316,6 +366,11 @@ export default {
       };
       xmlhttp.send(JSON.stringify(data));
     },
+    /**
+     * @vuese
+     * Start the simulation associated with the simulation-based dataset. The simulation UI has a `Run Simulation`
+     * button which, when clicked, calls this method.
+     */
     startSimulation() {
       // Retrieve the solver to be used for the simulation.
 
@@ -395,7 +450,7 @@ export default {
             this.showUserMessage = false;
 
             if (xmlhttp.status === 200) {
-              this.retrieveAndBuildSimulationUi(JSON.parse(xmlhttp.responseText));
+              this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
             }
           }
         };

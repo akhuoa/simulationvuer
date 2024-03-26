@@ -45,7 +45,7 @@ You can now use the SimulationVuer in your Vue template as follows:
 <SimulationVuer :apiLocation="apiLocation" :id=123 />
 ```
 
-where `apiLocation` is the URL to the API location and `id` the id of the dataset.
+where `apiLocation` is the URL to the API location and `id` the id of the simulation-based dataset.
 
 ## Project setup
 
@@ -79,3 +79,15 @@ npm run build-bundle
 
 SimulationVuer is now being developed as a Vue 3 component only.
 The [Vue 2 version of SimulationVuer](https://github.com/ABI-Software/simulationvuer/tree/vue2) is not maintained anymore.
+
+## Documentation
+
+The documentation is written using [VitePress](https://vitepress.dev/) and [vuese](https://github.com/vuese/vuese#readme), and it can be found in the `docs` folder.
+
+#### To run in local development mode
+
+```bash
+npm run docs:watch
+```
+
+This will start the documentation server with [VitePress](https://vitepress.dev/) on port `5173`: http://localhost:5173/simulationvuer/.
