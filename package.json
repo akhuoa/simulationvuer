@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "0.7.0-vue-3-alpha.5",
+  "version": "1.0.0",
   "private": false,
   "scripts": {
     "serve": "vite serve --host",
@@ -13,7 +13,7 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^0.4.0-vue-3-alpha.10",
+    "@abi-software/plotvuer": "^1.0.0",
     "element-plus": "^2.5.3",
     "jsonschema": "^1.4.0",
     "unplugin-vue-components": "^0.26.0",
