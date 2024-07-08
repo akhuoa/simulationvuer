@@ -54,9 +54,8 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/style.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
-import { evaluateValue, OPENCOR_SOLVER_NAME } from "./common.js";
+import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
-import { initialiseUi, finaliseUi } from "./ui.js";
 import libOpenCOR from "./libopencor.js";
 import { toRaw } from "vue";
 import { create, all } from "mathjs";
@@ -380,7 +379,52 @@ export default {
 
       // Initialise our UI.
 
-      initialiseUi(this);
+      this.simulationUiInfo.output.data.forEach((data) => {
+        this.simulationResultsId[data.id] = data.name;
+      });
+
+      let index = -1;
+
+      this.simulationUiInfo.output.plots.forEach((outputPlot) => {
+        ++index;
+
+        this.layout[index] = {
+          paper_bgcolor: "rgba(0, 0, 0, 0)",
+          plot_bgcolor: "rgba(0, 0, 0, 0)",
+          autosize: true,
+          margin: {
+            t: 25,
+            l: 55,
+            r: 25,
+            b: 30,
+            pad: 4,
+          },
+          loading: false,
+          options: {
+            responsive: true,
+            scrollZoom: true,
+          },
+          dragmode: "pan",
+          xaxis: {
+            title: {
+              text: outputPlot.xAxisTitle,
+              font: {
+                size: 10,
+              },
+            },
+          },
+          yaxis: {
+            title: {
+              text: outputPlot.yAxisTitle,
+              font: {
+                size: 10,
+              },
+            },
+          },
+        };
+
+        this.simulationResults[index] = [{}];
+      });
 
       // Finalise our UI.
       // Note: we try both here and in the mounted() function since we have no
