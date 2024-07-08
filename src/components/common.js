@@ -14,7 +14,6 @@ export function evaluateValue(parent, value) {
     parser.set(input.id, parent.$refs.simInput[index].vModel);
   });
 
-  value = value.replace("===", "=="); //---GRY--- TO BE REMOVED ONCE DATASET 135 HAS BEEN FIXED.
   return parser.evaluate(value);
 }
 
@@ -40,6 +39,7 @@ export function updateUi(parent) {
     }
   });
 }
+
 export function finaliseUi(parent) {
   // Finalise our UI, but only if we haven't already done so, we are mounted,
   // and we have some valid simulation UI information.
@@ -48,6 +48,18 @@ export function finaliseUi(parent) {
     // Configure the PlotVuer's.
 
     parent.$refs.output.classList.add("x" + parent.simulationUiInfo.output.plots.length);
+
+    // Initialise the simulation results.
+
+    let index = -1;
+
+    parent.simulationUiInfo.output.plots.forEach(() => {
+      parent.simulationResults[++index] = [{
+        x: [],
+        y: [],
+        type: "scatter",
+      }];
+    });
 
     // Make sure that our UI is up to date.
 
