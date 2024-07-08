@@ -54,14 +54,18 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/style.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
-import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME, PMR_URL } from "./common.js";
+import { evaluateValue, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
 import { initialiseUi, finaliseUi } from "./ui.js";
 import libOpenCOR from "./libopencor.js";
 import { toRaw } from "vue";
+import { create, all } from "mathjs";
 
 const LIBOPENCOR_SOLVER = "libOpenCOR";
 const OSPARC_SOLVER = "oSPARC";
+const PMR_URL = "https://models.physiomeproject.org/";
+
+const math = create(all, {});
 
 /**
  * SimulationVuer
@@ -543,21 +547,17 @@ export default {
       // Get the results ready for plotting.
 
       let index = -1;
-      let iMax = results[this.simulationResultsId[Object.keys(this.simulationResultsId)[0]]].length;
+      const parser = new math.parser();
+
+      Object.keys(this.simulationResultsId).forEach((id) => {
+        parser.set(id, results[this.simulationResultsId[id]]);
+      });
 
       this.simulationUiInfo.output.plots.forEach((outputPlot) => {
-        let xValue = [];
-        let yValue = [];
-
-        for (let i = 0; i < iMax; ++i) {
-          xValue[i] = evaluateSimulationValue(this, results, outputPlot.xValue, i);
-          yValue[i] = evaluateSimulationValue(this, results, outputPlot.yValue, i);
-        }
-
         this.simulationResults[++index] = [
           {
-            x: xValue,
-            y: yValue,
+            x: parser.evaluate(outputPlot.xValue),
+            y: parser.evaluate(outputPlot.yValue),
             type: "scatter",
           },
         ];

@@ -1,32 +1,19 @@
-export const PMR_URL = "https://models.physiomeproject.org/";
+import { create, all } from "mathjs";
+
+const math = create(all, {});
+
 export const OPENCOR_SOLVER_NAME = "simcore/services/comp/opencor";
-
-function doEvaluateValue(value, from, to) {
-  if (from !== undefined) {
-    let re = new RegExp(`\\b${ from }\\b`, 'g');
-
-    value = value.replace(re, to);
-  }
-
-  return value;
-}
 
 export function evaluateValue(parent, value) {
   let index = -1;
+  const parser = new math.parser();
 
   parent.simulationUiInfo.input.forEach((input) => {
     ++index;
 
-    value = doEvaluateValue(value, input.id, parent.$refs.simInput[index].vModel);
+    parser.set(input.id, parent.$refs.simInput[index].vModel);
   });
 
-  return Function("return " + value + ";")();
-}
-
-export function evaluateSimulationValue(parent, results, value, i) {
-  parent.simulationUiInfo.output.data.forEach((data) => {
-    value = doEvaluateValue(value, data.id, results[parent.simulationResultsId[data.id]][i]);
-  });
-
-  return Function("return " + value + ";")();
+  value = value.replace("===", "=="); //---GRY--- TO BE REMOVED ONCE DATASET 135 HAS BEEN FIXED.
+  return parser.evaluate(value);
 }
