@@ -115,7 +115,7 @@ export default {
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
           if (xmlhttp.status === 200) {
-            let datasetInfo = JSON.parse(xmlhttp.responseText);
+            const datasetInfo = JSON.parse(xmlhttp.responseText);
 
             this.name = datasetInfo.name;
             this.uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
@@ -200,7 +200,7 @@ export default {
     manageFile(url, fileContents) {
       let file = toRaw(this.fileManager).file(url);
 
-      if (!file) {
+      if (file === null) {
         file = new this.libopencor.File(url);
       }
 
@@ -257,7 +257,7 @@ export default {
 
       // Retrieve the simulation results.
 
-      let res = {};
+      const res = {};
       const instanceTask = instance.tasks().get(0);
 
       for (const output of this.outputData()) {
@@ -431,15 +431,11 @@ export default {
      * Data needed to set a model's parameters.
      */
     parametersData() {
-      let res = undefined;
+      const res = {};
 
-      if (this.simulationUiInfo.parameters !== undefined) {
-        res = {};
-
-        this.simulationUiInfo.parameters.forEach((parameter) => {
-          res[parameter.name] = evaluateValue(this, parameter.value);
-        });
-      }
+      this.simulationUiInfo.parameters.forEach((parameter) => {
+        res[parameter.name] = evaluateValue(this, parameter.value);
+      });
 
       return res;
     },
@@ -450,12 +446,10 @@ export default {
      outputData() {
       if (this.output === undefined) {
         if (this.simulationUiInfo.output.data !== undefined)  {
-          let index = -1;
-
           this.output = [];
 
           this.simulationUiInfo.output.data.forEach((output) => {
-            this.output[++index] = output.name;
+            this.output.push(output.name);
           });
         }
       }
@@ -467,7 +461,7 @@ export default {
      * Create the `request` that is going to be used by `startSimulation` to ask oSPARC to start the simulation.
      */
     retrieveRequest() {
-      let request = {
+      const request = {
         solver: this.solver
       };
 
@@ -485,11 +479,7 @@ export default {
           };
         }
 
-        const parameters = this.parametersData();
-
-        if (parameters !== undefined) {
-          request.opencor.json_config.parameters = parameters;
-        }
+        request.opencor.json_config.parameters = this.parametersData();
 
         const output = this.outputData();
 
@@ -499,11 +489,7 @@ export default {
       } else {
         request.osparc = {};
 
-        const parameters = this.parametersData();
-
-        if (parameters !== undefined) {
-          request.osparc.job_inputs = parameters;
-        }
+        request.osparc.job_inputs = this.parametersData();
       }
 
       return request;
@@ -520,9 +506,8 @@ export default {
 
       if (typeof(results) === "string") {
         const SPACES = /[ \t]+/g;
-
-        let lines = results.trim().split("\n");
-        let iMax = lines[0].trim().split(SPACES).length;
+        const lines = results.trim().split("\n");
+        const iMax = lines[0].trim().split(SPACES).length;
 
         results = {};
 
@@ -536,7 +521,7 @@ export default {
           ++i;
 
           let j = -1;
-          let values = line.trim().split(SPACES);
+          const values = line.trim().split(SPACES);
 
           values.forEach((value) => {
             results[++j][i] = Number(value);
@@ -546,12 +531,13 @@ export default {
 
       // Get the results ready for plotting.
 
-      let index = -1;
       const parser = new math.parser();
 
       Object.keys(this.simulationResultsId).forEach((id) => {
         parser.set(id, results[this.simulationResultsId[id]]);
       });
+
+      let index = -1;
 
       this.simulationUiInfo.output.plots.forEach((outputPlot) => {
         this.simulationResults[++index] = [

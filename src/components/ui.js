@@ -70,8 +70,6 @@ export function finaliseUi(parent) {
 
 export function updateUi(parent) {
   // Show/hide and enable/disable all the elements.
-  // Note: we do this using $nextTick() to ensure that the UI has been fully
-  //       mounted.
 
   parent.$nextTick(() => {
     let index = -1;
