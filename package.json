@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": false,
   "scripts": {
     "serve": "vite serve --host",
@@ -16,6 +16,7 @@
     "@abi-software/plotvuer": "^1.0.0",
     "element-plus": "^2.5.3",
     "jsonschema": "^1.4.0",
+    "mathjs": "^13.0.2",
     "unplugin-vue-components": "^0.26.0",
     "vue": "^3.4.15"
   },

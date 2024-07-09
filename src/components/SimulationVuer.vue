@@ -19,13 +19,16 @@
           />
         </div>
         <div class="primary-button">
-          <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
+          <el-button type="primary" size="small" @click="startSimulation()" v-if="!this.libopencor">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
           <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
         <div class="secondary-button">
-          <el-button size="small" @click="viewDataset()">View Dataset</el-button>
+          <el-button size="small" @click="viewDataset()" v-if="typeof this.id === 'number'">View Dataset</el-button>
+        </div>
+        <div class="secondary-button">
+          <el-button size="small" @click="viewWorkspace()" v-if="typeof this.id !== 'number'">View Workspace</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
@@ -33,7 +36,7 @@
         <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots"
           :key="`output-${index}`"
           :metadata="plotMetadata(index)"
-          :data-source="{data: simulationData[index]}"
+          :data-source="{data: simulationResults[index]}"
           :plotLayout="layout[index]"
           :plotType="'plotly-only'"
           :selectorUi="false"
@@ -51,14 +54,24 @@ import { PlotVuer } from "@abi-software/plotvuer";
 import "@abi-software/plotvuer/dist/style.css";
 import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
-import { evaluateValue, evaluateSimulationValue, OPENCOR_SOLVER_NAME } from "./common.js";
+import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
-import { initialiseUi, finaliseUi } from "./ui.js";
+import libOpenCOR from "./libopencor.js";
+import { toRaw } from "vue";
+import { create, all } from "mathjs";
+
+const LIBOPENCOR_SOLVER = "libOpenCOR";
+const OSPARC_SOLVER = "oSPARC";
+const PMR_URL = "https://models.physiomeproject.org/";
+
+const math = create(all, {});
 
 /**
  * SimulationVuer
  */
 export default {
+  LIBOPENCOR_SOLVER: LIBOPENCOR_SOLVER,
+  OSPARC_SOLVER: OSPARC_SOLVER,
   name: "SimulationVuer",
   components: {
     PlotVuer,
@@ -80,46 +93,62 @@ export default {
      */
     id: {
       required: true,
-      type: Number,
+    },
+    /**
+     * The preferred solver to use for OpenCOR-based simulations. This property
+     * is optional and defaults to "oSPARC". The only value that is currently
+     * supported is "libOpenCOR". Any other value will default to "oSPARC".
+     */
+     preferredSolver: {
+      type: String,
+      default: OSPARC_SOLVER,
     },
   },
   data: function() {
-    let xmlhttp = new XMLHttpRequest();
-    let name = undefined;
-    let uuid = undefined;
+    // Retrieve some information about the dataset.
 
-    xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id, false);
-    xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4) {
-        if (xmlhttp.status === 200) {
-          let datasetInfo = JSON.parse(xmlhttp.responseText);
+    if (this.id > 0) {
+      const xmlhttp = new XMLHttpRequest();
 
-          name = datasetInfo.name;
-          uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
+      xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id);
+      xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4) {
+          if (xmlhttp.status === 200) {
+            const datasetInfo = JSON.parse(xmlhttp.responseText);
+
+            this.name = datasetInfo.name;
+            this.uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
+          }
         }
-      }
-    };
-    xmlhttp.send();
+      };
+      xmlhttp.send();
+    }
 
     return {
       errorMessage: "",
+      fileManager: undefined,
       hasFinalisedUi: false,
       hasValidSimulationUiInfo: false,
+      instance: undefined,
       isMounted: false,
       isSimulationValid: true,
       layout: [],
-      name: name,
+      libopencor: undefined,
+      name: null,
+      opencorBasedSimulation: true,
+      output: undefined,
       perfectScollbarOptions: {
         suppressScrollX: true,
       },
+      pmrBasedCombineArchive: false,
       showUserMessage: false,
-      simulationData: [],
-      simulationDataId: {},
+      simulationResults: {},
+      simulationResultsId: {},
       simulationUiInfo: {},
+      solver: undefined,
       userMessage: "",
       ui: null,
-      uuid: uuid,
+      uuid: null,
     };
   },
   methods: {
@@ -140,6 +169,128 @@ export default {
     },
     /**
      * @vuese
+     * Download the PMR file associated with the given `url`.
+     * @arg `url`
+     */
+    downloadPmrFile(url) {
+      return new Promise((resolve, reject) => {
+        const xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("POST", this.apiLocation + "/pmr_file");
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              resolve(Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
+            }
+
+            reject();
+          }
+        };
+        xmlhttp.send(JSON.stringify({path: url.replace(PMR_URL, "")}));
+      });
+    },
+    /**
+     * @vuese
+     * Manage the file associated with the given `url` and `fileContents`.
+     * @arg `url`
+     * @arg `fileContents`
+     */
+    manageFile(url, fileContents) {
+      let file = toRaw(this.fileManager).file(url);
+
+      if (file === null) {
+        file = new this.libopencor.File(url);
+      }
+
+      const fileContentsPtr = this.libopencor._malloc(fileContents.length);
+      const mem = new Uint8Array(this.libopencor.HEAPU8.buffer, fileContentsPtr, fileContents.length);
+
+      mem.set(fileContents);
+
+      file.setContents(fileContentsPtr, fileContents.length);
+
+      this.libopencor._free(fileContentsPtr);
+
+      return file;
+    },
+    /**
+     * @vuese
+     * Run the simulation using libOpenCOR.
+     */
+    runSimulation() {
+      if (this.instance === undefined) {
+        const fileNameOrUrl = this.pmrBasedCombineArchive ? PMR_URL + this.id : this.simulationUiInfo.simulation.opencor.resource;
+        const document = new this.libopencor.SedDocument(toRaw(this.fileManager).file(fileNameOrUrl));
+
+        // Customise the ending point and point interval of the simulation, if
+        // needed.
+
+        if (   !this.pmrBasedCombineArchive
+            &&  (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
+            &&  (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
+          const simulation = document.simulations().get(0);
+
+          simulation.setOutputEndTime(this.simulationUiInfo.simulation.opencor.endingPoint);
+          simulation.setNumberOfSteps(this.simulationUiInfo.simulation.opencor.endingPoint / this.simulationUiInfo.simulation.opencor.pointInterval);
+        }
+
+        // Retrieve an instance of the model.
+
+        this.instance = document.instantiate();
+
+        document.delete();
+      }
+
+      // Run the simulation after passing some initial conditions to it, if any.
+
+      const instance = toRaw(this.instance);
+
+      instance.removeAllInitialConditions();
+
+      for (const [parameter, value] of Object.entries(this.parametersData())) {
+        instance.addInitialCondition(parameter, value);
+      }
+
+      instance.run();
+
+      // Retrieve the simulation results.
+
+      const res = {};
+      const instanceTask = instance.tasks().get(0);
+
+      for (const output of this.outputData()) {
+        if (output === instanceTask.voiName()) {
+          res[output] = instanceTask.voiAsArray();
+        }
+
+        if (res[output] === undefined) {
+          for (let i = 0; i < instanceTask.stateCount(); ++i) {
+            if (output === instanceTask.stateName(i)) {
+              res[output] = instanceTask.stateAsArray(i);
+
+              break;
+            }
+          }
+        }
+
+        if (res[output] === undefined) {
+          for (let i = 0; instanceTask.variableCount(); ++i) {
+            if (output === instanceTask.variableName(i)) {
+              res[output] = instanceTask.variableAsArray(i);
+
+              break;
+            }
+          }
+        }
+      }
+
+      this.processSimulationResults(res);
+
+      this.showUserMessage = false;
+    },
+    /**
+     * @vuese
      * Build the simulation UI using `simulationUiInfo`, a JSON object that describes the contents of the simulation UI.
      * @arg `simulationUiInfo`
      */
@@ -150,15 +301,128 @@ export default {
 
       // Make sure that the simulation UI information is valid.
 
-      this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
+      this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo, !this.pmrBasedCombineArchive);
 
       if (!this.hasValidSimulationUiInfo) {
         return;
       }
 
+      // Retrieve and keep track of the solver to be used for the simulation, if
+      // needed.
+
+      if (!this.pmrBasedCombineArchive) {
+        this.simulationUiInfo.simulation.solvers.forEach((solver) => {
+          if ((solver.if === undefined) || evaluateValue(this, solver.if)) {
+            this.solver = solver;
+          }
+        });
+
+        if (this.solver === undefined) {
+          console.warn("SIMULATION: no solver name and/or solver version specified.");
+
+          return;
+        }
+
+        this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
+      }
+
+      // Run the model if we are dealing with a PMR-based COMBINE archive or
+      // load libOpenCOR if we are dealing with an OpenCOR-based simulation and
+      // we want to use libOpenCOR.
+
+      if (this.pmrBasedCombineArchive) {
+        this.userMessage = "Running the model...";
+        this.showUserMessage = true;
+
+        this.$nextTick(() => {
+          this.runSimulation();
+        });
+      } else if (this.opencorBasedSimulation && (this.preferredSolver === LIBOPENCOR_SOLVER)) {
+        this.userMessage = "Retrieving and running the model...";
+        this.showUserMessage = true;
+
+        this.$nextTick(() => {
+          libOpenCOR().then((libopencor) => {
+            // Keep track of the libOpenCOR module and its file manager.
+
+            this.libopencor = libopencor;
+            this.fileManager = this.libopencor.FileManager.instance();
+
+            // Retrieve the model file, if needed.
+
+            const modelUrl = this.simulationUiInfo.simulation.opencor.resource;
+
+            this.downloadPmrFile(modelUrl).then((fileContents) => {
+              const file = this.manageFile(modelUrl, fileContents);
+
+              // In the case of a SED-ML file, we also need to retrieve its
+              // corresponding CellML file.
+
+              if (file.type().value === this.libopencor.File.Type.SEDML_FILE.value) {
+                const document = new this.libopencor.SedDocument(file);
+                const cellmlUrl = document.models().get(0).file().url();
+
+                this.downloadPmrFile(cellmlUrl).then((cellmlFileContents) => {
+                  this.manageFile(cellmlUrl, cellmlFileContents);
+
+                  this.runSimulation();
+                });
+
+                document.delete();
+              } else {
+                this.runSimulation();
+              }
+            });
+          });
+        });
+      }
+
       // Initialise our UI.
 
-      initialiseUi(this);
+      this.simulationUiInfo.output.data.forEach((data) => {
+        this.simulationResultsId[data.id] = data.name;
+      });
+
+      let index = -1;
+
+      this.simulationUiInfo.output.plots.forEach((outputPlot) => {
+        ++index;
+
+        this.layout[index] = {
+          paper_bgcolor: "rgba(0, 0, 0, 0)",
+          plot_bgcolor: "rgba(0, 0, 0, 0)",
+          autosize: true,
+          margin: {
+            t: 25,
+            l: 55,
+            r: 25,
+            b: 30,
+            pad: 4,
+          },
+          loading: false,
+          options: {
+            responsive: true,
+            scrollZoom: true,
+          },
+          dragmode: "pan",
+          xaxis: {
+            title: {
+              text: outputPlot.xAxisTitle,
+              font: {
+                size: 10,
+              },
+            },
+          },
+          yaxis: {
+            title: {
+              text: outputPlot.yAxisTitle,
+              font: {
+                size: 10,
+              },
+            },
+          },
+        };
+      });
 
       // Finalise our UI.
       // Note: we try both here and in the mounted() function since we have no
@@ -167,14 +431,6 @@ export default {
 
       this.$nextTick(() => {
         finaliseUi(this);
-
-        this.simulationData.forEach((data, index) => {
-          this.simulationData[index] = [{
-            x: [],
-            y: [],
-            type: "scatter",
-          }];
-        });
       });
     },
     /**
@@ -196,62 +452,78 @@ export default {
     },
     /**
      * @vuese
-     * Finish creating the `request` that is going to be used by `startSimulation` to ask oSPARC to start the
-     * simulation. `request` is a JSON object that initially contains the solver to be used by oSPARC and to which
-     * additional is added.
-     * @arg `request`
+     * View the simulation-based dataset on PMR. The simulation UI has a `View Workspace` button which, when clicked,
+     * calls this method.
      */
-    retrieveRequest(request) {
-      // Settings specific to OpenCOR/oSPARC.
+    viewWorkspace() {
+      const url = PMR_URL + this.id;
 
-      let isOpencorSimulation = request.solver.name === OPENCOR_SOLVER_NAME;
+      window.open(url.substring(0, url.lastIndexOf("/")), "_blank");
+    },
+    /**
+     * @vuese
+     * Data needed to set a model's parameters.
+     */
+    parametersData() {
+      const res = {};
 
-      if (isOpencorSimulation) {
+      this.simulationUiInfo.parameters.forEach((parameter) => {
+        res[parameter.name] = evaluateValue(this, parameter.value);
+      });
+
+      return res;
+    },
+    /**
+     * @vuese
+     * Data needed to specify the model output.
+     */
+     outputData() {
+      if (this.output === undefined) {
+        if (this.simulationUiInfo.output.data !== undefined)  {
+          this.output = [];
+
+          this.simulationUiInfo.output.data.forEach((output) => {
+            this.output.push(output.name);
+          });
+        }
+      }
+
+      return this.output;
+    },
+    /**
+     * @vuese
+     * Create the `request` that is going to be used by `startSimulation` to ask oSPARC to start the simulation.
+     */
+    retrieveRequest() {
+      const request = {
+        solver: this.solver
+      };
+
+      if (this.opencorBasedSimulation) {
         request.opencor = {
           model_url: this.simulationUiInfo.simulation.opencor.resource,
           json_config: {},
         };
+
+        if (   (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
+            && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
+          request.opencor.json_config.simulation = {
+            "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
+            "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
+          };
+        }
+
+        request.opencor.json_config.parameters = this.parametersData();
+
+        const output = this.outputData();
+
+        if (output !== undefined) {
+          request.opencor.json_config.output = output;
+        }
       } else {
         request.osparc = {};
-      }
 
-      // Specify the ending point and point interval, if we have some.
-
-      if (   isOpencorSimulation
-          && (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
-          && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
-        request.opencor.json_config.simulation = {
-          "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
-          "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
-        };
-      }
-
-      // Specify the parameters, if any.
-
-      if (this.simulationUiInfo.parameters !== undefined) {
-        let parameters = {};
-
-        this.simulationUiInfo.parameters.forEach((parameter) => {
-          parameters[parameter.name] = evaluateValue(this, parameter.value);
-        });
-
-        if (isOpencorSimulation) {
-          request.opencor.json_config.parameters = parameters;
-        } else {
-          request.osparc.job_inputs = parameters;
-        }
-      }
-
-      // Specify what we want to retrieve, if anything.
-
-      if (isOpencorSimulation && (this.simulationUiInfo.output.data !== undefined))  {
-        let index = -1;
-
-        request.opencor.json_config.output = [];
-
-        this.simulationUiInfo.output.data.forEach((outputData) => {
-          request.opencor.json_config.output[++index] = outputData.name;
-        });
+        request.osparc.job_inputs = this.parametersData();
       }
 
       return request;
@@ -268,9 +540,8 @@ export default {
 
       if (typeof(results) === "string") {
         const SPACES = /[ \t]+/g;
-
-        let lines = results.trim().split("\n");
-        let iMax = lines[0].trim().split(SPACES).length;
+        const lines = results.trim().split("\n");
+        const iMax = lines[0].trim().split(SPACES).length;
 
         results = {};
 
@@ -284,7 +555,7 @@ export default {
           ++i;
 
           let j = -1;
-          let values = line.trim().split(SPACES);
+          const values = line.trim().split(SPACES);
 
           values.forEach((value) => {
             results[++j][i] = Number(value);
@@ -294,22 +565,19 @@ export default {
 
       // Get the results ready for plotting.
 
+      const parser = new math.parser();
+
+      Object.keys(this.simulationResultsId).forEach((id) => {
+        parser.set(id, results[this.simulationResultsId[id]]);
+      });
+
       let index = -1;
-      let iMax = results[this.simulationDataId[Object.keys(this.simulationDataId)[0]]].length;
 
       this.simulationUiInfo.output.plots.forEach((outputPlot) => {
-        let xValue = [];
-        let yValue = [];
-
-        for (let i = 0; i < iMax; ++i) {
-          xValue[i] = evaluateSimulationValue(this, results, outputPlot.xValue, i);
-          yValue[i] = evaluateSimulationValue(this, results, outputPlot.yValue, i);
-        }
-
-        this.simulationData[++index] = [
+        this.simulationResults[++index] = [
           {
-            x: xValue,
-            y: yValue,
+            x: parser.evaluate(outputPlot.xValue),
+            y: parser.evaluate(outputPlot.yValue),
             type: "scatter",
           },
         ];
@@ -325,9 +593,9 @@ export default {
     checkSimulation(data) {
       // Check the simulation.
 
-      let xmlhttp = new XMLHttpRequest();
+      const xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", this.apiLocation + "/check_simulation", true);
+      xmlhttp.open("POST", this.apiLocation + "/check_simulation");
       xmlhttp.setRequestHeader("Content-type", "application/json");
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
@@ -372,36 +640,18 @@ export default {
      * button which, when clicked, calls this method.
      */
     startSimulation() {
-      // Retrieve the solver to be used for the simulation.
-
-      let solver = undefined;
-
-      this.simulationUiInfo.simulation.solvers.forEach((crtSolver) => {
-        if ((crtSolver.if === undefined) || evaluateValue(this, crtSolver.if)) {
-          solver = crtSolver;
-        }
-      });
-
-      if (solver === undefined) {
-        console.warn("SIMULATION: no solver name and/or solver version specified.");
-
-        return;
-      }
-
       // Start the simulation (after resetting our previous simulation data, in
       // case there were sonme).
-      // Note: we use this.$nextTick() so that the user message is shown before
-      //       we get to post our HTTP request.
 
       this.userMessage = "Loading simulation results...";
       this.showUserMessage = true;
 
       this.$nextTick(() => {
-        this.simulationData = [];
+        this.simulationResults = {};
 
-        let xmlhttp = new XMLHttpRequest();
+        const xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.open("POST", this.apiLocation + "/start_simulation", true);
+        xmlhttp.open("POST", this.apiLocation + "/start_simulation");
         xmlhttp.setRequestHeader("Content-type", "application/json");
         xmlhttp.onreadystatechange = () => {
           if (xmlhttp.readyState === 4) {
@@ -423,38 +673,70 @@ export default {
             }
           }
         };
-        xmlhttp.send(JSON.stringify(this.retrieveRequest({
-          solver: solver
-        })));
+        xmlhttp.send(JSON.stringify(this.retrieveRequest()));
       });
     },
   },
   created: function() {
-    // Try to retrieve the UI information, but only if we have a name.
+    // Try to retrieve the UI information.
 
-    if (this.name !== undefined) {
+    if (this.id > 0) {
       this.userMessage = "Retrieving UI information...";
       this.showUserMessage = true;
 
       // Retrieve and build the simulation UI.
-      // Note: we use this.$nextTick() so that the user message is shown before
-      //       we get to post our HTTP request.
 
       this.$nextTick(() => {
-        let xmlhttp = new XMLHttpRequest();
+        const xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id, true);
-        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.open("GET", this.apiLocation + "/simulation_ui_file/" + this.id);
         xmlhttp.onreadystatechange = () => {
           if (xmlhttp.readyState === 4) {
             this.showUserMessage = false;
 
             if (xmlhttp.status === 200) {
-              this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
+              this.$nextTick(() => {
+                this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
+              });
             }
           }
         };
         xmlhttp.send();
+      });
+    } else if (this.id !== 0) {
+      this.userMessage = "Retrieving OMEX file...";
+      this.showUserMessage = true;
+
+      // Retrieve the OMEX file, extract the simulation UI JSON file from it and
+      // then build the simulation UI.
+
+      this.$nextTick(() => {
+        const xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("POST", this.apiLocation + "/pmr_file");
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.onreadystatechange = () => {
+          if ((xmlhttp.readyState === 4) && (xmlhttp.status === 200)) {
+            libOpenCOR().then((libopencor) => {
+              this.pmrBasedCombineArchive = true;
+              this.libopencor = libopencor;
+              this.fileManager = this.libopencor.FileManager.instance();
+
+              const fileContents = Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0));
+              const file = this.manageFile(PMR_URL + this.id, fileContents);
+
+              const decoder = new TextDecoder();
+              const simulationUiInfo = JSON.parse(decoder.decode(file.childFile("simulation.json").contents()));
+
+              this.showUserMessage = false;
+
+              this.$nextTick(() => {
+                this.buildSimulationUi(simulationUiInfo);
+              });
+            });
+          }
+        };
+        xmlhttp.send(JSON.stringify({path: this.id}));
       });
     }
   },
