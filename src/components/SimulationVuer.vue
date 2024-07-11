@@ -611,7 +611,7 @@ export default {
               }
             } else {
               this.showUserMessage = false;
-              this.errorMessage = response.description + "QWEQWEQWE";
+              this.errorMessage = response.description;
             }
           } else {
             this.showHttpIssue(xmlhttp);
