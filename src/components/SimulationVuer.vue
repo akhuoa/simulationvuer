@@ -304,9 +304,7 @@ export default {
         this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
       }
 
-      // Run the model if we are dealing with a PMR-based COMBINE archive or
-      // load libOpenCOR if we are dealing with an OpenCOR-based simulation and
-      // we want to use libOpenCOR.
+      // Run the model if we are dealing with a PMR-based COMBINE archive.
 
       if (this.libopencor !== undefined) {
         this.userMessage = "Running the model...";
@@ -314,44 +312,6 @@ export default {
 
         this.$nextTick(() => {
           this.runSimulation();
-        });
-      } else if (this.opencorBasedSimulation && (this.libopencor !== undefined)) {
-        this.userMessage = "Retrieving and running the model...";
-        this.showUserMessage = true;
-
-        this.$nextTick(() => {
-          libOpenCOR().then((libopencor) => {
-            // Keep track of the libOpenCOR module and its file manager.
-
-            this.libopencor = libopencor;
-            this.fileManager = this.libopencor.FileManager.instance();
-
-            // Retrieve the model file, if needed.
-
-            const modelUrl = this.simulationUiInfo.simulation.opencor.resource;
-
-            this.downloadPmrFile(modelUrl).then((fileContents) => {
-              const file = this.manageFile(modelUrl, fileContents);
-
-              // In the case of a SED-ML file, we also need to retrieve its
-              // corresponding CellML file.
-
-              if (file.type().value === this.libopencor.File.Type.SEDML_FILE.value) {
-                const document = new this.libopencor.SedDocument(file);
-                const cellmlUrl = document.models().get(0).file().url();
-
-                this.downloadPmrFile(cellmlUrl).then((cellmlFileContents) => {
-                  this.manageFile(cellmlUrl, cellmlFileContents);
-
-                  this.runSimulation();
-                });
-
-                document.delete();
-              } else {
-                this.runSimulation();
-              }
-            });
-          });
         });
       }
 
