@@ -3,8 +3,8 @@
     <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
     <div class="main" v-if="hasValidSimulationUiInfo">
       <div class="main-left">
-        <p class="default name" v-if="libopencor === undefined">{{name}}</p>
-        <el-divider v-if="libopencor === undefined"></el-divider>
+        <p class="default name" v-if="!libopencorSet">{{name}}</p>
+        <el-divider v-if="!libopencorSet"></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div class="input scrollbar">
           <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input"
@@ -19,16 +19,16 @@
           />
         </div>
         <div class="primary-button">
-          <el-button type="primary" size="small" @click="startSimulation()" v-if="libopencor === undefined">Run Simulation</el-button>
+          <el-button type="primary" size="small" @click="startSimulation()" v-if="!libopencorSet">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
           <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
         <div class="secondary-button">
-          <el-button size="small" @click="viewDataset()" v-if="libopencor === undefined">View Dataset</el-button>
+          <el-button size="small" @click="viewDataset()" v-if="!libopencorSet">View Dataset</el-button>
         </div>
         <div class="secondary-button">
-          <el-button size="small" @click="viewWorkspace()" v-if="libopencor !== undefined">View Workspace</el-button>
+          <el-button size="small" @click="viewWorkspace()" v-if="libopencorSet">View Workspace</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
@@ -57,7 +57,7 @@ import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
 import libOpenCOR from "./libopencor.js";
-import { toRaw } from "vue";
+import { markRaw } from "vue";
 import { create, all } from "mathjs";
 
 const LIBOPENCOR_SOLVER = "libOpenCOR";
@@ -126,6 +126,7 @@ export default {
       isSimulationValid: true,
       layout: [],
       libopencor: undefined,
+      libopencorSet: false,
       name: null,
       opencorBasedSimulation: true,
       output: undefined,
@@ -188,7 +189,7 @@ export default {
      * @arg `fileContents`
      */
     manageFile(url, fileContents) {
-      let file = toRaw(this.fileManager).file(url);
+      let file = this.fileManager.file(url);
 
       if (file === null) {
         file = new this.libopencor.File(url);
@@ -213,29 +214,27 @@ export default {
       if (this.instance === undefined) {
         // Retrieve an instance of the model.
 
-        const document = new this.libopencor.SedDocument(toRaw(this.fileManager).file(PMR_URL + this.id));
+        const document = new this.libopencor.SedDocument(this.fileManager.file(PMR_URL + this.id));
 
-        this.instance = document.instantiate();
+        this.instance = markRaw(document.instantiate());
 
         document.delete();
       }
 
       // Run the simulation after passing some initial conditions to it, if any.
 
-      const instance = toRaw(this.instance);
-
-      instance.removeAllInitialConditions();
+      this.instance.removeAllInitialConditions();
 
       for (const [parameter, value] of Object.entries(this.parametersData())) {
-        instance.addInitialCondition(parameter, value);
+        this.instance.addInitialCondition(parameter, value);
       }
 
-      instance.run();
+      this.instance.run();
 
       // Retrieve the simulation results.
 
       const res = {};
-      const instanceTask = instance.tasks().get(0);
+      const instanceTask = this.instance.tasks().get(0);
 
       for (const output of this.outputData()) {
         if (output === instanceTask.voiName()) {
@@ -663,8 +662,9 @@ export default {
           if (xmlhttp.readyState === 4) {
             if (xmlhttp.status === 200) {
               libOpenCOR().then((libopencor) => {
-                this.libopencor = libopencor;
-                this.fileManager = this.libopencor.FileManager.instance();
+                this.libopencor = markRaw(libopencor);
+                this.libopencorSet = true;
+                this.fileManager = markRaw(this.libopencor.FileManager.instance());
 
                 const fileContents = Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0));
                 const file = this.manageFile(PMR_URL + this.id, fileContents);
