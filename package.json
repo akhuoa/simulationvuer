@@ -13,7 +13,7 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^1.0.0",
+    "@abi-software/plotvuer": "^1.0.1",
     "element-plus": "^2.5.3",
     "jsonschema": "^1.4.0",
     "mathjs": "^13.0.2",
