@@ -102,6 +102,9 @@ function transformData(data = []) {
       })
     }
   })
+  if (!data.length) {
+    return null
+  }
   return data
 }
 
