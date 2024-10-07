@@ -145,7 +145,7 @@ export default {
   },
   methods: {
     /**
-     * @vuese
+     * @public
      * Generate the metadata associated with the plot which `index` is given.
      * @arg `index`
      */
@@ -160,7 +160,7 @@ export default {
       };
     },
     /**
-     * @vuese
+     * @public
      * Download the PMR file associated with the given `url`.
      * @arg `url`
      */
@@ -183,7 +183,7 @@ export default {
       });
     },
     /**
-     * @vuese
+     * @public
      * Manage the file associated with the given `url` and `fileContents`.
      * @arg `url`
      * @arg `fileContents`
@@ -207,7 +207,7 @@ export default {
       return file;
     },
     /**
-     * @vuese
+     * @public
      * Run a PMR-based COMBINE archive using libOpenCOR.
      */
     runSimulation() {
@@ -267,7 +267,7 @@ export default {
       this.showUserMessage = false;
     },
     /**
-     * @vuese
+     * @public
      * Build the simulation UI using `simulationUiInfo`, a JSON object that describes the contents of the simulation UI.
      * @arg `simulationUiInfo`
      */
@@ -371,7 +371,7 @@ export default {
       });
     },
     /**
-     * @vuese
+     * @public
      * Run the simulation-based dataset directly on oSPARC. Not all simulation-based datasets can be run directly on
      * oSPARC, but for those that can the simulation UI shows a `Run on oSPARC` button which, when clicked, calls this
      * method.
@@ -380,7 +380,7 @@ export default {
       window.open(`https://osparc.io/study/${this.uuid}`, "_blank");
     },
     /**
-     * @vuese
+     * @public
      * View the simulation-based dataset on the SPARC portal. The simulation UI has a `View Dataset` button which, when
      * clicked, calls this method.
      */
@@ -388,7 +388,7 @@ export default {
       window.open(`https://sparc.science/datasets/${this.id}?type=dataset`, "_blank");
     },
     /**
-     * @vuese
+     * @public
      * View the simulation-based dataset on PMR. The simulation UI has a `View Workspace` button which, when clicked,
      * calls this method.
      */
@@ -398,7 +398,7 @@ export default {
       window.open(url.substring(0, url.lastIndexOf("/")), "_blank");
     },
     /**
-     * @vuese
+     * @public
      * Data needed to set a model's parameters.
      */
     parametersData() {
@@ -411,7 +411,7 @@ export default {
       return res;
     },
     /**
-     * @vuese
+     * @public
      * Data needed to specify the model output.
      */
      outputData() {
@@ -428,7 +428,7 @@ export default {
       return this.output;
     },
     /**
-     * @vuese
+     * @public
      * Create the `request` that is going to be used by `startSimulation` to ask oSPARC to start the simulation.
      */
     retrieveRequest() {
@@ -466,7 +466,7 @@ export default {
       return request;
     },
     /**
-     * @vuese
+     * @public
      * Process the simulation results retrieved by `checkSimulation`. The simulation results are post-processed, if
      * needed, and then readied for use by `PlotVuer`.
      * @arg `results`
@@ -521,7 +521,7 @@ export default {
       });
     },
     /**
-     * @vuese
+     * @public
      * Show an HTTP issue using the given `xmlhttp`.
      * @arg `xmlhttp`
      */
@@ -531,7 +531,7 @@ export default {
       this.errorMessage = xmlhttp.statusText.toLowerCase() + " (<a href='https://httpstatuses.com/" + xmlhttp.status + "/' target='_blank'>" + xmlhttp.status + "</a>)";
     },
     /**
-     * @vuese
+     * @public
      * Check the progress of the simulation using the given `data`, a JSON object that contains the simulation job ID,
      * as well as the solver name and version. This method is first called by `startSimulation` and then every second by
      * itself until the simulation is finished.
@@ -580,7 +580,7 @@ export default {
       xmlhttp.send(JSON.stringify(data));
     },
     /**
-     * @vuese
+     * @public
      * Start the simulation associated with the simulation-based dataset. The simulation UI has a `Run Simulation`
      * button which, when clicked, calls this method.
      */
