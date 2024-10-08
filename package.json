@@ -13,12 +13,12 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^1.0.2",
-    "element-plus": "^2.5.3",
+    "@abi-software/plotvuer": "^1.0.3",
+    "element-plus": "^2.8.4",
     "jsonschema": "^1.4.0",
     "mathjs": "^13.0.2",
     "unplugin-vue-components": "^0.26.0",
-    "vue": "^3.4.15"
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.3",
