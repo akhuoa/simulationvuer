@@ -96,8 +96,8 @@ export default {
 }
 
 .el-radio-button__original-radio:checked+.el-radio-button__inner {
-  background-color: #8300bf;
-  border-color: #8300bf;
+  background-color: #8300bf!important;
+  border-color: #8300bf!important;
   color: white;
 }
 

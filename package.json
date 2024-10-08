@@ -1,24 +1,28 @@
 {
   "name": "@abi-software/simulationvuer",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "private": false,
   "scripts": {
     "serve": "vite serve --host",
     "build-bundle": "vite build",
     "vuese-gen": "node vuese-generator.js",
     "vuese-watch": "node vuese-generator.js watch",
+    "version": "npm run build-bundle;",
+    "release:beta": "npm version prerelease --preid=beta; npm publish --tag beta",
+    "release:minor": "npm version minor; npm publish",
+    "release:patch": "npm version patch;  npm publish",
     "docs:dev": "vitepress dev docs",
     "docs:watch": "concurrently \"npm run vuese-watch\" \"npm run docs:dev\"",
     "docs:build": "npm run vuese-gen; vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "^1.0.2",
-    "element-plus": "^2.5.3",
+    "@abi-software/plotvuer": "^1.0.3",
+    "element-plus": "2.8.4",
     "jsonschema": "^1.4.0",
     "mathjs": "^13.0.2",
     "unplugin-vue-components": "^0.26.0",
-    "vue": "^3.4.15"
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.3",
