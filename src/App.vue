@@ -2,20 +2,24 @@
   <div id="app">
     <div class="app">
       <h1>SimulationVuer</h1>
+      <h3>Simulations run on o²S²PARC:</h3>
       <el-radio-group v-model="id" size="small">
-        <el-radio-button :class="className(dataset.id)" v-for="dataset in datasets" v-bind:key="dataset.id" :label="dataset.label" :value="dataset.id" />
+        <el-radio-button :class="className(dataset.id)" v-for="dataset in sparcDatasets" v-bind:key="dataset.id" :label="dataset.label" :value="dataset.id" />
+      </el-radio-group>
+      <h3>Simulations run in the browser:</h3>
+      <el-radio-group v-model="id" size="small">
+        <el-radio-button :class="className(dataset.id)" v-for="dataset in pmrDatasets" v-bind:key="dataset.id" :label="dataset.label" :value="dataset.id" />
       </el-radio-group>
     </div>
     <hr />
-    <div v-for="dataset in datasets" v-bind:key="dataset.id">
+    <div v-for="dataset in datasets()" v-bind:key="dataset.id">
       <div v-if="initialised(dataset.id)" v-show="dataset.id == id">
-        <span v-if="typeof dataset.id === 'number'">
+        <div v-if="typeof dataset.id === 'number'">
+          <span>
           <strong>Dataset <a :href="datasetUrl(dataset.id)" target="_blank">{{ dataset.id }}</a>:</strong> {{ dataset.description }}
-        </span>
-        <span v-if="typeof dataset.id !== 'number'">
-          <strong>ISAN:</strong> {{ dataset.description }}
-        </span>
-        <hr />
+          </span>
+          <hr />
+        </div>
         <SimulationVuer :apiLocation="apiLocation" :id="dataset.id" style="height: 640px;" />
       </div>
     </div>
@@ -37,18 +41,20 @@ export default {
   data: function () {
     return {
       apiLocation: import.meta.env.VITE_API_LOCATION,
-      datasets: [
+      sparcDatasets: [
         { id: 0, label: "0", description: "Non-simulation dataset" },
         { id: 135, label: "135", description: "Computational analysis of the human sinus node action potential - Model development and effects of mutations" },
         { id: 157, label: "157", description: "Fabbri-based composite SAN model" },
         { id: 308, label: "308", description: "Kember Cardiac Nerve Model" },
         { id: 318, label: "318", description: "Multi-scale rabbit cardiac electrophysiology models" },
         { id: 320, label: "320", description: "Multi-scale human cardiac electrophysiology models" },
-        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/135.omex", label: "ISAN-135", description: "COMBINE archive from PMR" },
-        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/157.omex", label: "ISAN-157", description: "COMBINE archive from PMR" },
-        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/lorenz.omex", label: "ISAN-Lorenz", description: "COMBINE archive from PMR" },
-        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/tt04.omex", label: "ISAN-TT04", description: "COMBINE archive from PMR" },
-        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/Gee_whiz_Exported.cellml.omex", label: "ISAN-GeeWhiz", description: "COMBINE archive from PMR" },
+      ],
+      pmrDatasets: [
+        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/135.omex", label: "135", description: "COMBINE archive from PMR" },
+        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/157.omex", label: "157", description: "COMBINE archive from PMR" },
+        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/lorenz.omex", label: "Lorenz", description: "COMBINE archive from PMR" },
+        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/tt04.omex", label: "TT04", description: "COMBINE archive from PMR" },
+        { id: "workspace/b7c/rawfile/01e2df76bf5e8d5ad7c00c3a4e7876879259edd6/Gee_whiz_Exported.cellml.omex", label: "GeeWhiz", description: "COMBINE archive from PMR" },
       ],
       id: 0,
       ready: [],
@@ -56,7 +62,10 @@ export default {
   },
   methods: {
     className(id) {
-      return (id == this.datasets[0].id) ? "first-dataset" : "";
+      return ((id == this.sparcDatasets[0].id) || (id == this.pmrDatasets[0].id)) ? "first-dataset" : "";
+    },
+    datasets() {
+      return this.sparcDatasets.concat(this.pmrDatasets);
     },
     datasetUrl(id) {
       return `https://sparc.science/datasets/${id}?type=dataset`;
@@ -111,5 +120,9 @@ a {
 
 div.app {
   text-align: center;
+}
+
+h3 {
+  margin-bottom: 0;
 }
 </style>
