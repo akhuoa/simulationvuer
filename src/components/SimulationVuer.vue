@@ -161,29 +161,6 @@ export default {
     },
     /**
      * @vuese
-     * Download the PMR file associated with the given `url`.
-     * @arg `url`
-     */
-    downloadPmrFile(url) {
-      return new Promise((resolve, reject) => {
-        const xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.open("POST", this.apiLocation + "/pmr_file");
-        xmlhttp.setRequestHeader("Content-type", "application/json");
-        xmlhttp.onreadystatechange = () => {
-          if (xmlhttp.readyState === 4) {
-            if (xmlhttp.status === 200) {
-              resolve(Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
-            }
-
-            reject();
-          }
-        };
-        xmlhttp.send(JSON.stringify({path: url.replace(PMR_URL, "")}));
-      });
-    },
-    /**
-     * @vuese
      * Manage the file associated with the given `url` and `fileContents`.
      * @arg `url`
      * @arg `fileContents`
