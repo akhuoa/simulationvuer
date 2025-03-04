@@ -33,7 +33,7 @@
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
       <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(outputPlot, index) in simulationUiInfo.output.plots"
+        <PlotVuer v-for="(_outputPlot, index) in simulationUiInfo.output.plots"
           :key="`output-${index}`"
           :metadata="plotMetadata(index)"
           :data-source="{data: simulationResults[index]}"
@@ -82,7 +82,7 @@ export default {
   },
   props: {
     /**
-     * The the URL to the API location.
+     * The URL to the API location.
      */
     apiLocation: {
       required: true,
@@ -93,7 +93,16 @@ export default {
      * to a PMR file, if it is a string.
      */
     id: {
-      required: true,
+      required: false,
+      default: 0,
+    },
+    /**
+     * A COMBINE archive that was passed directly.
+     */
+    combineArchive: {
+      required: false,
+      type: Uint8Array,
+      default: undefined,
     },
   },
   data: function() {
@@ -158,29 +167,6 @@ export default {
           layout: this.layout[index],
         },
       };
-    },
-    /**
-     * @public
-     * Download the PMR file associated with the given `url`.
-     * @arg `url`
-     */
-    downloadPmrFile(url) {
-      return new Promise((resolve, reject) => {
-        const xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.open("POST", this.apiLocation + "/pmr_file");
-        xmlhttp.setRequestHeader("Content-type", "application/json");
-        xmlhttp.onreadystatechange = () => {
-          if (xmlhttp.readyState === 4) {
-            if (xmlhttp.status === 200) {
-              resolve(Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
-            }
-
-            reject();
-          }
-        };
-        xmlhttp.send(JSON.stringify({path: url.replace(PMR_URL, "")}));
-      });
     },
     /**
      * @public
@@ -303,7 +289,8 @@ export default {
         this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
       }
 
-      // Run the model if we are dealing with a PMR-based COMBINE archive.
+      // Run the model if we are dealing with a PMR-based COMBINE archive or a
+      // COMBINE archive that was passed directly.
 
       if (this.libopencor !== undefined) {
         this.userMessage = "Running the model...";
@@ -650,8 +637,8 @@ export default {
       this.userMessage = "Retrieving COMBINE archive from PMR...";
       this.showUserMessage = true;
 
-      // Retrieve the OMEX file, extract the simulation UI JSON file from it and
-      // then build the simulation UI.
+      // Retrieve the COMBINE archive, extract the simulation UI JSON file from
+      // it and then build the simulation UI.
 
       this.$nextTick(() => {
         const xmlhttp = new XMLHttpRequest();
@@ -684,6 +671,36 @@ export default {
           }
         };
         xmlhttp.send(JSON.stringify({path: this.id}));
+      });
+    } else if (this.combineArchive !== undefined) {
+      // Extract the simulation UI JSON file from the COMBINE archive and build
+      // the simulation UI.
+
+      this.userMessage = "Retrieving COMBINE archive...";
+      this.showUserMessage = true;
+
+      this.$nextTick(() => {
+        libOpenCOR().then((libopencor) => {
+          this.libopencor = markRaw(libopencor);
+          this.libopencorSet = true;
+          this.fileManager = markRaw(this.libopencor.FileManager.instance());
+
+          const fileContents = this.combineArchive;
+          const file = this.manageFile(PMR_URL + this.id, fileContents);
+
+          if (file.type().value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
+            this.showUserMessage = false;
+          } else {
+            const decoder = new TextDecoder();
+            const simulationUiInfo = JSON.parse(decoder.decode(file.childFile("simulation.json").contents()));
+
+            this.showUserMessage = false;
+
+            this.$nextTick(() => {
+              this.buildSimulationUi(simulationUiInfo);
+            });
+          }
+        });
       });
     }
   },
