@@ -221,10 +221,16 @@ export default {
 
       const res = {};
       const instanceTask = this.instance.tasks().get(0);
+      let foundAllOutputs = true;
+      let foundOutput;
 
       for (const output of this.outputData()) {
+        foundOutput = false;
+
         if (output === instanceTask.voiName()) {
           res[output] = instanceTask.voiAsArray();
+
+          foundOutput = true;
         }
 
         if (res[output] === undefined) {
@@ -232,23 +238,35 @@ export default {
             if (output === instanceTask.stateName(i)) {
               res[output] = instanceTask.stateAsArray(i);
 
+              foundOutput = true;
+
               break;
             }
           }
         }
 
         if (res[output] === undefined) {
-          for (let i = 0; instanceTask.variableCount(); ++i) {
+          for (let i = 0; i < instanceTask.variableCount(); ++i) {
             if (output === instanceTask.variableName(i)) {
               res[output] = instanceTask.variableAsArray(i);
+
+              foundOutput = true;
 
               break;
             }
           }
         }
+
+        if (!foundOutput) {
+          console.warn("SIMULATION: output '" + output + "' not found.");
+
+          foundAllOutputs = false;
+        }
       }
 
-      this.processSimulationResults(res);
+      if (foundAllOutputs) {
+        this.processSimulationResults(res);
+      }
 
       this.showUserMessage = false;
     },
