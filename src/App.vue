@@ -10,17 +10,35 @@
       <el-radio-group v-model="id" size="small">
         <el-radio-button :class="className(dataset.id)" v-for="dataset in pmrDatasets" v-bind:key="dataset.id" :label="dataset.label" :value="dataset.id" />
       </el-radio-group>
+      <div ref="dropArea" class="drop-area" @dragenter.prevent="onDragEnter" @dragover.prevent @drop.prevent="onDrop" @dragleave.prevent="onDragLeave">
+        You can drag and drop a COMBINE archive here.
+      </div>
+      <el-dialog v-model="dragAndDropWarningVisible" width="352">
+        <span>Please only drag and drop one COMBINE archive.</span>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button type="primary" @click="dragAndDropWarningVisible = false">
+              OK
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
     </div>
     <hr />
     <div v-for="dataset in datasets()" v-bind:key="dataset.id">
       <div v-if="initialised(dataset.id)" v-show="dataset.id == id">
         <div v-if="typeof dataset.id === 'number'">
           <span>
-          <strong>Dataset <a :href="datasetUrl(dataset.id)" target="_blank">{{ dataset.id }}</a>:</strong> {{ dataset.description }}
+            <strong>Dataset <a :href="datasetUrl(dataset.id)" target="_blank">{{ dataset.id }}</a>:</strong> {{ dataset.description }}
           </span>
           <hr />
         </div>
         <SimulationVuer :apiLocation="apiLocation" :id="dataset.id" style="height: 640px;" />
+      </div>
+    </div>
+    <div v-if="id == -1">
+      <div v-for="combineArchive in combineArchives" v-bind:key="combineArchive">
+        <SimulationVuer :apiLocation="apiLocation" :combineArchive="combineArchive" style="height: 640px;" />
       </div>
     </div>
     <hr />
@@ -41,6 +59,9 @@ export default {
   data: function () {
     return {
       apiLocation: import.meta.env.VITE_API_LOCATION,
+      dropAreaCounter: 0,
+      dragAndDropWarningVisible: false,
+      combineArchives: [],
       sparcDatasets: [
         { id: 0, label: "0", description: "Non-simulation dataset" },
         { id: 135, label: "135", description: "Computational analysis of the human sinus node action potential - Model development and effects of mutations" },
@@ -82,6 +103,38 @@ export default {
 
       return this.ready.includes(id);
     },
+    onDragEnter() {
+      this.dropAreaCounter += 1;
+
+      if (this.dropAreaCounter === 1) {
+        this.$refs.dropArea.classList.add('drop-area-active');
+      }
+    },
+    onDrop(event) {
+      this.dropAreaCounter = 0;
+
+      this.$refs.dropArea.classList.remove('drop-area-active');
+
+      const files = event.dataTransfer.files;
+
+      if (files.length !== 1) {
+        this.dragAndDropWarningVisible = true;
+      } else {
+        files[0]
+          .arrayBuffer()
+          .then((arrayBuffer) => {
+            this.id = -1;
+            this.combineArchives = [new Uint8Array(arrayBuffer)];
+          })
+      }
+    },
+    onDragLeave() {
+      this.dropAreaCounter -= 1;
+
+      if (this.dropAreaCounter === 0) {
+        this.$refs.dropArea.classList.remove('drop-area-active');
+      }
+    }
   },
 };
 </script>
@@ -92,6 +145,33 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+
+.drop-area {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 192px;
+  height: 48px;
+  border: 2px dashed #8300bf;
+  background-color: #f9f2fc;
+  color: #8300bf;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
+
+.drop-area-active {
+  background-color: #8300bf;
+  color: white;
+}
+
+.el-button,
+.el-button:hover {
+  border-color: #8300bf;
+  background-color: #8300bf;
 }
 
 .el-radio-button__inner {
