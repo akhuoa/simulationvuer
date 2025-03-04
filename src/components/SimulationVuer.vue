@@ -596,7 +596,7 @@ export default {
                 this.checkSimulation(response.data);
               } else {
                 this.showUserMessage = false;
-                this.errorMessage = response.description + "ASDASDASD";
+                this.errorMessage = response.description;
               }
             } else {
               this.showHttpIssue(xmlhttp);
