@@ -30,7 +30,7 @@ export function updateUi(parent) {
     });
 
     if (parent.libopencor !== undefined) {
-      parent.userMessage = "Rerunning the model...";
+      parent.userMessage = "Running the model...";
       parent.showUserMessage = true;
 
       parent.$nextTick(() => {

@@ -307,18 +307,6 @@ export default {
         this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
       }
 
-      // Run the model if we are dealing with a PMR-based COMBINE archive or a
-      // COMBINE archive that was passed directly.
-
-      if (this.libopencor !== undefined) {
-        this.userMessage = "Running the model...";
-        this.showUserMessage = true;
-
-        this.$nextTick(() => {
-          this.runSimulation();
-        });
-      }
-
       // Initialise our UI.
 
       this.simulationUiInfo.output.data.forEach((data) => {
