@@ -1,9 +1,9 @@
 <template>
   <div class="simulation-vuer" v-loading="showUserMessage" :element-loading-text="userMessage">
-    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
     <div class="main" v-if="hasValidSimulationUiInfo">
       <div class="main-left">
-        <p class="default name" v-if="!libopencorSet">{{name}}</p>
+        <p class="default name" v-if="!libopencorSet">{{ name }}</p>
         <el-divider v-if="!libopencorSet"></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div class="input scrollbar">
@@ -36,7 +36,7 @@
         <PlotVuer v-for="(_outputPlot, index) in simulationUiInfo.output.plots"
           :key="`output-${index}`"
           :metadata="plotMetadata(index)"
-          :data-source="{data: simulationResults[index]}"
+          :data-source="{ data: simulationResults[index] }"
           :plotLayout="layout[index]"
           :plotType="'plotly-only'"
           :selectorUi="false"
@@ -105,7 +105,7 @@ export default {
       default: undefined,
     },
   },
-  data: function() {
+  data: function () {
     // Retrieve some information about the dataset.
 
     if (this.id > 0) {
@@ -118,7 +118,7 @@ export default {
             const datasetInfo = JSON.parse(xmlhttp.responseText);
 
             this.name = datasetInfo.name;
-            this.uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
+            this.uuid = (datasetInfo.study !== undefined) ? datasetInfo.study.uuid : undefined;
           }
         }
       };
@@ -221,10 +221,16 @@ export default {
 
       const res = {};
       const instanceTask = this.instance.tasks().get(0);
+      let foundAllOutputs = true;
+      let foundOutput;
 
       for (const output of this.outputData()) {
+        foundOutput = false;
+
         if (output === instanceTask.voiName()) {
           res[output] = instanceTask.voiAsArray();
+
+          foundOutput = true;
         }
 
         if (res[output] === undefined) {
@@ -232,23 +238,38 @@ export default {
             if (output === instanceTask.stateName(i)) {
               res[output] = instanceTask.stateAsArray(i);
 
+              foundOutput = true;
+
               break;
             }
           }
         }
 
         if (res[output] === undefined) {
-          for (let i = 0; instanceTask.variableCount(); ++i) {
+          for (let i = 0; i < instanceTask.variableCount(); ++i) {
             if (output === instanceTask.variableName(i)) {
               res[output] = instanceTask.variableAsArray(i);
+
+              foundOutput = true;
 
               break;
             }
           }
         }
+
+        if (!foundOutput) {
+          console.warn("SIMULATION: output '" + output + "' could not be found.");
+
+          foundAllOutputs = false;
+        }
       }
 
-      this.processSimulationResults(res);
+      if (foundAllOutputs) {
+        this.processSimulationResults(res);
+      } else {
+        this.hasValidSimulationUiInfo = false;
+        this.errorMessage = "some outputs could not be found";
+      }
 
       this.showUserMessage = false;
     },
@@ -267,6 +288,8 @@ export default {
       this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo, this.libopencor === undefined);
 
       if (!this.hasValidSimulationUiInfo) {
+        this.errorMessage = "the simulation.json file is malformed";
+
         return;
       }
 
@@ -281,24 +304,13 @@ export default {
         });
 
         if (this.solver === undefined) {
-          console.warn("SIMULATION: no solver name and/or solver version specified.");
+          this.hasValidSimulationUiInfo = false;
+          this.errorMessage = "no solver name and/or solver version specified";
 
           return;
         }
 
         this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
-      }
-
-      // Run the model if we are dealing with a PMR-based COMBINE archive or a
-      // COMBINE archive that was passed directly.
-
-      if (this.libopencor !== undefined) {
-        this.userMessage = "Running the model...";
-        this.showUserMessage = true;
-
-        this.$nextTick(() => {
-          this.runSimulation();
-        });
       }
 
       // Initialise our UI.
@@ -359,6 +371,40 @@ export default {
     },
     /**
      * @public
+     * Extract the simulation UI JSON file from the given file contents and build the simulation UI.
+     * @arg `libopencor`
+     * @arg `fileContents`
+     */
+    extractAndBuildSimulationUi(libopencor, fileContents) {
+      this.libopencor = markRaw(libopencor);
+      this.libopencorSet = true;
+      this.fileManager = markRaw(this.libopencor.FileManager.instance());
+
+      const file = this.manageFile(PMR_URL + this.id, fileContents);
+
+      if (file.type().value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
+        this.showUserMessage = false;
+      } else {
+        const decoder = new TextDecoder();
+        const simulationJson = file.childFile("simulation.json");
+
+        if (simulationJson === null) {
+          this.errorMessage = "no simulation JSON file could be found";
+
+          this.showUserMessage = false;
+        } else {
+          const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
+
+          this.showUserMessage = false;
+
+          this.$nextTick(() => {
+            this.buildSimulationUi(simulationUiInfo);
+          });
+        }
+      }
+    },
+    /**
+     * @public
      * Run the simulation-based dataset directly on oSPARC. Not all simulation-based datasets can be run directly on
      * oSPARC, but for those that can the simulation UI shows a `Run on oSPARC` button which, when clicked, calls this
      * method.
@@ -401,9 +447,9 @@ export default {
      * @public
      * Data needed to specify the model output.
      */
-     outputData() {
+    outputData() {
       if (this.output === undefined) {
-        if (this.simulationUiInfo.output.data !== undefined)  {
+        if (this.simulationUiInfo.output.data !== undefined) {
           this.output = [];
 
           this.simulationUiInfo.output.data.forEach((output) => {
@@ -429,8 +475,8 @@ export default {
           json_config: {},
         };
 
-        if (   (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
-            && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
+        if ((this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
+          && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
           request.opencor.json_config.simulation = {
             "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
             "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
@@ -462,7 +508,7 @@ export default {
       // Convert, if needed, the results to a JSON format that is compatible
       // with our OpenCOR results.
 
-      if (typeof(results) === "string") {
+      if (typeof (results) === "string") {
         const SPACES = /[ \t]+/g;
         const lines = results.trim().split("\n");
         const iMax = lines[0].trim().split(SPACES).length;
@@ -551,7 +597,7 @@ export default {
 
                 let that = this;
 
-                setTimeout(function() {
+                setTimeout(function () {
                   that.checkSimulation(data);
                 }, 1000);
               }
@@ -596,7 +642,7 @@ export default {
                 this.checkSimulation(response.data);
               } else {
                 this.showUserMessage = false;
-                this.errorMessage = response.description + "ASDASDASD";
+                this.errorMessage = response.description;
               }
             } else {
               this.showHttpIssue(xmlhttp);
@@ -607,7 +653,7 @@ export default {
       });
     },
   },
-  created: function() {
+  created: function () {
     // Try to retrieve the UI information.
 
     if (this.id > 0) {
@@ -628,6 +674,8 @@ export default {
               this.$nextTick(() => {
                 this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
               });
+            } else {
+              this.errorMessage = "the simulation dataset could not be retrieved";
             }
           }
         };
@@ -649,28 +697,15 @@ export default {
           if (xmlhttp.readyState === 4) {
             if (xmlhttp.status === 200) {
               libOpenCOR().then((libopencor) => {
-                this.libopencor = markRaw(libopencor);
-                this.libopencorSet = true;
-                this.fileManager = markRaw(this.libopencor.FileManager.instance());
-
-                const fileContents = Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0));
-                const file = this.manageFile(PMR_URL + this.id, fileContents);
-
-                const decoder = new TextDecoder();
-                const simulationUiInfo = JSON.parse(decoder.decode(file.childFile("simulation.json").contents()));
-
-                this.showUserMessage = false;
-
-                this.$nextTick(() => {
-                  this.buildSimulationUi(simulationUiInfo);
-                });
+                this.extractAndBuildSimulationUi(libopencor, Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
               });
             } else {
+              this.errorMessage = "the COMBINE archive chould not be retrieved";
               this.showUserMessage = false;
             }
           }
         };
-        xmlhttp.send(JSON.stringify({path: this.id}));
+        xmlhttp.send(JSON.stringify({ path: this.id }));
       });
     } else if (this.combineArchive !== undefined) {
       // Extract the simulation UI JSON file from the COMBINE archive and build
@@ -681,30 +716,14 @@ export default {
 
       this.$nextTick(() => {
         libOpenCOR().then((libopencor) => {
-          this.libopencor = markRaw(libopencor);
-          this.libopencorSet = true;
-          this.fileManager = markRaw(this.libopencor.FileManager.instance());
-
-          const fileContents = this.combineArchive;
-          const file = this.manageFile(PMR_URL + this.id, fileContents);
-
-          if (file.type().value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
-            this.showUserMessage = false;
-          } else {
-            const decoder = new TextDecoder();
-            const simulationUiInfo = JSON.parse(decoder.decode(file.childFile("simulation.json").contents()));
-
-            this.showUserMessage = false;
-
-            this.$nextTick(() => {
-              this.buildSimulationUi(simulationUiInfo);
-            });
-          }
+          this.extractAndBuildSimulationUi(libopencor, this.combineArchive);
         });
       });
+    } else {
+      this.errorMessage = "an non-simulation dataset was provided";
     }
   },
-  mounted: function() {
+  mounted: function () {
     // Finalise our UI.
     // Note: we try both here and in the created() function since we have no
     //       idea how long it's going to take to retrieve the simulation UI
@@ -719,7 +738,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 .simulation-vuer {
   --el-color-primary: #8300BF;
   --el-color-primary-light-7: #DAB3EC;
@@ -727,80 +745,101 @@ export default {
   --el-color-primary-light-9: #F3E6F9;
 }
 
-:deep( .el-button:hover) {
+:deep(.el-button:hover) {
   box-shadow: -3px 2px 4px #00000040;
 }
-:deep( .el-divider) {
+
+:deep(.el-divider) {
   margin: -8px 0 8px 0 !important;
   width: 210px;
 }
-:deep( .el-loading-spinner) {
+
+:deep(.el-loading-spinner) {
   .path {
     stroke: #8300BF;
   }
-  i, .el-loading-text {
+
+  i,
+  .el-loading-text {
     color: #8300BF;
   }
 }
+
 div.input {
   border: 1px solid #dcdfe6;
   padding: 4px;
   height: 300px;
 }
+
 div.main {
   display: grid;
   --mainLeftWidth: 243px;
   grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
   height: 100%;
 }
+
 div.main-left {
   border-right: 1px solid #dcdfe6;
   padding: 12px 20px 12px 12px;
   height: 100%;
   overflow: auto;
 }
+
 div.main-right.x1 {
   height: 100%;
 }
+
 div.main-right.x2 {
   height: 50%;
 }
+
 div.main-right.x3 {
   height: 33.333%;
 }
+
 div.main-right.x4 {
   height: 25%;
 }
+
 div.main-right.x5 {
   height: 20%;
 }
+
 div.main-right.x6 {
   height: 16.667%;
 }
+
 div.main-right.x7 {
   height: 14.286%;
 }
+
 div.main-right.x8 {
   height: 12.5%;
 }
+
 div.main-right.x9 {
   height: 11.111%;
 }
-:deep( div.main-right div.controls) {
+
+:deep(div.main-right div.controls) {
   height: 0;
 }
+
 div.primary-button,
 div.secondary-button {
   display: flex;
   justify-content: flex-end;
   width: 210px;
 }
+
 div.primary-button {
   margin-top: 14px;
 }
+
 div.secondary-button {
   margin-top: 8px;
 }
+
 div.primary-button .el-button,
 div.secondary-button .el-button,
 div.primary-button .el-button:hover,
@@ -808,61 +847,75 @@ div.secondary-button .el-button:hover {
   width: 121px;
   border-color: #8300bf;
 }
+
 div.primary-button .el-button,
 div.primary-button .el-button:hover {
   background-color: #8300bf;
 }
+
 div.secondary-button .el-button,
 div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
+
 div.scrollbar {
   overflow-y: scroll;
   scrollbar-width: thin;
 }
+
 div.scrollbar::-webkit-scrollbar {
   width: 8px;
   right: -8px;
   background-color: #f5f5f5;
 }
+
 div.scrollbar::-webkit-scrollbar-thumb {
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   background-color: #979797;
 }
+
 div.scrollbar::-webkit-scrollbar-track {
   border-radius: 10px;
   background-color: #f5f5f5;
 }
+
 div.simulation-vuer {
   height: 100%;
 }
+
 p.default {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
   margin: 16px 0;
   text-align: start;
 }
+
 p.error {
   margin-left: 16px;
 }
+
 p.input-parameters {
   margin-bottom: 8px;
 }
+
 p.name,
 p.input-parameters {
   margin-top: 0;
-  font-weight: 500 /* Medium */;
+  font-weight: bold;
 }
+
 p.name {
   line-height: 20px;
 }
+
 p.note {
   font-size: 12px;
   line-height: 16px;
 }
+
 span.error {
-  font-weight: 500 /* Medium */;
+  font-weight: bold;
 }
 </style>
