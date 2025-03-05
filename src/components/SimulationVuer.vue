@@ -371,6 +371,40 @@ export default {
     },
     /**
      * @public
+     * Extract the simulation UI JSON file from the given file contents and build the simulation UI.
+     * @arg `libopencor`
+     * @arg `fileContents`
+     */
+     extractAndBuildSimulationUi(libopencor, fileContents) {
+      this.libopencor = markRaw(libopencor);
+      this.libopencorSet = true;
+      this.fileManager = markRaw(this.libopencor.FileManager.instance());
+
+      const file = this.manageFile(PMR_URL + this.id, fileContents);
+
+      if (file.type().value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
+        this.showUserMessage = false;
+      } else {
+        const decoder = new TextDecoder();
+        const simulationJson = file.childFile("simulation.json");
+
+        if (simulationJson === null) {
+          this.errorMessage = "no simulation JSON file could be found";
+
+          this.showUserMessage = false;
+        } else {
+          const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
+
+          this.showUserMessage = false;
+
+          this.$nextTick(() => {
+            this.buildSimulationUi(simulationUiInfo);
+          });
+        }
+      }
+    },
+    /**
+     * @public
      * Run the simulation-based dataset directly on oSPARC. Not all simulation-based datasets can be run directly on
      * oSPARC, but for those that can the simulation UI shows a `Run on oSPARC` button which, when clicked, calls this
      * method.
@@ -663,29 +697,7 @@ export default {
           if (xmlhttp.readyState === 4) {
             if (xmlhttp.status === 200) {
               libOpenCOR().then((libopencor) => {
-                this.libopencor = markRaw(libopencor);
-                this.libopencorSet = true;
-                this.fileManager = markRaw(this.libopencor.FileManager.instance());
-
-                const fileContents = Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0));
-                const file = this.manageFile(PMR_URL + this.id, fileContents);
-
-                const decoder = new TextDecoder();
-                const simulationJson = file.childFile("simulation.json");
-
-                if (simulationJson === null) {
-                  this.errorMessage = "no simulation JSON file could be found";
-
-                  this.showUserMessage = false;
-                } else {
-                  const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
-
-                  this.showUserMessage = false;
-
-                  this.$nextTick(() => {
-                    this.buildSimulationUi(simulationUiInfo);
-                  });
-                }
+                this.extractAndBuildSimulationUi(libopencor, Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
               });
             } else {
               this.errorMessage = "the COMBINE archive chould not be retrieved";
@@ -704,33 +716,7 @@ export default {
 
       this.$nextTick(() => {
         libOpenCOR().then((libopencor) => {
-          this.libopencor = markRaw(libopencor);
-          this.libopencorSet = true;
-          this.fileManager = markRaw(this.libopencor.FileManager.instance());
-
-          const fileContents = this.combineArchive;
-          const file = this.manageFile(PMR_URL + this.id, fileContents);
-
-          if (file.type().value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
-            this.showUserMessage = false;
-          } else {
-            const decoder = new TextDecoder();
-            const simulationJson = file.childFile("simulation.json");
-
-            if (simulationJson === null) {
-              this.errorMessage = "no simulation JSON file could be found";
-
-              this.showUserMessage = false;
-            } else {
-              const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
-
-              this.showUserMessage = false;
-
-              this.$nextTick(() => {
-                this.buildSimulationUi(simulationUiInfo);
-              });
-            }
-          }
+          this.extractAndBuildSimulationUi(libopencor, this.combineArchive);
         });
       });
     } else {
