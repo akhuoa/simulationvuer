@@ -56,5 +56,12 @@ export default defineConfig(({ command, mode }) => {
       global: "globalThis",
     };
   }
+
+  if (mode === "app") {
+    config.base = "./";
+
+    ["build", "define", "resolve", "server"].forEach(key => delete config[key]);
+  }
+
   return config;
 });
