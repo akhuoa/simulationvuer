@@ -1,0 +1,45 @@
+name: Deploy Docs and App to GitHub Pages
+
+on:
+  push:
+    branches: [docs, main]
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SimulationVuer
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.17.1
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build docs
+        run: |
+          npm run docs:build
+          touch docs/.vitepress/dist/.nojekyll
+      - name: Build app
+        run: npm run build-app
+      - name: Merge docs and app
+        run: |
+          mkdir -p site/app
+          cp -r ./docs/.vitepress/dist/* ./site
+          cp -r ./dist/* ./site/app
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

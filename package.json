@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vite serve --host",
     "build-bundle": "vite build",
+    "build-app": "vite build --mode app",
     "vuese-gen": "node vuese-generator.js",
     "vuese-watch": "node vuese-generator.js watch",
     "release:beta": "npm version prerelease --preid=beta; npm publish --tag beta",
