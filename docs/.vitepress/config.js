@@ -21,8 +21,12 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: 'Live Demo',
-        link: '/demo'
+        text: 'Live Demo (for a simulation-based dataset)',
+        link: '/demoSimulationBasedDataset'
+      },
+      {
+        text: 'Live Demo (for a path to a PMR file)',
+        link: '/demoPathToPMRFile'
       },
       {
         text: 'API Reference',

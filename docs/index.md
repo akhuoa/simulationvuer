@@ -11,6 +11,9 @@ hero:
       text: API Reference
       link: /components/SimulationVuer
     - theme: alt
-      text: Demo
-      link: /demo
+      text: Simulation-based dataset demo
+      link: /demoSimulationBasedDataset
+    - theme: alt
+      text: Path to a PMR file demo
+      link: /demoPathToPMRFile
 ---
