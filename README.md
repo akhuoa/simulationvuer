@@ -45,7 +45,7 @@ You can now use the SimulationVuer in your Vue template as follows:
 <SimulationVuer :apiLocation="apiLocation" :id=123 />
 ```
 
-where `apiLocation` is the URL to the API location and `id` the id of the simulation-based dataset.
+where `apiLocation` is the URL to the API location and `id` the id of the simulation-based dataset, if it is a number, or the path to a PMR file, if it is a string.
 
 ## Project setup
 

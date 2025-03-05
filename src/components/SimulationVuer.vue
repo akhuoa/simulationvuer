@@ -94,6 +94,7 @@ export default {
      */
     id: {
       required: false,
+      type: [Number, String],
       default: 0,
     },
     /**
