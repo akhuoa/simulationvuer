@@ -3,7 +3,7 @@
     <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
     <div class="main" v-if="hasValidSimulationUiInfo">
       <div class="main-left">
-        <p class="default name" v-if="!libopencorSet">{{name}}</p>
+        <p class="default name" v-if="!libopencorSet">{{ name }}</p>
         <el-divider v-if="!libopencorSet"></el-divider>
         <p class="default input-parameters">Input parameters</p>
         <div class="input scrollbar">
@@ -36,7 +36,7 @@
         <PlotVuer v-for="(_outputPlot, index) in simulationUiInfo.output.plots"
           :key="`output-${index}`"
           :metadata="plotMetadata(index)"
-          :data-source="{data: simulationResults[index]}"
+          :data-source="{ data: simulationResults[index] }"
           :plotLayout="layout[index]"
           :plotType="'plotly-only'"
           :selectorUi="false"
@@ -105,7 +105,7 @@ export default {
       default: undefined,
     },
   },
-  data: function() {
+  data: function () {
     // Retrieve some information about the dataset.
 
     if (this.id > 0) {
@@ -118,7 +118,7 @@ export default {
             const datasetInfo = JSON.parse(xmlhttp.responseText);
 
             this.name = datasetInfo.name;
-            this.uuid = (datasetInfo.study !== undefined)?datasetInfo.study.uuid:undefined;
+            this.uuid = (datasetInfo.study !== undefined) ? datasetInfo.study.uuid : undefined;
           }
         }
       };
@@ -375,7 +375,7 @@ export default {
      * @arg `libopencor`
      * @arg `fileContents`
      */
-     extractAndBuildSimulationUi(libopencor, fileContents) {
+    extractAndBuildSimulationUi(libopencor, fileContents) {
       this.libopencor = markRaw(libopencor);
       this.libopencorSet = true;
       this.fileManager = markRaw(this.libopencor.FileManager.instance());
@@ -447,9 +447,9 @@ export default {
      * @public
      * Data needed to specify the model output.
      */
-     outputData() {
+    outputData() {
       if (this.output === undefined) {
-        if (this.simulationUiInfo.output.data !== undefined)  {
+        if (this.simulationUiInfo.output.data !== undefined) {
           this.output = [];
 
           this.simulationUiInfo.output.data.forEach((output) => {
@@ -475,8 +475,8 @@ export default {
           json_config: {},
         };
 
-        if (   (this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
-            && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
+        if ((this.simulationUiInfo.simulation.opencor.endingPoint !== undefined)
+          && (this.simulationUiInfo.simulation.opencor.pointInterval !== undefined)) {
           request.opencor.json_config.simulation = {
             "Ending point": this.simulationUiInfo.simulation.opencor.endingPoint,
             "Point interval": this.simulationUiInfo.simulation.opencor.pointInterval,
@@ -508,7 +508,7 @@ export default {
       // Convert, if needed, the results to a JSON format that is compatible
       // with our OpenCOR results.
 
-      if (typeof(results) === "string") {
+      if (typeof (results) === "string") {
         const SPACES = /[ \t]+/g;
         const lines = results.trim().split("\n");
         const iMax = lines[0].trim().split(SPACES).length;
@@ -597,7 +597,7 @@ export default {
 
                 let that = this;
 
-                setTimeout(function() {
+                setTimeout(function () {
                   that.checkSimulation(data);
                 }, 1000);
               }
@@ -653,7 +653,7 @@ export default {
       });
     },
   },
-  created: function() {
+  created: function () {
     // Try to retrieve the UI information.
 
     if (this.id > 0) {
@@ -705,7 +705,7 @@ export default {
             }
           }
         };
-        xmlhttp.send(JSON.stringify({path: this.id}));
+        xmlhttp.send(JSON.stringify({ path: this.id }));
       });
     } else if (this.combineArchive !== undefined) {
       // Extract the simulation UI JSON file from the COMBINE archive and build
@@ -723,7 +723,7 @@ export default {
       this.errorMessage = "an non-simulation dataset was provided";
     }
   },
-  mounted: function() {
+  mounted: function () {
     // Finalise our UI.
     // Note: we try both here and in the created() function since we have no
     //       idea how long it's going to take to retrieve the simulation UI
@@ -738,7 +738,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 .simulation-vuer {
   --el-color-primary: #8300BF;
   --el-color-primary-light-7: #DAB3EC;
@@ -746,80 +745,101 @@ export default {
   --el-color-primary-light-9: #F3E6F9;
 }
 
-:deep( .el-button:hover) {
+:deep(.el-button:hover) {
   box-shadow: -3px 2px 4px #00000040;
 }
-:deep( .el-divider) {
+
+:deep(.el-divider) {
   margin: -8px 0 8px 0 !important;
   width: 210px;
 }
-:deep( .el-loading-spinner) {
+
+:deep(.el-loading-spinner) {
   .path {
     stroke: #8300BF;
   }
-  i, .el-loading-text {
+
+  i,
+  .el-loading-text {
     color: #8300BF;
   }
 }
+
 div.input {
   border: 1px solid #dcdfe6;
   padding: 4px;
   height: 300px;
 }
+
 div.main {
   display: grid;
   --mainLeftWidth: 243px;
   grid-template-columns: var(--mainLeftWidth) calc(100% - var(--mainLeftWidth));
   height: 100%;
 }
+
 div.main-left {
   border-right: 1px solid #dcdfe6;
   padding: 12px 20px 12px 12px;
   height: 100%;
   overflow: auto;
 }
+
 div.main-right.x1 {
   height: 100%;
 }
+
 div.main-right.x2 {
   height: 50%;
 }
+
 div.main-right.x3 {
   height: 33.333%;
 }
+
 div.main-right.x4 {
   height: 25%;
 }
+
 div.main-right.x5 {
   height: 20%;
 }
+
 div.main-right.x6 {
   height: 16.667%;
 }
+
 div.main-right.x7 {
   height: 14.286%;
 }
+
 div.main-right.x8 {
   height: 12.5%;
 }
+
 div.main-right.x9 {
   height: 11.111%;
 }
-:deep( div.main-right div.controls) {
+
+:deep(div.main-right div.controls) {
   height: 0;
 }
+
 div.primary-button,
 div.secondary-button {
   display: flex;
   justify-content: flex-end;
   width: 210px;
 }
+
 div.primary-button {
   margin-top: 14px;
 }
+
 div.secondary-button {
   margin-top: 8px;
 }
+
 div.primary-button .el-button,
 div.secondary-button .el-button,
 div.primary-button .el-button:hover,
@@ -827,61 +847,75 @@ div.secondary-button .el-button:hover {
   width: 121px;
   border-color: #8300bf;
 }
+
 div.primary-button .el-button,
 div.primary-button .el-button:hover {
   background-color: #8300bf;
 }
+
 div.secondary-button .el-button,
 div.secondary-button .el-button:hover {
   background-color: #f9f2fc;
   color: #8300bf;
 }
+
 div.scrollbar {
   overflow-y: scroll;
   scrollbar-width: thin;
 }
+
 div.scrollbar::-webkit-scrollbar {
   width: 8px;
   right: -8px;
   background-color: #f5f5f5;
 }
+
 div.scrollbar::-webkit-scrollbar-thumb {
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   background-color: #979797;
 }
+
 div.scrollbar::-webkit-scrollbar-track {
   border-radius: 10px;
   background-color: #f5f5f5;
 }
+
 div.simulation-vuer {
   height: 100%;
 }
+
 p.default {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
   margin: 16px 0;
   text-align: start;
 }
+
 p.error {
   margin-left: 16px;
 }
+
 p.input-parameters {
   margin-bottom: 8px;
 }
+
 p.name,
 p.input-parameters {
   margin-top: 0;
-  font-weight: 500 /* Medium */;
+  font-weight: bold;
 }
+
 p.name {
   line-height: 20px;
 }
+
 p.note {
   font-size: 12px;
   line-height: 16px;
 }
+
 span.error {
-  font-weight: 700 /* Bold */;
+  font-weight: bold;
 }
 </style>

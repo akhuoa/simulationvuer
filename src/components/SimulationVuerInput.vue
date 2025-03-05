@@ -45,16 +45,16 @@ export default {
       type: Number,
     },
   },
-  data: function() {
+  data: function () {
     return {
       isDiscrete: this.possibleValues !== undefined,
-      labelClasses: "default " + ((this.possibleValues !== undefined)?"discrete":"scalar"),
+      labelClasses: "default " + ((this.possibleValues !== undefined) ? "discrete" : "scalar"),
       visible: true,
       vModel: this.defaultValue,
     };
   },
   methods: {
-    updateUi: function() {
+    updateUi: function () {
       updateUi(this.$parent);
     },
   },
@@ -63,63 +63,76 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
-:deep( .el-input-number.scalar ){
+:deep(.el-input-number.scalar) {
   margin-top: -8px;
   width: 45px;
 }
-:deep( .el-input-number.scalar .el-input ){
+
+:deep(.el-input-number.scalar .el-input) {
   width: 60px;
 }
-:deep( .el-input-number.scalar .el-input__inner:focus ){
+
+:deep(.el-input-number.scalar .el-input__inner:focus) {
   border-color: #8300bf;
 }
-:deep( .el-select.discrete ){
+
+:deep(.el-select.discrete) {
   margin-bottom: 16px;
 }
-:deep( .el-slider ){
+
+:deep(.el-slider) {
   width: 108px;
   margin-top: -12px;
   margin-left: 8px;
 }
-:deep( .el-slider__bar ){
+
+:deep(.el-slider__bar) {
   background-color: #8300bf;
 }
-:deep( .el-slider__button ){
+
+:deep(.el-slider__button) {
   border-color: #8300bf;
 }
+
 .discrete {
   margin-left: 8px;
   width: 160px;
 }
+
 .discrete {
-  :deep( .el-input__inner ){
+  :deep(.el-input__inner) {
     font-family: Asap, sans-serif;
     font-size: 16px;
   }
 }
-.discrete :deep( .el-input__inner:focus),
-.discrete :deep( .el-input.is-focus .el-input__inner) {
+
+.discrete :deep(.el-input__inner:focus),
+.discrete :deep(.el-input.is-focus .el-input__inner) {
   border-color: #8300bf;
 }
+
 .discrete-popper .el-select-dropdown__item {
   font-family: Asap, sans-serif;
 }
+
 .discrete-popper .el-select-dropdown__item.is-selected {
   font-weight: normal;
   color: #8300bf;
 }
-.scalar :deep( .el-input__inner ){
+
+.scalar :deep(.el-input__inner) {
   text-align: center;
 }
 
-.scalar :deep(.el-input__wrapper){
+.scalar :deep(.el-input__wrapper) {
   padding-left: 4px;
   padding-right: 4px;
 }
+
 div.simulation-vuer {
   height: 100%;
 }
+
 div.sliders-and-fields {
   display: grid;
   grid-template-columns: 132px auto;
@@ -127,16 +140,19 @@ div.sliders-and-fields {
   height: 26px;
   margin-bottom: 4px;
 }
+
 p.default {
   font-family: Asap, sans-serif;
   letter-spacing: 0;
   margin: 16px 0;
   text-align: start;
 }
+
 p.discrete {
   margin-top: 0;
   margin-bottom: 4px;
 }
+
 p.scalar {
   grid-column-start: 1;
   grid-column-end: 3;
