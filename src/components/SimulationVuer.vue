@@ -1,6 +1,6 @@
 <template>
   <div class="simulation-vuer" v-loading="showUserMessage" :element-loading-text="userMessage">
-    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> an unknown or invalid model was provided.</p>
+    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
     <div class="main" v-if="hasValidSimulationUiInfo">
       <div class="main-left">
         <p class="default name" v-if="!libopencorSet">{{name}}</p>
@@ -258,7 +258,7 @@ export default {
         }
 
         if (!foundOutput) {
-          console.warn("SIMULATION: output '" + output + "' not found.");
+          console.warn("SIMULATION: output '" + output + "' could not be found.");
 
           foundAllOutputs = false;
         }
@@ -266,6 +266,9 @@ export default {
 
       if (foundAllOutputs) {
         this.processSimulationResults(res);
+      } else {
+        this.hasValidSimulationUiInfo = false;
+        this.errorMessage = "some outputs could not be found";
       }
 
       this.showUserMessage = false;
@@ -285,6 +288,8 @@ export default {
       this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo, this.libopencor === undefined);
 
       if (!this.hasValidSimulationUiInfo) {
+        this.errorMessage = "the simulation.json file is malformed";
+
         return;
       }
 
@@ -299,7 +304,8 @@ export default {
         });
 
         if (this.solver === undefined) {
-          console.warn("SIMULATION: no solver name and/or solver version specified.");
+          this.hasValidSimulationUiInfo = false;
+          this.errorMessage = "no solver name and/or solver version specified";
 
           return;
         }
@@ -634,6 +640,8 @@ export default {
               this.$nextTick(() => {
                 this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
               });
+            } else {
+              this.errorMessage = "the simulation dataset could not be retrieved";
             }
           }
         };
@@ -663,15 +671,24 @@ export default {
                 const file = this.manageFile(PMR_URL + this.id, fileContents);
 
                 const decoder = new TextDecoder();
-                const simulationUiInfo = JSON.parse(decoder.decode(file.childFile("simulation.json").contents()));
+                const simulationJson = file.childFile("simulation.json");
 
-                this.showUserMessage = false;
+                if (simulationJson === null) {
+                  this.errorMessage = "no simulation JSON file could be found";
 
-                this.$nextTick(() => {
-                  this.buildSimulationUi(simulationUiInfo);
-                });
+                  this.showUserMessage = false;
+                } else {
+                  const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
+
+                  this.showUserMessage = false;
+
+                  this.$nextTick(() => {
+                    this.buildSimulationUi(simulationUiInfo);
+                  });
+                }
               });
             } else {
+              this.errorMessage = "the COMBINE archive chould not be retrieved";
               this.showUserMessage = false;
             }
           }
@@ -698,16 +715,26 @@ export default {
             this.showUserMessage = false;
           } else {
             const decoder = new TextDecoder();
-            const simulationUiInfo = JSON.parse(decoder.decode(file.childFile("simulation.json").contents()));
+            const simulationJson = file.childFile("simulation.json");
 
-            this.showUserMessage = false;
+            if (simulationJson === null) {
+              this.errorMessage = "no simulation JSON file could be found";
 
-            this.$nextTick(() => {
-              this.buildSimulationUi(simulationUiInfo);
-            });
+              this.showUserMessage = false;
+            } else {
+              const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
+
+              this.showUserMessage = false;
+
+              this.$nextTick(() => {
+                this.buildSimulationUi(simulationUiInfo);
+              });
+            }
           }
         });
       });
+    } else {
+      this.errorMessage = "an non-simulation dataset was provided";
     }
   },
   mounted: function() {
@@ -869,6 +896,6 @@ p.note {
   line-height: 16px;
 }
 span.error {
-  font-weight: 500 /* Medium */;
+  font-weight: 700 /* Bold */;
 }
 </style>
