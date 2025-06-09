@@ -56,7 +56,7 @@ import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
-import libOpenCOR from "./libopencor.js";
+import libOpenCOR from "https://cdn.jsdelivr.net/npm/@abi-software/libopencor-wasm@0.0.1-beta.1/+esm";
 import { markRaw } from "vue";
 import { create, all } from "mathjs";
 
