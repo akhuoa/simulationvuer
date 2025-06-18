@@ -38,7 +38,7 @@
     </div>
     <div v-if="id === -1">
       <div v-for="combineArchive in combineArchives" v-bind:key="combineArchive">
-        <SimulationVuer :apiLocation="apiLocation" :combineArchive="combineArchive" style="height: 640px;" />
+        <SimulationVuer :apiLocation="apiLocation" :id="combineArchive" style="height: 640px;" />
       </div>
     </div>
     <hr />
