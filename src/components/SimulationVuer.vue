@@ -18,17 +18,17 @@
             :stepValue="input.stepValue"
           />
         </div>
-        <div class="primary-button">
-          <el-button type="primary" size="small" @click="startSimulation()" v-if="!libopencorSet">Run Simulation</el-button>
+        <div class="primary-button" v-if="!libopencorSet">
+          <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
           <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
-        <div class="secondary-button">
-          <el-button size="small" @click="viewDataset()" v-if="!libopencorSet">View Dataset</el-button>
+        <div class="secondary-button" v-if="!libopencorSet">
+          <el-button size="small" @click="viewDataset()">View Dataset</el-button>
         </div>
-        <div class="secondary-button">
-          <el-button size="small" @click="viewWorkspace()" v-if="libopencorSet">View Workspace</el-button>
+        <div class="secondary-button" v-if="libopencorSet">
+          <el-button size="small" @click="viewWorkspace()">View Workspace</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
