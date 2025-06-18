@@ -2,14 +2,18 @@
   <div id="app">
     <div class="app">
       <h1>SimulationVuer</h1>
-      <h3>Simulations run on o²S²PARC:</h3>
-      <el-radio-group v-model="id" size="small">
-        <el-radio-button :class="className(dataset.id)" v-for="dataset in sparcDatasets" v-bind:key="dataset.id" :label="dataset.label" :value="dataset.id" />
-      </el-radio-group>
-      <h3>Simulations run in the browser:</h3>
-      <el-radio-group v-model="id" size="small">
-        <el-radio-button :class="className(dataset.id)" v-for="dataset in pmrDatasets" v-bind:key="dataset.id" :label="dataset.label" :value="dataset.id" />
-      </el-radio-group>
+      <div v-if="datasetIds.length !== 0">
+        <h3>Dataset IDs (run on o²S²PARC):</h3>
+        <el-radio-group v-model="activeResource" size="small">
+          <el-radio-button :class="className(datasetId.id)" v-for="datasetId in datasetIds" v-bind:key="datasetId.id" :label="datasetId.label" :value="datasetId.id" />
+        </el-radio-group>
+      </div>
+      <div v-if="pmrPaths.length !== 0">
+        <h3>PMR paths (run in the browser):</h3>
+        <el-radio-group v-model="activeResource" size="small">
+          <el-radio-button :class="className(pmrPath.id)" v-for="pmrPath in pmrPaths" v-bind:key="pmrPath.id" :label="pmrPath.label" :value="pmrPath.id" />
+        </el-radio-group>
+      </div>
       <div ref="dropArea" class="drop-area" @dragenter.prevent="onDragEnter" @dragover.prevent @drop.prevent="onDrop" @dragleave.prevent="onDragLeave">
         You can drag and drop a COMBINE archive here.
       </div>
@@ -25,18 +29,18 @@
       </el-dialog>
     </div>
     <hr />
-    <div v-for="dataset in datasets()" v-bind:key="dataset.id">
-      <div v-if="initialised(dataset.id)" v-show="dataset.id === id">
-        <div v-if="typeof dataset.id === 'number'">
+    <div v-for="resource in resources()" v-bind:key="resource.id">
+      <div v-if="isResourceInitialised(resource.id)" v-show="resource.id === activeResource">
+        <div v-if="typeof resource.id === 'number'">
           <span>
-            <strong>Dataset <a :href="datasetUrl(dataset.id)" target="_blank">{{ dataset.id }}</a>:</strong> {{ dataset.description }}
+            <strong>Dataset <a :href="datasetUrl(resource.id)" target="_blank">{{ resource.id }}</a>:</strong> {{ resource.description }}
           </span>
           <hr />
         </div>
-        <SimulationVuer :apiLocation="apiLocation" :id="dataset.id" style="height: 640px;" />
+        <SimulationVuer :apiLocation="apiLocation" :id="resource.id" style="height: 640px;" />
       </div>
     </div>
-    <div v-if="id === -1">
+    <div v-if="activeResource === -1">
       <div v-for="combineArchive in combineArchives" v-bind:key="combineArchive">
         <SimulationVuer :apiLocation="apiLocation" :id="combineArchive" style="height: 640px;" />
       </div>
@@ -62,46 +66,49 @@ export default {
       dropAreaCounter: 0,
       dragAndDropWarningVisible: false,
       combineArchives: [],
-      sparcDatasets: [
-        { id: 0, label: "0", description: "Non-simulation dataset" },
+      datasetIds: [
+        { id: 0, label: "Invalid", description: "Non-simulation dataset" },
         { id: 135, label: "135", description: "Computational analysis of the human sinus node action potential - Model development and effects of mutations" },
         { id: 157, label: "157", description: "Fabbri-based composite SAN model" },
         { id: 308, label: "308", description: "Kember Cardiac Nerve Model" },
         { id: 318, label: "318", description: "Multi-scale rabbit cardiac electrophysiology models" },
         { id: 320, label: "320", description: "Multi-scale human cardiac electrophysiology models" },
       ],
-      pmrDatasets: [
+      pmrPaths: [
+        { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/invalid.omex", label: "Invalid", description: "COMBINE archive from PMR" },
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/135.omex", label: "135", description: "COMBINE archive from PMR" },
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/157.omex", label: "157", description: "COMBINE archive from PMR" },
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/lorenz.omex", label: "Lorenz", description: "COMBINE archive from PMR" },
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/tt04.omex", label: "TT04", description: "COMBINE archive from PMR" },
-        { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/Gee_whiz_Exported.omex", label: "GeeWhiz", description: "COMBINE archive from PMR" },
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/cvs.omex", label: "CVS", description: "COMBINE archive from PMR" },
       ],
-      id: 0,
-      ready: [],
+      activeResource: 0,
+      initialisedResources: [],
     };
   },
   methods: {
     className(id) {
-      return ((id === this.sparcDatasets[0].id) || (id === this.pmrDatasets[0].id)) ? "first-dataset" : "";
+      return (   ((this.datasetIds.length !== 0) && (id === this.datasetIds[0].id))
+              || ((this.pmrPaths.length !== 0) && (id === this.pmrPaths[0].id))) ?
+              "first-resource" :
+              "not-first-resource";
     },
-    datasets() {
-      return this.sparcDatasets.concat(this.pmrDatasets);
+    resources() {
+      return this.datasetIds.concat(this.pmrPaths);
     },
     datasetUrl(id) {
       return `https://sparc.science/datasets/${id}?type=dataset`;
     },
-    initialised(id) {
-      if (this.ready.includes(id)) {
+    isResourceInitialised(resource) {
+      if (this.initialisedResources.includes(resource)) {
         return true;
       }
 
-      if (this.id === id) {
-        this.ready.push(id);
+      if (this.activeResource === resource) {
+        this.initialisedResources.push(resource);
       }
 
-      return this.ready.includes(id);
+      return this.initialisedResources.includes(resource);
     },
     onDragEnter() {
       this.dropAreaCounter += 1;
@@ -123,7 +130,7 @@ export default {
         files[0]
           .arrayBuffer()
           .then((arrayBuffer) => {
-            this.id = -1;
+            this.activeResource = -1;
             this.combineArchives = [new Uint8Array(arrayBuffer)];
           })
       }
@@ -181,8 +188,12 @@ export default {
   color: #8300bf;
 }
 
-.first-dataset>.el-radio-button__inner {
+.first-resource>.el-radio-button__inner {
   border-left: 1px solid #8300bf !important;
+}
+
+.not-first-resource>.el-radio-button__inner {
+  border-left: 0 !important;
 }
 
 .el-radio-button__original-radio:checked+.el-radio-button__inner {
