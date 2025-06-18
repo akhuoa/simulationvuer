@@ -26,7 +26,7 @@
     </div>
     <hr />
     <div v-for="dataset in datasets()" v-bind:key="dataset.id">
-      <div v-if="initialised(dataset.id)" v-show="dataset.id == id">
+      <div v-if="initialised(dataset.id)" v-show="dataset.id === id">
         <div v-if="typeof dataset.id === 'number'">
           <span>
             <strong>Dataset <a :href="datasetUrl(dataset.id)" target="_blank">{{ dataset.id }}</a>:</strong> {{ dataset.description }}
@@ -36,7 +36,7 @@
         <SimulationVuer :apiLocation="apiLocation" :id="dataset.id" style="height: 640px;" />
       </div>
     </div>
-    <div v-if="id == -1">
+    <div v-if="id === -1">
       <div v-for="combineArchive in combineArchives" v-bind:key="combineArchive">
         <SimulationVuer :apiLocation="apiLocation" :combineArchive="combineArchive" style="height: 640px;" />
       </div>
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     className(id) {
-      return ((id == this.sparcDatasets[0].id) || (id == this.pmrDatasets[0].id)) ? "first-dataset" : "";
+      return ((id === this.sparcDatasets[0].id) || (id === this.pmrDatasets[0].id)) ? "first-dataset" : "";
     },
     datasets() {
       return this.sparcDatasets.concat(this.pmrDatasets);
@@ -97,7 +97,7 @@ export default {
         return true;
       }
 
-      if (this.id == id) {
+      if (this.id === id) {
         this.ready.push(id);
       }
 
