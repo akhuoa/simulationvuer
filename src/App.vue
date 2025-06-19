@@ -8,6 +8,12 @@
           <el-radio-button :class="className(datasetId.id)" v-for="datasetId in datasetIds" v-bind:key="datasetId.id" :label="datasetId.label" :value="datasetId.id" />
         </el-radio-group>
       </div>
+      <div v-if="datasetUrls.length !== 0">
+        <h3>Dataset URLs (run in the browser):</h3>
+        <el-radio-group v-model="activeResource" size="small">
+          <el-radio-button :class="className(datasetUrl.id)" v-for="datasetUrl in datasetUrls" v-bind:key="datasetUrl.id" :label="datasetUrl.label" :value="datasetUrl.id" />
+        </el-radio-group>
+      </div>
       <div v-if="pmrPaths.length !== 0">
         <h3>PMR paths (run in the browser):</h3>
         <el-radio-group v-model="activeResource" size="small">
@@ -74,6 +80,14 @@ export default {
         { id: 318, label: "318", description: "Multi-scale rabbit cardiac electrophysiology models" },
         { id: 320, label: "320", description: "Multi-scale human cardiac electrophysiology models" },
       ],
+      datasetUrls: [
+        { id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/invalid.omex", label: "Invalid", description: "COMBINE archive" },
+        { id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/135.omex", label: "135", description: "COMBINE archive" },
+        { id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/157.omex", label: "157", description: "COMBINE archive" },
+        { id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/lorenz.omex", label: "Lorenz", description: "COMBINE archive" },
+        { id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/tt04.omex", label: "TT04", description: "COMBINE archive" },
+        { id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/cvs.omex", label: "CVS", description: "COMBINE archive" },
+      ],
       pmrPaths: [
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/invalid.omex", label: "Invalid", description: "COMBINE archive from PMR" },
         { id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/135.omex", label: "135", description: "COMBINE archive from PMR" },
@@ -89,12 +103,13 @@ export default {
   methods: {
     className(id) {
       return (   ((this.datasetIds.length !== 0) && (id === this.datasetIds[0].id))
+              || ((this.datasetUrls.length !== 0) && (id === this.datasetUrls[0].id))
               || ((this.pmrPaths.length !== 0) && (id === this.pmrPaths[0].id))) ?
               "first-resource" :
               "not-first-resource";
     },
     resources() {
-      return this.datasetIds.concat(this.pmrPaths);
+      return this.datasetIds.concat(this.datasetUrls).concat(this.pmrPaths);
     },
     datasetUrl(id) {
       return `https://sparc.science/datasets/${id}?type=dataset`;

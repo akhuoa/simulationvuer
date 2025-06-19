@@ -27,7 +27,7 @@
         <div class="secondary-button" v-if="!libopencorSet">
           <el-button size="small" @click="viewDataset()">View Dataset</el-button>
         </div>
-        <div class="secondary-button" v-if="libopencorSet">
+        <div class="secondary-button" v-if="libopencorSet && idType === 'pmr_path'">
           <el-button size="small" @click="viewWorkspace()">View Workspace</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
@@ -68,6 +68,7 @@ const math = create(all, {});
 
 const IdType = Object.freeze({
   DATASET_ID: 'dataset_id',
+  DATASET_URL: 'dataset_url',
   PMR_PATH: 'pmr_path',
   RAW_COMBINE_ARCHIVE: 'raw_combine_archive',
 });
@@ -97,6 +98,7 @@ export default {
     /**
      * The ID for this simulation, i.e. either
      *  - the ID (as a number) of a SPARC dataset,
+     *  - the URL (as a string) of a COMBINE archive located in a SPARC dataset,
      *  - the path (as a string) to a COMBINE archive located on PMR, or
      *  - a raw COMBINE archive (as a Uint8Array).
      */
@@ -114,6 +116,8 @@ export default {
       idType = IdType.DATASET_ID;
     } else if (this.id instanceof Uint8Array) {
       idType = IdType.RAW_COMBINE_ARCHIVE;
+    } else if (this.id.startsWith("https://")) {
+      idType = IdType.DATASET_URL;
     } else {
       idType = IdType.PMR_PATH;
     }
@@ -694,6 +698,32 @@ export default {
         };
         xmlhttp.send();
       });
+    } else if (this.idType === IdType.DATASET_URL) {
+      this.userMessage = "Retrieving COMBINE archive...";
+      this.showUserMessage = true;
+
+      // Retrieve the COMBINE archive, extract the simulation UI JSON file from
+      // it and then build the simulation UI.
+
+      this.$nextTick(() => {
+        const xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("GET", this.id);
+        xmlhttp.responseType = "arraybuffer";
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              libOpenCOR().then((libopencor) => {
+                this.extractAndBuildSimulationUi(libopencor, new Uint8Array(xmlhttp.response));
+              });
+            } else {
+              this.errorMessage = "the COMBINE archive could not be retrieved";
+              this.showUserMessage = false;
+            }
+          }
+        };
+        xmlhttp.send();
+      });
     } else if (this.idType === IdType.PMR_PATH) {
       this.userMessage = "Retrieving COMBINE archive from PMR...";
       this.showUserMessage = true;
@@ -713,7 +743,7 @@ export default {
                 this.extractAndBuildSimulationUi(libopencor, Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
               });
             } else {
-              this.errorMessage = "the COMBINE archive chould not be retrieved";
+              this.errorMessage = "the COMBINE archive chould not be retrieved from PMR";
               this.showUserMessage = false;
             }
           }
