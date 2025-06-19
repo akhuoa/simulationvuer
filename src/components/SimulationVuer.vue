@@ -18,17 +18,17 @@
             :stepValue="input.stepValue"
           />
         </div>
-        <div class="primary-button">
-          <el-button type="primary" size="small" @click="startSimulation()" v-if="!libopencorSet">Run Simulation</el-button>
+        <div class="primary-button" v-if="!libopencorSet">
+          <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
         </div>
         <div class="secondary-button" v-if="uuid">
           <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
         </div>
-        <div class="secondary-button">
-          <el-button size="small" @click="viewDataset()" v-if="!libopencorSet">View Dataset</el-button>
+        <div class="secondary-button" v-if="!libopencorSet">
+          <el-button size="small" @click="viewDataset()">View Dataset</el-button>
         </div>
-        <div class="secondary-button">
-          <el-button size="small" @click="viewWorkspace()" v-if="libopencorSet">View Workspace</el-button>
+        <div class="secondary-button" v-if="libopencorSet && idType === 'pmr_path'">
+          <el-button size="small" @click="viewWorkspace()">View Workspace</el-button>
         </div>
         <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
       </div>
@@ -66,6 +66,13 @@ const PMR_URL = "https://models.physiomeproject.org/";
 
 const math = create(all, {});
 
+const IdType = Object.freeze({
+  DATASET_ID: 'dataset_id',
+  DATASET_URL: 'dataset_url',
+  PMR_PATH: 'pmr_path',
+  RAW_COMBINE_ARCHIVE: 'raw_combine_archive',
+});
+
 /**
  * SimulationVuer
  */
@@ -89,27 +96,35 @@ export default {
       type: String,
     },
     /**
-     * The ID of the simulation-based dataset, if it is a number, or the path
-     * to a PMR file, if it is a string.
+     * The ID for this simulation, i.e. either
+     *  - the ID (as a number) of a SPARC dataset,
+     *  - the URL (as a string) of a COMBINE archive located in a SPARC dataset,
+     *  - the path (as a string) to a COMBINE archive located on PMR, or
+     *  - a raw COMBINE archive (as a Uint8Array).
      */
     id: {
-      required: false,
-      type: [Number, String],
-      default: 0,
-    },
-    /**
-     * A COMBINE archive that was passed directly.
-     */
-    combineArchive: {
-      required: false,
-      type: Uint8Array,
-      default: undefined,
+      required: true,
+      type: [Number, String, Uint8Array],
     },
   },
   data: function () {
+    // Determine the ID's type.
+
+    let idType;
+
+    if (typeof this.id === "number") {
+      idType = IdType.DATASET_ID;
+    } else if (this.id instanceof Uint8Array) {
+      idType = IdType.RAW_COMBINE_ARCHIVE;
+    } else if (this.id.startsWith("https://")) {
+      idType = IdType.DATASET_URL;
+    } else {
+      idType = IdType.PMR_PATH;
+    }
+
     // Retrieve some information about the dataset.
 
-    if (this.id > 0) {
+    if (idType === IdType.DATASET_ID) {
       const xmlhttp = new XMLHttpRequest();
 
       xmlhttp.open("GET", this.apiLocation + "/sim/dataset/" + this.id);
@@ -131,6 +146,7 @@ export default {
       fileManager: undefined,
       hasFinalisedUi: false,
       hasValidSimulationUiInfo: false,
+      idType: idType,
       instance: undefined,
       isMounted: false,
       isSimulationValid: true,
@@ -657,7 +673,7 @@ export default {
   created: function () {
     // Try to retrieve the UI information.
 
-    if (this.id > 0) {
+    if (this.idType === IdType.DATASET_ID) {
       this.userMessage = "Retrieving UI information...";
       this.showUserMessage = true;
 
@@ -682,7 +698,33 @@ export default {
         };
         xmlhttp.send();
       });
-    } else if (this.id !== 0) {
+    } else if (this.idType === IdType.DATASET_URL) {
+      this.userMessage = "Retrieving COMBINE archive...";
+      this.showUserMessage = true;
+
+      // Retrieve the COMBINE archive, extract the simulation UI JSON file from
+      // it and then build the simulation UI.
+
+      this.$nextTick(() => {
+        const xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("GET", this.id);
+        xmlhttp.responseType = "arraybuffer";
+        xmlhttp.onreadystatechange = () => {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              libOpenCOR().then((libopencor) => {
+                this.extractAndBuildSimulationUi(libopencor, new Uint8Array(xmlhttp.response));
+              });
+            } else {
+              this.errorMessage = "the COMBINE archive could not be retrieved";
+              this.showUserMessage = false;
+            }
+          }
+        };
+        xmlhttp.send();
+      });
+    } else if (this.idType === IdType.PMR_PATH) {
       this.userMessage = "Retrieving COMBINE archive from PMR...";
       this.showUserMessage = true;
 
@@ -701,14 +743,14 @@ export default {
                 this.extractAndBuildSimulationUi(libopencor, Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
               });
             } else {
-              this.errorMessage = "the COMBINE archive chould not be retrieved";
+              this.errorMessage = "the COMBINE archive chould not be retrieved from PMR";
               this.showUserMessage = false;
             }
           }
         };
         xmlhttp.send(JSON.stringify({ path: this.id }));
       });
-    } else if (this.combineArchive !== undefined) {
+    } else {
       // Extract the simulation UI JSON file from the COMBINE archive and build
       // the simulation UI.
 
@@ -717,11 +759,9 @@ export default {
 
       this.$nextTick(() => {
         libOpenCOR().then((libopencor) => {
-          this.extractAndBuildSimulationUi(libopencor, this.combineArchive);
+          this.extractAndBuildSimulationUi(libopencor, this.id);
         });
       });
-    } else {
-      this.errorMessage = "an non-simulation dataset was provided";
     }
   },
   mounted: function () {
