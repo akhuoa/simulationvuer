@@ -56,7 +56,7 @@ import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
-import libOpenCOR from "https://cdn.jsdelivr.net/npm/@abi-software/libopencor-wasm@0.0.1-beta.1/+esm";
+import libOpenCOR from "https://cdn.jsdelivr.net/npm/@abi-software/libopencor-wasm@0.0.2/+esm";
 import { markRaw } from "vue";
 import { create, all } from "mathjs";
 
@@ -153,6 +153,7 @@ export default {
       layout: [],
       libopencor: undefined,
       libopencorSet: false,
+      model: undefined,
       name: null,
       opencorBasedSimulation: true,
       output: undefined,
@@ -219,17 +220,20 @@ export default {
 
         const document = new this.libopencor.SedDocument(this.fileManager.file(PMR_URL + this.id));
 
+        this.model = markRaw(document.model());
         this.instance = markRaw(document.instantiate());
 
         document.delete();
       }
 
-      // Run the simulation after passing some initial conditions to it, if any.
+      // Run the simulation after passing some changes, if any, to the model.
 
-      this.instance.removeAllInitialConditions();
+      this.model.removeAllChanges();
 
       for (const [parameter, value] of Object.entries(this.parametersData())) {
-        this.instance.addInitialCondition(parameter, value);
+        const parameterParts = parameter.split("/")
+
+        this.model.addChange(new this.libopencor.SedChangeAttribute(parameterParts[0], parameterParts[1], value.toString()));
       }
 
       this.instance.run();
@@ -237,21 +241,21 @@ export default {
       // Retrieve the simulation results.
 
       const res = {};
-      const instanceTask = this.instance.tasks().get(0);
+      const instanceTask = this.instance.task(0);
       let foundAllOutputs = true;
       let foundOutput;
 
       for (const output of this.outputData()) {
         foundOutput = false;
 
-        if (output === instanceTask.voiName()) {
-          res[output] = instanceTask.voiAsArray();
+        if (output === instanceTask.voiName) {
+          res[output] = instanceTask.voiAsArray;
 
           foundOutput = true;
         }
 
         if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.stateCount(); ++i) {
+          for (let i = 0; i < instanceTask.stateCount; ++i) {
             if (output === instanceTask.stateName(i)) {
               res[output] = instanceTask.stateAsArray(i);
 
@@ -263,9 +267,45 @@ export default {
         }
 
         if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.variableCount(); ++i) {
-            if (output === instanceTask.variableName(i)) {
-              res[output] = instanceTask.variableAsArray(i);
+          for (let i = 0; i < instanceTask.rateCount; ++i) {
+            if (output === instanceTask.rateName(i)) {
+              res[output] = instanceTask.rateAsArray(i);
+
+              foundOutput = true;
+
+              break;
+            }
+          }
+        }
+
+        if (res[output] === undefined) {
+          for (let i = 0; i < instanceTask.constantCount; ++i) {
+            if (output === instanceTask.constantName(i)) {
+              res[output] = instanceTask.constantAsArray(i);
+
+              foundOutput = true;
+
+              break;
+            }
+          }
+        }
+
+        if (res[output] === undefined) {
+          for (let i = 0; i < instanceTask.computedConstantCount; ++i) {
+            if (output === instanceTask.computedConstantName(i)) {
+              res[output] = instanceTask.computedConstantAsArray(i);
+
+              foundOutput = true;
+
+              break;
+            }
+          }
+        }
+
+        if (res[output] === undefined) {
+          for (let i = 0; i < instanceTask.algebraicCount; ++i) {
+            if (output === instanceTask.algebraicName(i)) {
+              res[output] = instanceTask.algebraicAsArray(i);
 
               foundOutput = true;
 
@@ -399,11 +439,11 @@ export default {
 
       const file = this.manageFile(PMR_URL + this.id, fileContents);
 
-      if (file.type().value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
+      if (file.type.value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
         this.showUserMessage = false;
       } else {
         const decoder = new TextDecoder();
-        const simulationJson = file.childFile("simulation.json");
+        const simulationJson = file.childFileFromFileName("simulation.json");
 
         if (simulationJson === null) {
           this.errorMessage = "no simulation JSON file could be found";
