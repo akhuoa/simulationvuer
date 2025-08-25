@@ -1,10 +1,10 @@
-# SimulationVuer Live Demo (for a path to a PMR file)
+# Live demo for a direct URL to an OMEX file
 
 This is a live demo of the `SimulationVuer` component for a path to a PMR file.
-Here, the [Lorenz model](https://en.wikipedia.org/wiki/Lorenz_system) avaialble at [here](https://models.physiomeproject.org/workspace/b7c/file/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/) is used.
+Here, the [Lorenz model](https://en.wikipedia.org/wiki/Lorenz_system) (avaialble [here](https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/lorenz.omex)) is used.
 The simulation is run in the browser and it is rerun automatically whenever you modify some of the model parameters.
 
-## Live Demo
+## Live demo
 
 <div class="demo-map-container">
   <div class="demo-map-container-inner">
@@ -30,14 +30,13 @@ const SimulationVuer = defineClientComponent(() => {
 export default {
   data: function() {
     return {
-      apiLocation: import.meta.env.VITE_API_LOCATION,
-      id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/lorenz.omex",
+      id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/lorenz.omex",
     };
   }
 }
 </script>
 
-## Code Preview
+## Code preview
 
 ```js-vue
   <div class="your-outer-container">
@@ -54,8 +53,7 @@ export default {
       components: { SimulationVuer },
       data: function () {
         return {
-          apiLocation: API_LOCATION,
-          id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/lorenz.omex",
+          id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/lorenz.omex",
         }
       }
     }

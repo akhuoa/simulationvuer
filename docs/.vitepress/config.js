@@ -21,16 +21,20 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: 'Live Demo (for a simulation-based dataset)',
-        link: '/demoSimulationBasedDataset'
-      },
-      {
-        text: 'Live Demo (for a path to a PMR file)',
-        link: '/demoPathToPMRFile'
-      },
-      {
         text: 'API Reference',
         link: '/components/SimulationVuer'
+      },
+      {
+        text: 'Live demo for a SPARC simulation-based dataset',
+        link: '/demoSparcSimulationBasedDataset'
+      },
+      {
+        text: 'Live demo for a PMR path to an OMEX file',
+        link: '/demoPmrPathToAnOmexFile'
+      },
+      {
+        text: 'Live demo for a direct URL to an OMEX file',
+        link: '/demoDirectUrlToAnOmexFile'
       },
       {
         text: 'Version',
