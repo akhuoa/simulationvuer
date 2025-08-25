@@ -30,6 +30,7 @@ const SimulationVuer = defineClientComponent(() => {
 export default {
   data: function() {
     return {
+      apiLocation: import.meta.env.VITE_API_LOCATION,
       id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/lorenz.omex",
     };
   }
@@ -53,6 +54,7 @@ export default {
       components: { SimulationVuer },
       data: function () {
         return {
+          apiLocation: API_LOCATION,
           id: "https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/lorenz.omex",
         }
       }

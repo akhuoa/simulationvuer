@@ -30,6 +30,7 @@ const SimulationVuer = defineClientComponent(() => {
 export default {
   data: function() {
     return {
+      apiLocation: import.meta.env.VITE_API_LOCATION,
       id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/lorenz.omex",
     };
   }
@@ -53,6 +54,7 @@ export default {
       components: { SimulationVuer },
       data: function () {
         return {
+          apiLocation: API_LOCATION,
           id: "workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/lorenz.omex",
         }
       }
