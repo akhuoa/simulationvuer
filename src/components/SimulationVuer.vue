@@ -89,18 +89,18 @@ export default {
   },
   props: {
     /**
-     * The URL to the API location.
+     * The URL of a running copy of the [SPARC API](https://github.com/nih-sparc/sparc-api).
      */
     apiLocation: {
       required: true,
       type: String,
     },
     /**
-     * The ID for this simulation, i.e. either
-     *  - the ID (as a number) of a SPARC dataset,
-     *  - the URL (as a string) of a COMBINE archive located in a SPARC dataset,
-     *  - the path (as a string) to a COMBINE archive located on PMR, or
-     *  - a raw COMBINE archive (as a Uint8Array).
+     * Either:<br/>
+     * <li>the id of a SPARC simulation-based dataset (as a `Number`, e.g., `135`);</li>
+     * <li>the [PMR](https://models.physiomeproject.org/) path to an [OMEX](https://combinearchive.org/) file (as a `String`, e.g., `workspace/b7c/rawfile/e0ae8d2d56aaaa091e23e1ee7e84cacbda1dfb6b/135.omex`);</li>
+     * <li>the direct URL to an OMEX file (as a `String`, e.g., `https://raw.githubusercontent.com/opencor/webapp/refs/heads/main/tests/models/ui/135.omex`); or</li>
+     * <li>a raw OMEX file (as a `Uint8Array`).</li>
      */
     id: {
       required: true,

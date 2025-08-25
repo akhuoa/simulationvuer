@@ -1,11 +1,11 @@
-# SimulationVuer Live Demo (for a simulation-based dataset)
+# Live demo for a SPARC simulation-based dataset
 
-This is a live demo of the `SimulationVuer` component for a simulation-based dataset.
+This is a live demo of the `SimulationVuer` component for a SPARC simulation-based dataset.
 Here, dataset [135](https://sparc.science/datasets/135?type=simulation) is used.
 Click on the `Run Simulation` button to run the simulation through [o<sup>2</sup>S<sup>2</sup>PARC](https://osparc.io/).
 You need to click on that button again whenever you modify some of the model parameters.
 
-## Live Demo
+## Live demo
 
 <div class="demo-map-container">
   <div class="demo-map-container-inner">
@@ -38,7 +38,7 @@ export default {
 }
 </script>
 
-## Code Preview
+## Code preview
 
 ```js-vue
   <div class="your-outer-container">

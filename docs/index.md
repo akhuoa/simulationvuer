@@ -5,15 +5,18 @@ layout: home
 hero:
   name: "SimulationVuer"
   text: "API documentation"
-  tagline: SimulationVuer is a Vue component used in the SPARC portal to run some simulation-based datasets.
+  tagline: SimulationVuer is a Vue 3 component used in the SPARC portal to run some SPARC simulation-based datasets, as well as OMEX files.
   actions:
     - theme: brand
       text: API Reference
       link: /components/SimulationVuer
     - theme: alt
-      text: Simulation-based dataset demo
-      link: /demoSimulationBasedDataset
+      text: SPARC simulation-based dataset
+      link: /demoSparcSimulationBasedDataset
     - theme: alt
-      text: Path to a PMR file demo
-      link: /demoPathToPMRFile
+      text: PMR path to an OMEX file
+      link: /demoPmrPathToAnOmexFile
+    - theme: alt
+      text: Direct URL to an OMEX file
+      link: /demoDirectUrlToAnOmexFile
 ---
