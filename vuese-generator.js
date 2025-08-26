@@ -68,6 +68,10 @@ function generateMarkdown(file) {
 }
 
 function transformData(data = []) {
+  function capitalise(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+  }
+
   data.forEach((prop) => {
     prop.name = prop.name
 
@@ -76,7 +80,13 @@ function transformData(data = []) {
     }
 
     if (prop.type) {
-      prop.type = prop.type.name
+      // Handle multiple types separated by '|'
+      // Convert to array to avoid markdown table issues
+      if (prop.type.name.indexOf('|') !== -1) {
+        prop.type = prop.type.name.split('|').map((item) => capitalise(item.trim()))
+      } else {
+        prop.type = capitalise(prop.type.name)
+      }
     }
 
     if (prop.defaultValue) {
