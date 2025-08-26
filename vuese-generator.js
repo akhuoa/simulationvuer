@@ -76,7 +76,13 @@ function transformData(data = []) {
     }
 
     if (prop.type) {
-      prop.type = prop.type.name
+      // Handle multiple types separated by '|'
+      // Convert to array to avoid markdown table issues
+      if (prop.type.name.indexOf('|') !== -1) {
+        prop.type = prop.type.name.split('|').map((item) => item.trim())
+      } else {
+        prop.type = prop.type.name
+      }
     }
 
     if (prop.defaultValue) {
