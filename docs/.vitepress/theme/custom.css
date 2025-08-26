@@ -22,6 +22,10 @@
       & table tr {
         th, td {
           vertical-align: top;
+
+          code {
+            word-break: break-word;
+          }
         }
 
         th:first-child,
@@ -38,7 +42,7 @@
 
         th:nth-child(3),
         td:nth-child(3) {
-          width: 10%;
+          width: 18%;
         }
 
         th:nth-child(4),
