@@ -63,6 +63,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+p {
+  font-size: 14px;
+}
+
 :deep(.el-input-number.scalar) {
   margin-top: -8px;
   width: 45px;
