@@ -866,39 +866,44 @@ div.main-left {
   overflow: auto;
 }
 
-div.main-right.x1 {
+div.main-right {
+  height: 100%;
+  overflow: auto;
+}
+
+div.main-right.x1 > .plotvuer_parent {
   height: 100%;
 }
 
-div.main-right.x2 {
+div.main-right.x2 > .plotvuer_parent {
   height: 50%;
 }
 
-div.main-right.x3 {
+div.main-right.x3 > .plotvuer_parent {
   height: 33.333%;
 }
 
-div.main-right.x4 {
+div.main-right.x4 > .plotvuer_parent {
   height: 25%;
 }
 
-div.main-right.x5 {
+div.main-right.x5 > .plotvuer_parent {
   height: 20%;
 }
 
-div.main-right.x6 {
+div.main-right.x6 > .plotvuer_parent {
   height: 16.667%;
 }
 
-div.main-right.x7 {
+div.main-right.x7 > .plotvuer_parent {
   height: 14.286%;
 }
 
-div.main-right.x8 {
+div.main-right.x8 > .plotvuer_parent {
   height: 12.5%;
 }
 
-div.main-right.x9 {
+div.main-right.x9 > .plotvuer_parent {
   height: 11.111%;
 }
 
