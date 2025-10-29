@@ -852,8 +852,9 @@ div.input {
   border: 1px solid #dcdfe6;
   padding: 8px;
   min-height: 0;
-  max-height: fit-content;
-  flex-grow: 1;
+  max-height: none;
+  flex: 0 1 auto;
+  align-self: flex-start;
 }
 
 .buttons-container {
