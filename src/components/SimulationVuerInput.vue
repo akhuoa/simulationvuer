@@ -7,7 +7,7 @@
       popper-class="discrete-popper"
       size="small"
       v-model="vModel"
-      :teleported=false
+      :teleported="true"
       @change="updateUi()"
     >
       <el-option
