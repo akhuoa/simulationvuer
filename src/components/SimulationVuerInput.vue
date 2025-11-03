@@ -1,12 +1,43 @@
 <template>
   <div v-show="visible">
     <p :class="labelClasses">{{ name }}</p>
-    <el-select class="discrete" popper-class="discrete-popper" size="small" v-if="isDiscrete" v-model="vModel" :teleported=false @change="updateUi()">
-      <el-option v-for="possibleValue in possibleValues" :key="possibleValue.value" :label="possibleValue.name" :value="possibleValue.value" />
+    <el-select
+      v-if="isDiscrete"
+      class="discrete"
+      popper-class="discrete-popper"
+      size="small"
+      v-model="vModel"
+      :teleported="true"
+      @change="updateUi()"
+    >
+      <el-option
+        v-for="possibleValue in possibleValues"
+        :key="possibleValue.value"
+        :label="possibleValue.name"
+        :value="possibleValue.value"
+      />
     </el-select>
     <div class="sliders-and-fields" v-if="!isDiscrete">
-      <el-slider v-model="vModel" :max="maximumValue" :min="minimumValue" :show-input="false" :show-tooltip="false" :step="stepValue" @input="updateUi()" />
-      <el-input-number class="scalar" size="small" v-model="vModel" :controls="false" :max="maximumValue" :min="minimumValue" :step="stepValue" :step-strictly="true" @input="updateUi()" />
+      <el-slider
+        v-model="vModel"
+        :max="maximumValue"
+        :min="minimumValue"
+        :show-input="false"
+        :show-tooltip="false"
+        :step="stepValue"
+        @input="updateUi()"
+      />
+      <el-input-number
+        class="scalar"
+        size="small"
+        v-model="vModel"
+        :controls="false"
+        :max="maximumValue"
+        :min="minimumValue"
+        :step="stepValue"
+        :step-strictly="true"
+        @input="updateUi()"
+      />
     </div>
   </div>
 </template>
@@ -63,9 +94,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+// select box, slider and input number height
+$input-height: 32px;
+$input-number-width: 45px;
+
+p {
+  font-size: 14px;
+}
+
 :deep(.el-input-number.scalar) {
-  margin-top: -8px;
-  width: 45px;
+  width: $input-number-width;
+  height: $input-height;
 }
 
 :deep(.el-input-number.scalar .el-input) {
@@ -77,13 +116,17 @@ export default {
 }
 
 :deep(.el-select.discrete) {
-  margin-bottom: 16px;
+  margin-top: 4px;
+
+  .el-select__wrapper {
+    height: $input-height;
+  }
 }
 
 :deep(.el-slider) {
-  width: 108px;
-  margin-top: -12px;
   margin-left: 8px;
+  width: calc(100% - 16px);
+  height: $input-height;
 }
 
 :deep(.el-slider__bar) {
@@ -96,7 +139,7 @@ export default {
 
 .discrete {
   margin-left: 8px;
-  width: 160px;
+  width: calc(100% - 16px);
 }
 
 .discrete {
@@ -134,11 +177,11 @@ div.simulation-vuer {
 }
 
 div.sliders-and-fields {
-  display: grid;
-  grid-template-columns: 132px auto;
-  width: 191px;
-  height: 26px;
-  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: -4px;
 }
 
 p.default {
@@ -154,9 +197,8 @@ p.discrete {
 }
 
 p.scalar {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  margin-bottom: 8px;
+  margin-bottom: 0;
   margin-top: 0;
+  padding-right: $input-number-width;
 }
 </style>
