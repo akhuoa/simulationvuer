@@ -1,52 +1,57 @@
 <template>
   <div class="simulation-vuer" v-loading="showUserMessage" :element-loading-text="userMessage">
-    <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
-    <div class="main" v-if="hasValidSimulationUiInfo">
-      <div class="main-left" :class="{'with-buttons': !libopencorSet || uuid}">
-        <p class="default name" v-if="!libopencorSet">{{ name }}</p>
-        <el-divider v-if="!libopencorSet"></el-divider>
-        <p class="default input-parameters">Input parameters</p>
-        <div class="input scrollbar">
-          <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input"
-            ref="simInput"
-            :defaultValue="input.defaultValue"
-            :key="`input-${index}`"
-            :name="input.name"
-            :maximumValue="input.maximumValue"
-            :minimumValue="input.minimumValue"
-            :possibleValues="input.possibleValues"
-            :stepValue="input.stepValue"
+    <div class="container" v-if="opencorOmexFile === null">
+      <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
+      <div class="main" v-if="hasValidSimulationUiInfo">
+        <div class="main-left" :class="{'with-buttons': !libopencorSet || uuid}">
+          <p class="default name" v-if="!libopencorSet">{{ name }}</p>
+          <el-divider v-if="!libopencorSet"></el-divider>
+          <p class="default input-parameters">Input parameters</p>
+          <div class="input scrollbar">
+            <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input"
+              ref="simInput"
+              :defaultValue="input.defaultValue"
+              :key="`input-${index}`"
+              :name="input.name"
+              :maximumValue="input.maximumValue"
+              :minimumValue="input.minimumValue"
+              :possibleValues="input.possibleValues"
+              :stepValue="input.stepValue"
+            />
+          </div>
+          <div class="buttons-container">
+            <div class="primary-button" v-if="!libopencorSet">
+              <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
+            </div>
+            <div class="secondary-button" v-if="uuid">
+              <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
+            </div>
+            <div class="secondary-button" v-if="!libopencorSet">
+              <el-button size="small" @click="viewDataset()">View Dataset</el-button>
+            </div>
+            <div class="secondary-button" v-if="libopencorSet && idType === 'pmr_path'">
+              <el-button size="small" @click="viewWorkspace()">View Workspace</el-button>
+            </div>
+            <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
+          </div>
+        </div>
+        <div class="main-right" ref="output" v-show="isSimulationValid">
+          <PlotVuer v-for="(_outputPlot, index) in simulationUiInfo.output.plots"
+            :key="`output-${index}`"
+            :metadata="plotMetadata(index)"
+            :data-source="{ data: simulationResults[index] }"
+            :plotLayout="layout[index]"
+            :plotType="'plotly-only'"
+            :selectorUi="false"
           />
         </div>
-        <div class="buttons-container">
-          <div class="primary-button" v-if="!libopencorSet">
-            <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
-          </div>
-          <div class="secondary-button" v-if="uuid">
-            <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
-          </div>
-          <div class="secondary-button" v-if="!libopencorSet">
-            <el-button size="small" @click="viewDataset()">View Dataset</el-button>
-          </div>
-          <div class="secondary-button" v-if="libopencorSet && idType === 'pmr_path'">
-            <el-button size="small" @click="viewWorkspace()">View Workspace</el-button>
-          </div>
-          <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
+        <div class="main-right" v-show="!isSimulationValid">
+          <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
         </div>
       </div>
-      <div class="main-right" ref="output" v-show="isSimulationValid">
-        <PlotVuer v-for="(_outputPlot, index) in simulationUiInfo.output.plots"
-          :key="`output-${index}`"
-          :metadata="plotMetadata(index)"
-          :data-source="{ data: simulationResults[index] }"
-          :plotLayout="layout[index]"
-          :plotType="'plotly-only'"
-          :selectorUi="false"
-        />
-      </div>
-      <div class="main-right" v-show="!isSimulationValid">
-        <p class="default error"><span class="error">Error:</span> <span v-html="errorMessage"></span>.</p>
-      </div>
+    </div>
+    <div v-else class="opencor">
+      Use OpenCOR with <a :href="opencorOmexFile" style="color: #8300bf">{{ opencorOmexFile }}</a>.
     </div>
   </div>
 </template>
@@ -154,6 +159,7 @@ export default {
       model: undefined,
       name: null,
       opencorBasedSimulation: true,
+      opencorOmexFile: null,
       output: undefined,
       perfectScollbarOptions: {
         suppressScrollX: true,
@@ -737,57 +743,9 @@ export default {
         xmlhttp.send();
       });
     } else if (this.idType === IdType.DATASET_URL) {
-      this.userMessage = "Retrieving COMBINE archive...";
-      this.showUserMessage = true;
-
-      // Retrieve the COMBINE archive, extract the simulation UI JSON file from
-      // it and then build the simulation UI.
-
-      this.$nextTick(() => {
-        const xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.open("GET", this.id);
-        xmlhttp.responseType = "arraybuffer";
-        xmlhttp.onreadystatechange = () => {
-          if (xmlhttp.readyState === 4) {
-            if (xmlhttp.status === 200) {
-              libOpenCOR().then((libopencor) => {
-                this.extractAndBuildSimulationUi(libopencor, new Uint8Array(xmlhttp.response));
-              });
-            } else {
-              this.errorMessage = "the COMBINE archive could not be retrieved";
-              this.showUserMessage = false;
-            }
-          }
-        };
-        xmlhttp.send();
-      });
+      this.opencorOmexFile = this.id;
     } else if (this.idType === IdType.PMR_PATH) {
-      this.userMessage = "Retrieving COMBINE archive from PMR...";
-      this.showUserMessage = true;
-
-      // Retrieve the COMBINE archive, extract the simulation UI JSON file from
-      // it and then build the simulation UI.
-
-      this.$nextTick(() => {
-        const xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.open("POST", this.apiLocation + "/pmr_file");
-        xmlhttp.setRequestHeader("Content-type", "application/json");
-        xmlhttp.onreadystatechange = () => {
-          if (xmlhttp.readyState === 4) {
-            if (xmlhttp.status === 200) {
-              libOpenCOR().then((libopencor) => {
-                this.extractAndBuildSimulationUi(libopencor, Uint8Array.from(atob(xmlhttp.response), (c) => c.charCodeAt(0)));
-              });
-            } else {
-              this.errorMessage = "the COMBINE archive chould not be retrieved from PMR";
-              this.showUserMessage = false;
-            }
-          }
-        };
-        xmlhttp.send(JSON.stringify({ path: this.id }));
-      });
+      this.opencorOmexFile = PMR_URL + this.id;
     } else {
       // Extract the simulation UI JSON file from the COMBINE archive and build
       // the simulation UI.
@@ -862,6 +820,10 @@ div.input {
   flex-shrink: 0;
 }
 
+div.container {
+  height: 100%;
+}
+
 div.main {
   display: grid;
   --mainLeftWidth: 243px;
@@ -923,6 +885,10 @@ div.main-right.x9 > .plotvuer_parent {
 
 :deep(div.main-right div.controls) {
   height: 0;
+}
+
+div.opencor {
+  height: 100%;
 }
 
 div.primary-button,
