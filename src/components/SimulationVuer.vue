@@ -51,7 +51,7 @@
       </div>
     </div>
     <div v-else class="opencor">
-      Use OpenCOR with <a :href="opencorOmexFile" style="color: #8300bf">{{ opencorOmexFile }}</a>.
+      <OpenCOR :omex="opencorOmexFile" theme="light" />
     </div>
   </div>
 </template>
@@ -66,6 +66,8 @@ import { validJson } from "./json.js";
 import libOpenCOR from "https://mapcore-demo.org/current/opencor-wasm/0.0.3/libopencor.js";
 import { markRaw } from "vue";
 import { create, all } from "mathjs";
+import OpenCOR from '@opencor/opencor';
+import '@opencor/opencor/style.css';
 
 const PMR_URL = "https://models.physiomeproject.org/";
 
@@ -89,6 +91,7 @@ export default {
     ElButton,
     ElDivider,
     ElLoading,
+    OpenCOR,
   },
   props: {
     /**
@@ -802,6 +805,22 @@ export default {
   }
 }
 
+:deep(.p-floatlabel:has(input:focus)) label, :deep(.p-floatlabel:has(input:-webkit-autofill)) label, :deep(.p-floatlabel:has(textarea:focus)) label, :deep(.p-floatlabel:has(.p-inputwrapper-focus)) label {
+  color: #8300BF;
+}
+
+:deep(.p-inputtext:enabled:focus) {
+    border-color: #8300BF;
+}
+
+:deep(.p-select:not(.p-disabled).p-focus) {
+    border-color: #8300BF;
+}
+
+:deep(.p-slider-range) {
+  background-color: #8300BF;
+}
+
 div.input {
   display: flex;
   flex-direction: column;
@@ -995,5 +1014,23 @@ span.error {
       min-height: 180px;
     }
   }
+}
+</style>
+
+<style>
+/* Note: not sure why, but the following rules need to be global!? */
+
+.p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
+    background: #F5F7FA;
+}
+
+.p-select-option.p-select-option-selected.p-focus {
+    background: #F5F7FA;
+    color: #8300BF;
+}
+
+.p-select-option.p-select-option-selected {
+    background: white;
+    color: #8300BF;
 }
 </style>
