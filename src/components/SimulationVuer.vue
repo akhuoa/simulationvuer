@@ -62,8 +62,6 @@ import libOpenCOR from "https://mapcore-demo.org/current/opencor-wasm/0.0.3/libo
 import { markRaw } from "vue";
 import { create, all } from "mathjs";
 
-const LIBOPENCOR_SOLVER = "libOpenCOR";
-const OSPARC_SOLVER = "oSPARC";
 const PMR_URL = "https://models.physiomeproject.org/";
 
 const math = create(all, {});
@@ -79,8 +77,6 @@ const IdType = Object.freeze({
  * SimulationVuer
  */
 export default {
-  LIBOPENCOR_SOLVER: LIBOPENCOR_SOLVER,
-  OSPARC_SOLVER: OSPARC_SOLVER,
   name: "SimulationVuer",
   components: {
     PlotVuer,
