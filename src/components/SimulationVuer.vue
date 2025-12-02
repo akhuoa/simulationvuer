@@ -63,7 +63,7 @@ import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
-import libOpenCOR from "https://mapcore-demo.org/current/opencor-wasm/0.0.3/libopencor.js";
+import libOpenCOR from "https://cors-proxy.opencor.workers.dev/?url=https://opencor.ws/libopencor/downloads/wasm/libopencor-0.20251027.0.js";
 import { markRaw } from "vue";
 import { create, all } from "mathjs";
 import OpenCOR from '@opencor/opencor';
