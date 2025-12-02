@@ -226,6 +226,7 @@ a {
 
 div.app {
   text-align: center;
+  margin-bottom: 8px;
 }
 
 h3 {
