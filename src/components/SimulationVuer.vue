@@ -1021,16 +1021,16 @@ span.error {
 /* Note: not sure why, but the following rules need to be global!? */
 
 .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
-    background: #F5F7FA;
+    background: #F5F7FA !important;
 }
 
 .p-select-option.p-select-option-selected.p-focus {
-    background: #F5F7FA;
-    color: #8300BF;
+    background: #F5F7FA !important;
+    color: #8300BF !important;
 }
 
 .p-select-option.p-select-option-selected {
-    background: white;
-    color: #8300BF;
+    background: white !important;
+    color: #8300BF !important;
 }
 </style>
