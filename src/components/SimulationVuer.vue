@@ -3,9 +3,9 @@
     <div class="container" v-if="opencorOmexFile === null">
       <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error"><span class="error">Error:</span> {{ errorMessage }}.</p>
       <div class="main" v-if="hasValidSimulationUiInfo">
-        <div class="main-left" :class="{'with-buttons': !libopencorSet || uuid}">
-          <p class="default name" v-if="!libopencorSet">{{ name }}</p>
-          <el-divider v-if="!libopencorSet"></el-divider>
+        <div class="main-left" :class="{'with-buttons': uuid}">
+          <p class="default name">{{ name }}</p>
+          <el-divider></el-divider>
           <p class="default input-parameters">Input parameters</p>
           <div class="input scrollbar">
             <SimulationVuerInput v-for="(input, index) in simulationUiInfo.input"
@@ -20,17 +20,14 @@
             />
           </div>
           <div class="buttons-container">
-            <div class="primary-button" v-if="!libopencorSet">
+            <div class="primary-button">
               <el-button type="primary" size="small" @click="startSimulation()">Run Simulation</el-button>
             </div>
             <div class="secondary-button" v-if="uuid">
               <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
             </div>
-            <div class="secondary-button" v-if="!libopencorSet">
+            <div class="secondary-button">
               <el-button size="small" @click="viewDataset()">View Dataset</el-button>
-            </div>
-            <div class="secondary-button" v-if="libopencorSet && idType === 'pmr_path'">
-              <el-button size="small" @click="viewWorkspace()">View Workspace</el-button>
             </div>
             <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
           </div>
@@ -63,7 +60,6 @@ import SimulationVuerInput from "./SimulationVuerInput.vue";
 import { ElButton, ElDivider, ElLoading } from "element-plus";
 import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
 import { validJson } from "./json.js";
-import libOpenCOR from "https://mapcore-demo.org/current/opencor-wasm/0.0.3/libopencor.js";
 import { markRaw } from "vue";
 import { create, all } from "mathjs";
 import OpenCOR from '@opencor/opencor';
@@ -157,8 +153,6 @@ export default {
       isMounted: false,
       isSimulationValid: true,
       layout: [],
-      libopencor: undefined,
-      libopencorSet: false,
       model: undefined,
       name: null,
       opencorBasedSimulation: true,
@@ -195,150 +189,6 @@ export default {
     },
     /**
      * @public
-     * Manage the file associated with the given `url` and `fileContents`.
-     * @arg `url`
-     * @arg `fileContents`
-     */
-    manageFile(url, fileContents) {
-      let file = this.fileManager.file(url);
-
-      if (file === null) {
-        file = new this.libopencor.File(url);
-      }
-
-      const fileContentsPtr = this.libopencor._malloc(fileContents.length);
-      const mem = new Uint8Array(this.libopencor.HEAPU8.buffer, fileContentsPtr, fileContents.length);
-
-      mem.set(fileContents);
-
-      file.setContents(fileContentsPtr, fileContents.length);
-
-      this.libopencor._free(fileContentsPtr);
-
-      return file;
-    },
-    /**
-     * @public
-     * Run a PMR-based COMBINE archive using libOpenCOR.
-     */
-    runSimulation() {
-      if (this.instance === undefined) {
-        // Retrieve an instance of the model.
-
-        const document = new this.libopencor.SedDocument(this.fileManager.file(PMR_URL + this.id));
-
-        this.model = markRaw(document.model());
-        this.instance = markRaw(document.instantiate());
-
-        document.delete();
-      }
-
-      // Run the simulation after passing some changes, if any, to the model.
-
-      this.model.removeAllChanges();
-
-      for (const [parameter, value] of Object.entries(this.parametersData())) {
-        const parameterParts = parameter.split("/")
-
-        this.model.addChange(new this.libopencor.SedChangeAttribute(parameterParts[0], parameterParts[1], value.toString()));
-      }
-
-      this.instance.run();
-
-      // Retrieve the simulation results.
-
-      const res = {};
-      const instanceTask = this.instance.task(0);
-      let foundAllOutputs = true;
-      let foundOutput;
-
-      for (const output of this.outputData()) {
-        foundOutput = false;
-
-        if (output === instanceTask.voiName) {
-          res[output] = instanceTask.voiAsArray;
-
-          foundOutput = true;
-        }
-
-        if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.stateCount; ++i) {
-            if (output === instanceTask.stateName(i)) {
-              res[output] = instanceTask.stateAsArray(i);
-
-              foundOutput = true;
-
-              break;
-            }
-          }
-        }
-
-        if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.rateCount; ++i) {
-            if (output === instanceTask.rateName(i)) {
-              res[output] = instanceTask.rateAsArray(i);
-
-              foundOutput = true;
-
-              break;
-            }
-          }
-        }
-
-        if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.constantCount; ++i) {
-            if (output === instanceTask.constantName(i)) {
-              res[output] = instanceTask.constantAsArray(i);
-
-              foundOutput = true;
-
-              break;
-            }
-          }
-        }
-
-        if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.computedConstantCount; ++i) {
-            if (output === instanceTask.computedConstantName(i)) {
-              res[output] = instanceTask.computedConstantAsArray(i);
-
-              foundOutput = true;
-
-              break;
-            }
-          }
-        }
-
-        if (res[output] === undefined) {
-          for (let i = 0; i < instanceTask.algebraicCount; ++i) {
-            if (output === instanceTask.algebraicName(i)) {
-              res[output] = instanceTask.algebraicAsArray(i);
-
-              foundOutput = true;
-
-              break;
-            }
-          }
-        }
-
-        if (!foundOutput) {
-          console.warn("SIMULATION: output '" + output + "' could not be found.");
-
-          foundAllOutputs = false;
-        }
-      }
-
-      if (foundAllOutputs) {
-        this.processSimulationResults(res);
-      } else {
-        this.hasValidSimulationUiInfo = false;
-        this.errorMessage = "some outputs could not be found";
-      }
-
-      this.showUserMessage = false;
-    },
-    /**
-     * @public
      * Build the simulation UI using `simulationUiInfo`, a JSON object that describes the contents of the simulation UI.
      * @arg `simulationUiInfo`
      */
@@ -349,7 +199,7 @@ export default {
 
       // Make sure that the simulation UI information is valid.
 
-      this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo, this.libopencor === undefined);
+      this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
 
       if (!this.hasValidSimulationUiInfo) {
         this.errorMessage = "the simulation.json file is malformed";
@@ -357,25 +207,22 @@ export default {
         return;
       }
 
-      // Retrieve and keep track of the solver to be used for the simulation, if
-      // needed.
+      // Retrieve and keep track of the solver to be used for the simulation.
 
-      if (this.libopencor === undefined) {
-        this.simulationUiInfo.simulation.solvers.forEach((solver) => {
-          if ((solver.if === undefined) || evaluateValue(this, solver.if)) {
-            this.solver = solver;
-          }
-        });
-
-        if (this.solver === undefined) {
-          this.hasValidSimulationUiInfo = false;
-          this.errorMessage = "no solver name and/or solver version specified";
-
-          return;
+      this.simulationUiInfo.simulation.solvers.forEach((solver) => {
+        if ((solver.if === undefined) || evaluateValue(this, solver.if)) {
+          this.solver = solver;
         }
+      });
 
-        this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
+      if (this.solver === undefined) {
+        this.hasValidSimulationUiInfo = false;
+        this.errorMessage = "no solver name and/or solver version specified";
+
+        return;
       }
+
+      this.opencorBasedSimulation = this.solver.name === OPENCOR_SOLVER_NAME;
 
       // Initialise our UI.
 
@@ -432,40 +279,6 @@ export default {
       this.$nextTick(() => {
         finaliseUi(this);
       });
-    },
-    /**
-     * @public
-     * Extract the simulation UI JSON file from the given file contents and build the simulation UI.
-     * @arg `libopencor`
-     * @arg `fileContents`
-     */
-    extractAndBuildSimulationUi(libopencor, fileContents) {
-      this.libopencor = markRaw(libopencor);
-      this.libopencorSet = true;
-      this.fileManager = markRaw(this.libopencor.FileManager.instance());
-
-      const file = this.manageFile(PMR_URL + this.id, fileContents);
-
-      if (file.type.value !== libopencor.File.Type.COMBINE_ARCHIVE.value) {
-        this.showUserMessage = false;
-      } else {
-        const decoder = new TextDecoder();
-        const simulationJson = file.childFileFromFileName("simulation.json");
-
-        if (simulationJson === null) {
-          this.errorMessage = "no simulation JSON file could be found";
-
-          this.showUserMessage = false;
-        } else {
-          const simulationUiInfo = JSON.parse(decoder.decode(simulationJson.contents()));
-
-          this.showUserMessage = false;
-
-          this.$nextTick(() => {
-            this.buildSimulationUi(simulationUiInfo);
-          });
-        }
-      }
     },
     /**
      * @public
@@ -749,18 +562,8 @@ export default {
       this.opencorOmexFile = this.id;
     } else if (this.idType === IdType.PMR_PATH) {
       this.opencorOmexFile = PMR_URL + this.id;
-    } else {
-      // Extract the simulation UI JSON file from the COMBINE archive and build
-      // the simulation UI.
-
-      this.userMessage = "Retrieving COMBINE archive...";
-      this.showUserMessage = true;
-
-      this.$nextTick(() => {
-        libOpenCOR().then((libopencor) => {
-          this.extractAndBuildSimulationUi(libopencor, this.id);
-        });
-      });
+    } else { // IdType.RAW_COMBINE_ARCHIVE
+      this.opencorOmexFile = this.id;
     }
   },
   mounted: function () {

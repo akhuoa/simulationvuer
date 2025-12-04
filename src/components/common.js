@@ -28,15 +28,6 @@ export function updateUi(parent) {
 
       parent.$refs.simInput[index].visible = (input.visible === undefined) ? true : evaluateValue(parent, input.visible);
     });
-
-    if (parent.libopencor !== undefined) {
-      parent.userMessage = "Running the model...";
-      parent.showUserMessage = true;
-
-      parent.$nextTick(() => {
-        parent.runSimulation();
-      });
-    }
   });
 }
 
