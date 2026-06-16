@@ -33,12 +33,13 @@ export default defineConfig(({ command, mode }) => {
         fileName: "simulationvuer",
       },
       rollupOptions: {
-        external: ["vue", "@abi-software/svg-sprite", "@abi-software/plotvuer"],
+        external: ["vue", "@abi-software/svg-sprite", "@abi-software/plotvuer", /@opencor\/opencor.*/],
         output: {
           globals: {
             vue: "Vue",
             "@abi-software/svg-sprite": "@abi-software/svg-sprite",
             "@abi-software/plotvuer": "@abi-software/plotvuer",
+            "@opencor/opencor": "@opencor/opencor",
           },
         },
       },
