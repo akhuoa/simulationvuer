@@ -28,3 +28,6 @@ pnpm-debug.log*
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs/components
+
+# unplugin-vue-components auto generated file
+**/components.d.ts
