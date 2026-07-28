@@ -78,6 +78,7 @@ The exact steps to set these headers depend on your Web server. Here are the ste
    ```
 
    Adjust the `Location` path to match the URL prefix where the Web app is served (here, we use `/app` assuming the Web app is served from `https://your-domain.com/app`).
+
 3. **Reload Apache**. Apply the changes with `sudo apachectl reload` or the equivalent for your distribution.
 4. **Verify**. Check the response headers on your deployed HTML page using:
 

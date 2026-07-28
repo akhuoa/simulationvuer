@@ -19,8 +19,7 @@ const opencorPackage = JSON.parse(
   ),
 );
 const libopencorVersion = opencorPackage.libopencorVersion;
-const libopencorUrl =
-  `https://opencor.ws/libopencor/downloads/wasm/${libopencorVersion}`;
+const libopencorUrl = `https://opencor.ws/libopencor/downloads/wasm/${libopencorVersion}`;
 
 export default defineConfig(({ command, mode }) => {
   const config = {
@@ -65,7 +64,10 @@ export default defineConfig(({ command, mode }) => {
             return;
           }
 
-          if (id.includes("@opencor/opencor") && !id.split("?")[0].endsWith(".css")) {
+          if (
+            id.includes("@opencor/opencor") &&
+            !id.split("?")[0].endsWith(".css")
+          ) {
             return {
               code: code.replace(
                 /"https:\/\/opencor\.ws\/libopencor\/downloads\/wasm\/[^/]+\/libopencor\.js"/g,
@@ -78,25 +80,30 @@ export default defineConfig(({ command, mode }) => {
       },
     ],
     base: mode === "app" ? "./" : "/",
-    build: mode === "app"
-      ? {}
-      : {
-      lib: {
-        entry: path.resolve(__dirname, "./src/components/index.js"),
-        name: "SimulationVuer",
-        fileName: "simulationvuer",
-      },
-      rollupOptions: {
-        external: ["vue", "@abi-software/svg-sprite", "@abi-software/plotvuer"],
-        output: {
-          globals: {
-            vue: "Vue",
-            "@abi-software/svg-sprite": "@abi-software/svg-sprite",
-            "@abi-software/plotvuer": "@abi-software/plotvuer",
+    build:
+      mode === "app"
+        ? {}
+        : {
+            lib: {
+              entry: path.resolve(__dirname, "./src/components/index.js"),
+              name: "SimulationVuer",
+              fileName: "simulationvuer",
+            },
+            rollupOptions: {
+              external: [
+                "vue",
+                "@abi-software/svg-sprite",
+                "@abi-software/plotvuer",
+              ],
+              output: {
+                globals: {
+                  vue: "Vue",
+                  "@abi-software/svg-sprite": "@abi-software/svg-sprite",
+                  "@abi-software/plotvuer": "@abi-software/plotvuer",
+                },
+              },
+            },
           },
-        },
-      },
-    },
     resolve: {
       alias: {
         "~/": `${pathSrc}/`,
