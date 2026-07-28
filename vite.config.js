@@ -77,7 +77,10 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     ],
-    build: {
+    base: mode === "app" ? "./" : "/",
+    build: mode === "app"
+      ? {}
+      : {
       lib: {
         entry: path.resolve(__dirname, "./src/components/index.js"),
         name: "SimulationVuer",
