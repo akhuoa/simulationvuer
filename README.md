@@ -52,6 +52,47 @@ where:
 
 Note that a simulation will be run on oSPARC if the `id` references a SPARC simulation-based dataset, in a user's browser otherwise.
 
+## Deployment
+
+SimulationVuer uses [@opencor/opencor](https://www.npmjs.com/package/@opencor/opencor), which relies on [libOpenCOR](https://github.com/opencor/libopencor)'s threaded WebAssembly (WASM) to run simulations in the browser. Threaded WASM requires [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer), which in turn requires the page to be served with **cross-origin isolation** headers.
+
+When deploying an application that uses SimulationVuer, your Web server **must** must send the following headers with the HTML document:
+
+```http
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+Without these headers, @opencor/opencor will fail to initialise libOpenCOR and will not function.
+
+The exact steps to set these headers depend on your Web server. Here are the steps for Apache:
+
+1. **Enable `mod_headers`**. Ensure the `headers` module is enabled (e.g., `a2enmod headers` or add it to your modules list).
+2. **Set headers on the HTML path**. In your virtual host config, add:
+
+   ```apache
+   <Location "/app">
+       Header set Cross-Origin-Opener-Policy "same-origin"
+       Header set Cross-Origin-Embedder-Policy "require-corp"
+   </Location>
+   ```
+
+   Adjust the `Location` path to match the URL prefix where the Web app is served (here, we use `/app` assuming the Web app is served from `https://your-domain.com/app`).
+
+3. **Reload Apache**. Apply the changes with `sudo apachectl reload` or the equivalent for your distribution.
+4. **Verify**. Check the response headers on your deployed HTML page using:
+
+   ```bash
+   curl -I https://your-domain.com/app/
+   ```
+
+   You should see:
+
+   ```http
+   cross-origin-opener-policy: same-origin
+   cross-origin-embedder-policy: require-corp
+   ```
+
 ## Project setup
 
 ### Clone the respository
