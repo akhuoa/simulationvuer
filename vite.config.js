@@ -10,17 +10,6 @@ import { defineConfig } from "vite";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pathSrc = path.resolve(__dirname, "./src");
 
-// Retrieve the version of libOpenCOR used by @opencor/opencor.
-
-const opencorPackage = JSON.parse(
-  fs.readFileSync(
-    path.resolve(__dirname, "node_modules/@opencor/opencor/package.json"),
-    "utf-8",
-  ),
-);
-const libopencorVersion = opencorPackage.libopencorVersion;
-const libopencorUrl = `https://opencor.ws/libopencor/downloads/wasm/${libopencorVersion}`;
-
 export default defineConfig(({ command, mode }) => {
   const config = {
     plugins: [
@@ -38,44 +27,41 @@ export default defineConfig(({ command, mode }) => {
         dts: "src/components.d.ts",
       }),
 
-      // Rewrite the libOpenCOR import URL in @opencor/opencor to a same-origin path. This is needed because
-      // libopencor.js constructs pthread workers via new Worker(), which requires the worker script to be
-      // same-origin with the page. The actual files are served by the dev server proxy (see below).
+      // Serve the local libopencor/ directory from @opencor/opencor so that the dynamic import in opencor.es.js (new
+      // URL("./libopencor/wasm/...", window.location.href)) resolves same-origin. libopencor.js itself is bundled in
+      // the package while the threaded WASM is loaded from opencor.ws via locateFile.
 
       {
-        name: "opencor-local-libopencor",
-        enforce: "pre",
+        name: "opencor-serve-local-libopencor",
+        configureServer(server) {
+          const libopencorDir = path.resolve(
+            __dirname,
+            "node_modules/@opencor/opencor/dist/libopencor",
+          );
 
-        // Tell Vite that /libopencor/* paths are external.
-        // Note: they are served via the dev server proxy, so Vite should not try to resolve them locally.
+          server.middlewares.use((req, res, next) => {
+            const urlPath = req.url;
 
-        resolveId(id) {
-          if (id.startsWith("/libopencor/")) {
-            return { id, external: true };
-          }
-        },
+            if (urlPath.startsWith("/libopencor/")) {
+              const filePath = path.join(
+                libopencorDir,
+                urlPath.replace("/libopencor/", ""),
+              );
 
-        // Rewrite the libOpenCOR URL to same-origin path for @opencor/opencor.
-        // Note: this is needed so the worker constructed inside libopencor.js is same-origin (i.e. no CORS error).
-        //       For production, the target server should be configured to serve /libopencor/* files.
+              if (fs.existsSync(filePath)) {
+                res.writeHead(200, {
+                  "Content-Type": "application/javascript",
+                  "Cross-Origin-Embedder-Policy": "require-corp",
+                  "Cross-Origin-Resource-Policy": "same-origin",
+                });
+                res.end(fs.readFileSync(filePath));
 
-        transform(code, id) {
-          if (command !== "serve") {
-            return;
-          }
+                return;
+              }
+            }
 
-          if (
-            id.includes("@opencor/opencor") &&
-            !id.split("?")[0].endsWith(".css")
-          ) {
-            return {
-              code: code.replace(
-                /"https:\/\/opencor\.ws\/libopencor\/downloads\/wasm\/[^/]+\/libopencor\.js"/g,
-                '"/libopencor/libopencor.js"',
-              ),
-              map: null,
-            };
-          }
+            next();
+          });
         },
       },
     ],
@@ -115,30 +101,12 @@ export default defineConfig(({ command, mode }) => {
     config.server = {
       port: 8081,
 
-      // Proxy /libopencor/* requests to the libOpenCOR server, so the worker constructed inside libopencor.js loads
-      // from a same-origin path (new Worker() requires the worker script to be same-origin with the page).
-
-      proxy: {
-        "/libopencor": {
-          target: libopencorUrl,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/libopencor/, ""),
-        },
-      },
-
       // Emscripten pthreads require SharedArrayBuffer, which needs cross-origin isolation.
 
       headers: {
         "Cross-Origin-Opener-Policy": "same-origin",
         "Cross-Origin-Embedder-Policy": "require-corp",
       },
-    };
-
-    // Exclude @opencor/opencor from Vite's pre-bundling so our transform plugin above can rewrite the import URL in
-    // opencor.es.js.
-
-    config.optimizeDeps = {
-      exclude: ["@opencor/opencor"],
     };
     config.define = {
       "process.env.HTTP_PROXY": 8081,
