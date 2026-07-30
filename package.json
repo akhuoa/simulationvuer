@@ -2,6 +2,9 @@
   "name": "@abi-software/simulationvuer",
   "version": "4.0.1",
   "private": false,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "serve": "vite serve --host --force",
     "build-bundle": "vite build",
