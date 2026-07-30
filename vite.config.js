@@ -9,6 +9,10 @@ import { defineConfig } from "vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pathSrc = path.resolve(__dirname, "./src");
+const libopencorDir = path.resolve(
+  __dirname,
+  "node_modules/@opencor/opencor/dist/libopencor",
+);
 
 export default defineConfig(({ command, mode }) => {
   const config = {
@@ -27,41 +31,100 @@ export default defineConfig(({ command, mode }) => {
         dts: "src/components.d.ts",
       }),
 
-      // Serve the local libopencor/ directory from @opencor/opencor so that the dynamic import in opencor.es.js (new
-      // URL("./libopencor/wasm/...", window.location.href)) resolves same-origin. libopencor.js itself is bundled in
-      // the package while the threaded WASM is loaded from opencor.ws via locateFile.
+      // Resolve the libopencor.js import URL in @opencor/opencor's opencor.es.js so that it works for all consumers
+      // (not just Vite projects) and this without server configuration.
+      //
+      // In @opencor/opencor, the code uses:
+      //   new URL("./libopencor/wasm/<version>/libopencor.js", window.location.href).href
+      //
+      // This resolves relative to the page URL, requiring the server to host libopencor.js at a page-relative path
+      // (which doesn't work for library consumers or static builds).
+      //
+      // We fix this by:
+      //   - Dev (serve): rewriting to "/libopencor/libopencor.js", served by the middleware below.
+      //   - Build (lib): rewriting to use import.meta.url, so the import resolves relative to simulationvuer.js's URL
+      //                  (same directory, libopencor.js is copied alongside it via closeBundle).
 
       {
-        name: "opencor-serve-local-libopencor",
+        name: "opencor-libopencor",
+        transform(code, id) {
+          if (id.includes("@opencor/opencor") && id.endsWith("opencor.es.js")) {
+            const importRegex =
+              /(\/\*\s*@vite-ignore\s*\*\/[\s\n]*)(new URL\("(\.\/libopencor\/wasm\/[^/]+\/libopencor\.js)",\s*window\.location\.href\)\.href)/g;
+            const res = code.replace(
+              importRegex,
+              (_match, prefix, _urlExpr, urlPath) => {
+                if (command === "serve") {
+                  // Dev mode: absolute path served by the middleware below.
+
+                  return `${prefix}"/libopencor/libopencor.js"`;
+                }
+
+                // Build mode: resolve relative to the bundle's own URL.
+                // Note: we use replace() instead of new URL(..., import.meta.url) to avoid Vite's asset handler, which
+                //       would inline the file as a data: URL (which breaks Emscripten's pthread Worker creation). At
+                //       runtime, import.meta.url points to simulationvuer.js and the derived path correctly reaches
+                //       libopencor in the same directory (copied alongside by closeBundle).
+
+                return `${prefix}import.meta.url.replace(/[^/]*$/, "") + ${JSON.stringify(urlPath.substring(2))}`;
+              },
+            );
+
+            if (res !== code) {
+              return {
+                code: res,
+                map: null,
+              };
+            }
+          }
+        },
         configureServer(server) {
-          const libopencorDir = path.resolve(
-            __dirname,
-            "node_modules/@opencor/opencor/dist/libopencor",
-          );
+          // Serve libopencor files from @opencor/opencor during development so the dynamic import in opencor.es.js
+          // resolves same-origin (required for pthread Workers).
 
           server.middlewares.use((req, res, next) => {
             const urlPath = req.url;
 
-            if (urlPath.startsWith("/libopencor/")) {
-              const filePath = path.join(
-                libopencorDir,
-                urlPath.replace("/libopencor/", ""),
-              );
+            if (!urlPath.startsWith("/libopencor/")) {
+              next();
 
-              if (fs.existsSync(filePath)) {
-                res.writeHead(200, {
-                  "Content-Type": "application/javascript",
-                  "Cross-Origin-Embedder-Policy": "require-corp",
-                  "Cross-Origin-Resource-Policy": "same-origin",
-                });
-                res.end(fs.readFileSync(filePath));
-
-                return;
-              }
+              return;
             }
 
-            next();
+            const filePath = path.join(
+              libopencorDir,
+              urlPath.replace("/libopencor/", ""),
+            );
+
+            if (!fs.existsSync(filePath)) {
+              next();
+
+              return;
+            }
+
+            res.writeHead(200, {
+              "Content-Type": "application/javascript",
+              "Cross-Origin-Embedder-Policy": "require-corp",
+              "Cross-Origin-Resource-Policy": "same-origin",
+            });
+            res.end(fs.readFileSync(filePath));
           });
+        },
+        closeBundle() {
+          // Copy libopencor alongside the built JavaScript file so that the dynamic import (using import.meta.url as
+          // base) resolves correctly. App mode puts the built JavaScript file in dist/assets while lib mode puts it in
+          // dist.
+
+          if (!fs.existsSync(libopencorDir)) {
+            return;
+          }
+
+          const distDir = path.resolve(__dirname, "dist");
+          const targetDir = fs.existsSync(path.join(distDir, "assets"))
+            ? path.join(distDir, "assets", "libopencor")
+            : path.join(distDir, "libopencor");
+
+          fs.cpSync(libopencorDir, targetDir, { recursive: true, force: true });
         },
       },
     ],
