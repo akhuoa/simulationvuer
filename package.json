@@ -56,9 +56,9 @@
     "webpack-node-externals": "^2.5.2"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "4.48.1",
-    "@rollup/rollup-linux-x64-gnu": "4.48.1",
-    "@rollup/rollup-win32-x64-msvc": "4.48.1"
+    "@rollup/rollup-darwin-arm64": "4.62.3",
+    "@rollup/rollup-linux-x64-gnu": "4.62.3",
+    "@rollup/rollup-win32-x64-msvc": "4.62.3"
   },
   "eslintConfig": {
     "root": true,
