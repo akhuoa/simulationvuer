@@ -55,6 +55,11 @@
     "vue-router": "4.2.5",
     "webpack-node-externals": "^2.5.2"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-darwin-arm64": "4.48.1",
+    "@rollup/rollup-linux-x64-gnu": "4.48.1",
+    "@rollup/rollup-win32-x64-msvc": "4.48.1"
+  },
   "eslintConfig": {
     "root": true,
     "plugins": [
