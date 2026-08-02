@@ -82,21 +82,88 @@ export default defineConfig(({ command, mode }) => {
           // Serve libopencor files from @opencor/opencor during development so the dynamic import in opencor.es.js
           // resolves same-origin (required for pthread Workers).
 
-          server.middlewares.use((req, res, next) => {
-            const urlPath = req.url;
+          // Resolve symlinks in libopencorDir once so the per-request guard compares real paths on both sides.
 
-            if (!urlPath.startsWith("/libopencor/")) {
+          let realLibopencorDir;
+
+          try {
+            realLibopencorDir = fs.realpathSync(libopencorDir);
+          } catch {
+            realLibopencorDir = libopencorDir;
+          }
+
+          server.middlewares.use((req, res, next) => {
+            // Parse the URL to strip any query string, and decode it safely (malformed sequences are rejected).
+
+            let pathname;
+
+            try {
+              pathname = decodeURIComponent(
+                new URL(req.url, "http://localhost").pathname,
+              );
+            } catch {
               next();
 
               return;
             }
 
-            const filePath = path.join(
-              libopencorDir,
-              urlPath.replace("/libopencor/", ""),
-            );
+            if (!pathname.startsWith("/libopencor/")) {
+              next();
 
-            if (!fs.existsSync(filePath)) {
+              return;
+            }
+
+            // Resolve the requested subpath and verify the result stays within libopencorDir, guarding against
+            // directory traversal (e.g., "/libopencor/../../..." or percent-encoded ".." segments) and symlink
+            // escapes (a symlink inside libopencorDir pointing outside would pass a purely lexical check).
+            // Note: realpathSync() resolves symlinks, so a symlink pointing outside libopencorDir resolves to a path
+            //       outside it, which the relative check below rejects. It also throws if the path doesn't exist.
+
+            let filePath;
+
+            try {
+              filePath = fs.realpathSync(
+                path.resolve(
+                  libopencorDir,
+                  pathname.slice("/libopencor/".length),
+                ),
+              );
+            } catch {
+              next();
+
+              return;
+            }
+
+            // Reject paths escaping the directory: exactly "..", starting with "../", or absolute (e.g., a
+            // different drive on Windows).
+            // Note: a plain startsWith("..") check would wrongly reject legitimate files like "..foo.js".
+
+            const relative = path.relative(realLibopencorDir, filePath);
+
+            if (
+              relative === "" ||
+              relative === ".." ||
+              relative.startsWith(`..${path.sep}`) ||
+              path.isAbsolute(relative)
+            ) {
+              next();
+
+              return;
+            }
+
+            // Read the file and serve it with the correct headers.
+
+            let content;
+
+            try {
+              if (!fs.statSync(filePath).isFile()) {
+                next();
+
+                return;
+              }
+
+              content = fs.readFileSync(filePath);
+            } catch {
               next();
 
               return;
@@ -107,7 +174,7 @@ export default defineConfig(({ command, mode }) => {
               "Cross-Origin-Embedder-Policy": "require-corp",
               "Cross-Origin-Resource-Policy": "same-origin",
             });
-            res.end(fs.readFileSync(filePath));
+            res.end(content);
           });
         },
         closeBundle() {
