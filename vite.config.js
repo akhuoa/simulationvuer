@@ -16,6 +16,14 @@ const libopencorDir = path.resolve(
 
 export default defineConfig(({ command, mode }) => {
   const config = {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+          additionalData: `@use '@/assets/styles' as *;`,
+        },
+      },
+    },
     plugins: [
       vue(),
       Components({
@@ -193,6 +201,7 @@ export default defineConfig(({ command, mode }) => {
           },
     resolve: {
       alias: {
+        "@": pathSrc,
         "~/": `${pathSrc}/`,
       },
     },
