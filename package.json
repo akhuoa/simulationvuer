@@ -23,13 +23,12 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@abi-software/plotvuer": "1.0.7",
+    "@abi-software/plotvuer": "1.1.0",
     "@opencor/opencor": "^0.20260804.0",
-    "element-plus": "2.8.4",
+    "element-plus": "^2.14.4",
     "jsonschema": "^1.5.0",
     "mathjs": "^15.2.0",
-    "unplugin-vue-components": "^0.26.0",
-    "vue": "3.4.21"
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.29.7",
@@ -40,7 +39,7 @@
     "base64-inline-loader": "^2.0.1",
     "chokidar": "^3.6.0",
     "concurrently": "^8.2.2",
-    "eslint": "^8.57.1",
+    "eslint": "^9.34.0",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-vue": "^9.33.0",
@@ -48,11 +47,11 @@
     "mathjs": "^15.2.0",
     "prettier": "^3.9.6",
     "sass": "^1.102.0",
-    "unplugin-vue-components": "^0.26.0",
+    "unplugin-vue-components": "^0.27.0",
     "vite": "^5.4.21",
     "vitepress": "^1.6.4",
     "vue-docgen-api": "^4.79.2",
-    "vue-router": "4.2.5",
+    "vue-router": "^4.2.5",
     "webpack-node-externals": "^2.5.2"
   },
   "optionalDependencies": {
