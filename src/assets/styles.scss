@@ -1,6 +1,7 @@
-@import url("https://fonts.googleapis.com/css?family=Asap:400,400i,500,600,700&display=swap");
+@use "_variables" as *;
+@forward "_variables";
 
-@import "_variables";
+@import url("https://fonts.googleapis.com/css?family=Asap:400,400i,500,600,700&display=swap");
 
 /* icon font path, required */
 $--color-primary: $app-primary-color !default;
