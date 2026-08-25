@@ -25,39 +25,37 @@
   "dependencies": {
     "@abi-software/plotvuer": "1.1.0",
     "@opencor/opencor": "^0.20260804.0",
-    "element-plus": "^2.14.4",
+    "element-plus": "^2.14.5",
     "jsonschema": "^1.5.0",
     "mathjs": "^15.2.0",
-    "vue": "^3.4.21"
+    "vue": "^3.5.41"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.29.7",
-    "@vitejs/plugin-vue": "^5.2.4",
+    "@babel/eslint-parser": "^8.0.1",
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-vue": "^6.0.8",
     "@vuese/markdown-render": "^2.11.3",
-    "babel-eslint": "^10.1.0",
     "babel-plugin-component": "^1.1.1",
     "base64-inline-loader": "^2.0.1",
-    "chokidar": "^3.6.0",
-    "concurrently": "^8.2.2",
-    "eslint": "^9.34.0",
-    "eslint-config-prettier": "^9.1.2",
+    "chokidar": "^5.0.0",
+    "concurrently": "^9.2.4",
+    "globals": "^17.11.0",
+    "eslint": "^10.9.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
-    "eslint-plugin-vue": "^9.33.0",
-    "jsonschema": "^1.5.0",
-    "mathjs": "^15.2.0",
+    "eslint-plugin-vue": "^10.10.0",
     "prettier": "^3.9.6",
-    "sass": "^1.102.0",
-    "unplugin-vue-components": "^0.27.0",
-    "vite": "^5.4.21",
+    "sass": "^1.103.1",
+    "unplugin-vue-components": "^32.1.0",
+    "vite": "^8.2.1",
     "vitepress": "^1.6.4",
     "vue-docgen-api": "^4.79.2",
-    "vue-router": "^4.2.5",
-    "webpack-node-externals": "^2.5.2"
+    "vue-router": "^5.2.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "4.62.3",
-    "@rollup/rollup-linux-x64-gnu": "4.62.3",
-    "@rollup/rollup-win32-x64-msvc": "4.62.3"
+    "@rollup/rollup-darwin-arm64": "^4.62.4",
+    "@rollup/rollup-linux-x64-gnu": "^4.62.4",
+    "@rollup/rollup-win32-x64-msvc": "^4.62.4"
   },
   "eslintConfig": {
     "root": true,
