@@ -17,7 +17,10 @@ export default [
       prettier,
     },
     languageOptions: {
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+      },
       parserOptions: {
         parser: babelParser,
         requireConfigFile: false,
