@@ -13,7 +13,7 @@
     "vuese-watch": "node vuese-generator.js watch",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --ext .js,.vue",
+    "lint": "eslint .",
     "release:beta": "npm version prerelease --preid=beta; npm publish --tag beta",
     "release:minor": "npm version minor; npm publish",
     "release:patch": "npm version patch;  npm publish",
@@ -58,25 +58,6 @@
     "@rollup/rollup-darwin-arm64": "4.63.0",
     "@rollup/rollup-linux-x64-gnu": "4.63.0",
     "@rollup/rollup-win32-x64-msvc": "4.63.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "plugins": [
-      "prettier"
-    ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:prettier/recommended",
-      "plugin:vue/essential"
-    ],
-    "env": {
-      "node": true
-    },
-    "parserOptions": {
-      "parser": "@babel/eslint-parser",
-      "requireConfigFile": false
-    },
-    "rules": {}
   },
   "browserslist": [
     "> 1%",
