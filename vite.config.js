@@ -196,6 +196,8 @@ export default defineConfig(({ command, mode }) => {
                   "@abi-software/svg-sprite": "@abi-software/svg-sprite",
                   "@abi-software/plotvuer": "@abi-software/plotvuer",
                 },
+                // keep css output name stable for the "./dist/style.css" export/import paths
+                assetFileNames: (assetInfo) => (assetInfo.name?.endsWith(".css") ? "style.css" : "assets/[name][extname]"),
               },
             },
           },
