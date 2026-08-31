@@ -3,7 +3,7 @@
   "version": "4.1.0",
   "private": false,
   "engines": {
-    "node": ">=20"
+    "node": "^24.20.0"
   },
   "scripts": {
     "serve": "vite serve --host --force",
