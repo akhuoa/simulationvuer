@@ -188,6 +188,7 @@ export default defineConfig(({ command, mode }) => {
               external: [
                 "vue",
                 "@abi-software/plotvuer",
+                "@abi-software/plotvuer/dist/style.css",
               ],
               output: {
                 globals: {
