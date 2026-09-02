@@ -187,13 +187,12 @@ export default defineConfig(({ command, mode }) => {
             rollupOptions: {
               external: [
                 "vue",
-                "@abi-software/svg-sprite",
                 "@abi-software/plotvuer",
+                "@abi-software/plotvuer/dist/style.css",
               ],
               output: {
                 globals: {
                   vue: "Vue",
-                  "@abi-software/svg-sprite": "@abi-software/svg-sprite",
                   "@abi-software/plotvuer": "@abi-software/plotvuer",
                 },
                 // keep css output name stable for the "./dist/style.css" export/import paths
