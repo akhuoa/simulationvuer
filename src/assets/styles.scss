@@ -1,5 +1,5 @@
-@use "_variables" as *;
-@forward "_variables";
+@use '_variables' as *;
+@forward '_variables';
 
 /* icon font path, required */
 $--color-primary: $app-primary-color !default;
