@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "SimulationVuer"
-  text: "API documentation"
+  name: 'SimulationVuer'
+  text: 'API documentation'
   tagline: SimulationVuer is a Vue 3 component used in the SPARC portal to run some SPARC simulation-based datasets, as well as OMEX files.
   actions:
     - theme: brand
