@@ -1,10 +1,14 @@
 import js from '@eslint/js';
+import { includeIgnoreFile } from 'eslint/config';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import vue from 'eslint-plugin-vue';
 import globals from 'globals';
 
+const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url));
+
 export default [
+  includeIgnoreFile(gitignorePath, { gitignoreResolution: true }),
   {
     ignores: ['dist/**', 'docs/.vitepress/**', 'docs/components/**'],
   },
