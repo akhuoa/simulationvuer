@@ -5,32 +5,26 @@
  * To watch components changes for Vitepress on Dev Mode
  */
 
-import { Render } from "@vuese/markdown-render";
+import { Render } from '@vuese/markdown-render';
 
-import chokidar from "chokidar";
-import fs from "node:fs";
-import path from "node:path";
-import { parseSource } from "vue-docgen-api";
+import chokidar from 'chokidar';
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseSource } from 'vue-docgen-api';
 
-const watchMode = process.argv.find((argv) => argv === "watch");
+const watchMode = process.argv.find((argv) => argv === 'watch');
 
-const componentsDir = "src/components";
-const components = ["SimulationVuer.vue"];
-const outputDir = "docs/components";
+const componentsDir = 'src/components';
+const components = ['SimulationVuer.vue'];
+const outputDir = 'docs/components';
 
 async function generateMarkdown(file) {
   const fileWithPath = `${componentsDir}/${file}`;
-  const fileContent = fs.readFileSync(fileWithPath, "utf-8");
+  const fileContent = fs.readFileSync(fileWithPath, 'utf-8');
 
   try {
     const result = await parseSource(fileContent, fileWithPath);
-    const {
-      displayName: name,
-      description: desc,
-      props,
-      events,
-      methods,
-    } = result;
+    const { displayName: name, description: desc, props, events, methods } = result;
 
     // transform props to vuese styles
     const parseResult = {
@@ -42,20 +36,17 @@ async function generateMarkdown(file) {
       events: transformData(events),
       methods: transformData(methods),
     };
-    parseResult.name = "SimulationVuer"; // Because there has another name prop in component
+    parseResult.name = 'SimulationVuer'; // Because there has another name prop in component
     const r = new Render(parseResult);
     const markdownResult = r.renderMarkdown();
     const markdownContent = markdownResult.content;
-    const componentName = path.basename(fileWithPath, ".vue");
+    const componentName = path.basename(fileWithPath, '.vue');
 
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir);
     }
 
-    await fs.promises.writeFile(
-      `${outputDir}/${componentName}.md`,
-      markdownContent,
-    );
+    await fs.promises.writeFile(`${outputDir}/${componentName}.md`, markdownContent);
 
     console.log(`Markdown file for ${componentName} is generated!`);
   } catch (e) {
@@ -71,23 +62,21 @@ function transformData(data = []) {
 
   data.forEach((prop) => {
     if (prop.description) {
-      prop.describe = [prop.description.replaceAll("\n", " ")];
+      prop.describe = [prop.description.replaceAll('\n', ' ')];
     }
 
     if (prop.type) {
       // Handle multiple types separated by '|'
       // Convert to array to avoid markdown table issues
-      if (prop.type.name.indexOf("|") !== -1) {
-        prop.type = prop.type.name
-          .split("|")
-          .map((item) => capitalise(item.trim()));
+      if (prop.type.name.indexOf('|') !== -1) {
+        prop.type = prop.type.name.split('|').map((item) => capitalise(item.trim()));
       } else {
         prop.type = capitalise(prop.type.name);
       }
     }
 
     if (prop.defaultValue) {
-      prop.default = prop.defaultValue.value.replaceAll("\n", " ");
+      prop.default = prop.defaultValue.value.replaceAll('\n', ' ');
     }
 
     // events
@@ -127,7 +116,7 @@ if (watchMode) {
     ignoreInitial: true,
   });
 
-  watcher.on("change", (file) => {
+  watcher.on('change', (file) => {
     console.log(`The component ${file} has changed!`);
     generateMarkdown(file);
   });

@@ -1,15 +1,9 @@
 <template>
-  <div
-    class="simulation-vuer"
-    v-loading="showUserMessage"
-    :element-loading-text="userMessage"
-  >
+  <div class="simulation-vuer" v-loading="showUserMessage" :element-loading-text="userMessage">
     <div class="container" v-if="opencorOmexFile === null">
-      <p
-        v-if="!hasValidSimulationUiInfo && !showUserMessage"
-        class="default error"
-      >
-        <span class="error">Error:</span> {{ errorMessage }}.
+      <p v-if="!hasValidSimulationUiInfo && !showUserMessage" class="default error">
+        <span class="error">Error:</span>
+        {{ errorMessage }}.
       </p>
       <div class="main" v-if="hasValidSimulationUiInfo">
         <div class="main-left" :class="{ 'with-buttons': uuid }">
@@ -31,23 +25,17 @@
           </div>
           <div class="buttons-container">
             <div class="primary-button">
-              <el-button type="primary" size="small" @click="startSimulation()"
-                >Run Simulation</el-button
-              >
+              <el-button type="primary" size="small" @click="startSimulation()">
+                Run Simulation
+              </el-button>
             </div>
             <div class="secondary-button" v-if="uuid">
-              <el-button size="small" @click="runOnOsparc()"
-                >Run on oSPARC</el-button
-              >
+              <el-button size="small" @click="runOnOsparc()">Run on oSPARC</el-button>
             </div>
             <div class="secondary-button">
-              <el-button size="small" @click="viewDataset()"
-                >View Dataset</el-button
-              >
+              <el-button size="small" @click="viewDataset()">View Dataset</el-button>
             </div>
-            <p class="default note" v-if="uuid">
-              Additional parameters are available on oSPARC
-            </p>
+            <p class="default note" v-if="uuid">Additional parameters are available on oSPARC</p>
           </div>
         </div>
         <div class="main-right" ref="output" v-show="isSimulationValid">
@@ -66,14 +54,17 @@
             <span class="error">Error:</span>
             {{ errorMessage }}
             <span v-if="errorStatus">
-              (<a
+              (
+              <a
                 :href="`https://httpstatuses.com/${errorStatus}`"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {{ errorStatus }} </a
-              >) </span
-            >.
+                {{ errorStatus }}
+              </a>
+              )
+            </span>
+            .
           </p>
         </div>
       </div>
@@ -92,34 +83,34 @@
 </template>
 
 <script>
-import { PlotVuer } from "@abi-software/plotvuer";
-import "@abi-software/plotvuer/dist/style.css";
-import OpenCOR from "@opencor/opencor";
-import "@opencor/opencor/style.css";
+import { PlotVuer } from '@abi-software/plotvuer';
+import '@abi-software/plotvuer/dist/style.css';
+import OpenCOR from '@opencor/opencor';
+import '@opencor/opencor/style.css';
 
-import { ElButton, ElDivider } from "element-plus";
-import { create, all } from "mathjs";
+import { ElButton, ElDivider } from 'element-plus';
+import { create, all } from 'mathjs';
 
-import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from "./common.js";
-import { validJson } from "./json.js";
-import SimulationVuerInput from "./SimulationVuerInput.vue";
+import { evaluateValue, finaliseUi, OPENCOR_SOLVER_NAME } from './common.js';
+import { validJson } from './json.js';
+import SimulationVuerInput from './SimulationVuerInput.vue';
 
-const PMR_URL = "https://models.physiomeproject.org/";
+const PMR_URL = 'https://models.physiomeproject.org/';
 
 const math = create(all, {});
 
 const IdType = Object.freeze({
-  DATASET_ID: "dataset_id",
-  DATASET_URL: "dataset_url",
-  PMR_PATH: "pmr_path",
-  RAW_COMBINE_ARCHIVE: "raw_combine_archive",
+  DATASET_ID: 'dataset_id',
+  DATASET_URL: 'dataset_url',
+  PMR_PATH: 'pmr_path',
+  RAW_COMBINE_ARCHIVE: 'raw_combine_archive',
 });
 
 function isWebProtocol(urlString) {
   try {
     const url = new URL(urlString);
     // Protocol property includes the colon, e.g., "https:".
-    return url.protocol === "http:" || url.protocol === "https:";
+    return url.protocol === 'http:' || url.protocol === 'https:';
   } catch (_err) {
     // String was not a valid URL.
     return false;
@@ -130,7 +121,7 @@ function isWebProtocol(urlString) {
  * SimulationVuer
  */
 export default {
-  name: "SimulationVuer",
+  name: 'SimulationVuer',
   components: {
     PlotVuer,
     SimulationVuerInput,
@@ -163,7 +154,7 @@ export default {
 
     let idType;
 
-    if (typeof this.id === "number") {
+    if (typeof this.id === 'number') {
       idType = IdType.DATASET_ID;
     } else if (this.id instanceof Uint8Array) {
       idType = IdType.RAW_COMBINE_ARCHIVE;
@@ -178,17 +169,14 @@ export default {
     if (idType === IdType.DATASET_ID) {
       const xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("GET", `${this.apiLocation}/sim/dataset/${this.id}`);
+      xmlhttp.open('GET', `${this.apiLocation}/sim/dataset/${this.id}`);
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
           if (xmlhttp.status === 200) {
             const datasetInfo = JSON.parse(xmlhttp.responseText);
 
             this.name = datasetInfo.name;
-            this.uuid =
-              datasetInfo.study !== undefined
-                ? datasetInfo.study.uuid
-                : undefined;
+            this.uuid = datasetInfo.study !== undefined ? datasetInfo.study.uuid : undefined;
           }
         }
       };
@@ -196,7 +184,7 @@ export default {
     }
 
     return {
-      errorMessage: "",
+      errorMessage: '',
       errorStatus: null,
       fileManager: undefined,
       hasFinalisedUi: false,
@@ -219,7 +207,7 @@ export default {
       simulationResultsId: {},
       simulationUiInfo: {},
       solver: undefined,
-      userMessage: "",
+      userMessage: '',
       ui: null,
       uuid: null,
       activeSubscriptions: [],
@@ -234,17 +222,15 @@ export default {
     addDataSubscription(subscription) {
       // Check that the subscription is valid.
 
-      if (!subscription || typeof subscription !== "object") {
-        console.warn(
-          "SimulationVuer: addDataSubscription: subscription must be an object.",
-        );
+      if (!subscription || typeof subscription !== 'object') {
+        console.warn('SimulationVuer: addDataSubscription: subscription must be an object.');
 
         return;
       }
 
       // Check that the subscription has the expected ID.
 
-      const EXPECTED_ID = "nz.ac.auckland.simulation-data-request";
+      const EXPECTED_ID = 'nz.ac.auckland.simulation-data-request';
       const EXPECTED_MAJOR_VERSION = 0;
 
       if (subscription.id !== EXPECTED_ID) {
@@ -257,7 +243,7 @@ export default {
 
       // Check that the version is valid and compatible with what we expect.
 
-      if (typeof subscription.version !== "string") {
+      if (typeof subscription.version !== 'string') {
         console.warn(
           `SimulationVuer: addDataSubscription: missing or non-string version ('${subscription.version}').`,
         );
@@ -265,7 +251,7 @@ export default {
         return;
       }
 
-      const versionParts = subscription.version.split(".");
+      const versionParts = subscription.version.split('.');
 
       if (versionParts.length < 1 || !/^[0-9]+$/.test(versionParts[0])) {
         console.warn(
@@ -299,24 +285,24 @@ export default {
       const missing = [];
 
       if (payload.windowId == null) {
-        missing.push("windowId");
+        missing.push('windowId');
       }
 
       if (payload.ownerId == null) {
-        missing.push("ownerId");
+        missing.push('ownerId');
       }
 
       if (!payload.component) {
-        missing.push("component");
+        missing.push('component');
       }
 
       if (!payload.variable) {
-        missing.push("variable");
+        missing.push('variable');
       }
 
       if (missing.length) {
         console.warn(
-          `SimulationVuer: addDataSubscription: payload missing fields: ${missing.join(", ")}.`,
+          `SimulationVuer: addDataSubscription: payload missing fields: ${missing.join(', ')}.`,
         );
 
         return;
@@ -332,12 +318,10 @@ export default {
       const modelParameters = [];
 
       if (subscription.payload?.withVOI) {
-        modelParameters.push("VOI");
+        modelParameters.push('VOI');
       }
 
-      modelParameters.push(
-        `${subscription.payload?.component}/${subscription.payload?.variable}`,
-      );
+      modelParameters.push(`${subscription.payload?.component}/${subscription.payload?.variable}`);
 
       this.$refs.opencorRef?.trackSimulationData(modelParameters);
     },
@@ -350,18 +334,12 @@ export default {
      */
     addExternalData(csv, voiExpression, modelParameters) {
       if (!this.$refs.opencorRef?.addExternalData) {
-        console.warn(
-          "SimulationVuer: addExternalData: OpenCOR instance is not available.",
-        );
+        console.warn('SimulationVuer: addExternalData: OpenCOR instance is not available.');
 
         return;
       }
 
-      return this.$refs.opencorRef.addExternalData(
-        csv,
-        voiExpression,
-        modelParameters,
-      );
+      return this.$refs.opencorRef.addExternalData(csv, voiExpression, modelParameters);
     },
     /**
      * @public
@@ -372,11 +350,9 @@ export default {
       // Ask OpenCOR to stop tracking the simulation data associated with the subscription's component and variable (and
       // the VOI, if requested and unless it's requested by another subscription).
 
-      const subscription = this.activeSubscriptions.find(
-        (activeSubscription) => {
-          return activeSubscription.windowId === subscriptionId;
-        },
-      );
+      const subscription = this.activeSubscriptions.find((activeSubscription) => {
+        return activeSubscription.windowId === subscriptionId;
+      });
 
       if (!subscription) {
         console.warn(
@@ -388,35 +364,28 @@ export default {
 
       const isVoiTrackedByAnotherSubscription = this.activeSubscriptions.some(
         (activeSubscription) => {
-          return (
-            activeSubscription.windowId !== subscriptionId &&
-            activeSubscription.withVOI
-          );
+          return activeSubscription.windowId !== subscriptionId && activeSubscription.withVOI;
         },
       );
-      const isModelParameterTrackedByAnotherSubscription =
-        this.activeSubscriptions.some((activeSubscription) => {
+      const isModelParameterTrackedByAnotherSubscription = this.activeSubscriptions.some(
+        (activeSubscription) => {
           return (
             activeSubscription.windowId !== subscriptionId &&
             activeSubscription.component === subscription.component &&
             activeSubscription.variable === subscription.variable
           );
-        });
+        },
+      );
 
-      if (
-        !isVoiTrackedByAnotherSubscription ||
-        !isModelParameterTrackedByAnotherSubscription
-      ) {
+      if (!isVoiTrackedByAnotherSubscription || !isModelParameterTrackedByAnotherSubscription) {
         const modelParameters = [];
 
         if (subscription.withVOI && !isVoiTrackedByAnotherSubscription) {
-          modelParameters.push("VOI");
+          modelParameters.push('VOI');
         }
 
         if (!isModelParameterTrackedByAnotherSubscription) {
-          modelParameters.push(
-            `${subscription.component}/${subscription.variable}`,
-          );
+          modelParameters.push(`${subscription.component}/${subscription.variable}`);
         }
 
         if (modelParameters.length) {
@@ -426,11 +395,9 @@ export default {
 
       // Remove the subscription from our list of active subscriptions.
 
-      this.activeSubscriptions = this.activeSubscriptions.filter(
-        (activeSubscription) => {
-          return activeSubscription.windowId !== subscriptionId;
-        },
-      );
+      this.activeSubscriptions = this.activeSubscriptions.filter((activeSubscription) => {
+        return activeSubscription.windowId !== subscriptionId;
+      });
     },
     /**
      * @public
@@ -438,7 +405,7 @@ export default {
      * @param `event`
      */
     onExternalData(event) {
-      this.$emit("externalData", event);
+      this.$emit('externalData', event);
     },
     /**
      * @public
@@ -446,7 +413,7 @@ export default {
      * @param `event`
      */
     onFile(event) {
-      this.$emit("file", event);
+      this.$emit('file', event);
     },
     /**
      * @public
@@ -463,9 +430,7 @@ export default {
         const simData = simulationData[modelParameter];
 
         if (simData == null) {
-          console.warn(
-            `SimulationVuer: onSimulationData: no data for ${modelParameter}.`,
-          );
+          console.warn(`SimulationVuer: onSimulationData: no data for ${modelParameter}.`);
 
           return;
         }
@@ -477,7 +442,7 @@ export default {
 
         if (activeSubscription.withVOI) {
           if (simulationData.VOI == null) {
-            console.warn("SimulationVuer: onSimulationData: no data for VOI.");
+            console.warn('SimulationVuer: onSimulationData: no data for VOI.');
 
             return;
           } else {
@@ -487,9 +452,9 @@ export default {
           }
         }
 
-        this.$emit("data-notification", {
-          id: "nz.ac.auckland.simulation-data-response",
-          version: "0.1.0",
+        this.$emit('data-notification', {
+          id: 'nz.ac.auckland.simulation-data-response',
+          version: '0.1.0',
           payload: {
             windowId: activeSubscription.windowId,
             ownerId: activeSubscription.ownerId,
@@ -498,7 +463,7 @@ export default {
         });
       });
 
-      this.$emit("simulationData", event);
+      this.$emit('simulationData', event);
     },
     /**
      * @public
@@ -507,10 +472,10 @@ export default {
      */
     plotMetadata(index) {
       return {
-        version: "1.1.0",
-        type: "plot",
+        version: '1.1.0',
+        type: 'plot',
         attrs: {
-          style: "timeseries",
+          style: 'timeseries',
           layout: this.layout[index],
         },
       };
@@ -530,7 +495,7 @@ export default {
       this.hasValidSimulationUiInfo = validJson(this.simulationUiInfo);
 
       if (!this.hasValidSimulationUiInfo) {
-        this.errorMessage = "the simulation.json file is malformed";
+        this.errorMessage = 'the simulation.json file is malformed';
 
         return;
       }
@@ -545,7 +510,7 @@ export default {
 
       if (this.solver === undefined) {
         this.hasValidSimulationUiInfo = false;
-        this.errorMessage = "no solver name and/or solver version specified";
+        this.errorMessage = 'no solver name and/or solver version specified';
 
         return;
       }
@@ -564,8 +529,8 @@ export default {
         ++index;
 
         this.layout[index] = {
-          paper_bgcolor: "rgba(0, 0, 0, 0)",
-          plot_bgcolor: "rgba(0, 0, 0, 0)",
+          paper_bgcolor: 'rgba(0, 0, 0, 0)',
+          plot_bgcolor: 'rgba(0, 0, 0, 0)',
           autosize: true,
           margin: {
             t: 25,
@@ -579,7 +544,7 @@ export default {
             responsive: true,
             scrollZoom: true,
           },
-          dragmode: "pan",
+          dragmode: 'pan',
           xaxis: {
             title: {
               text: outputPlot.xAxisTitle,
@@ -614,12 +579,12 @@ export default {
      * @param `url`
      */
     openUrl(url) {
-      const a = document.createElement("a");
+      const a = document.createElement('a');
 
       a.href = url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.style.display = "none";
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
 
       document.body.appendChild(a);
 
@@ -651,7 +616,7 @@ export default {
      */
     viewWorkspace() {
       const url = PMR_URL + this.id;
-      this.openUrl(url.substring(0, url.lastIndexOf("/")));
+      this.openUrl(url.substring(0, url.lastIndexOf('/')));
     },
     /**
      * @public
@@ -703,10 +668,8 @@ export default {
           this.simulationUiInfo.simulation.opencor.pointInterval !== undefined
         ) {
           request.opencor.json_config.simulation = {
-            "Ending point":
-              this.simulationUiInfo.simulation.opencor.endingPoint,
-            "Point interval":
-              this.simulationUiInfo.simulation.opencor.pointInterval,
+            'Ending point': this.simulationUiInfo.simulation.opencor.endingPoint,
+            'Point interval': this.simulationUiInfo.simulation.opencor.pointInterval,
           };
         }
 
@@ -735,9 +698,9 @@ export default {
       // Convert, if needed, the results to a JSON format that is compatible
       // with our OpenCOR results.
 
-      if (typeof results === "string") {
+      if (typeof results === 'string') {
         const SPACES = /[ \t]+/g;
-        const lines = results.trim().split("\n");
+        const lines = results.trim().split('\n');
         const iMax = lines[0].trim().split(SPACES).length;
 
         results = {};
@@ -775,7 +738,7 @@ export default {
           {
             x: parser.evaluate(outputPlot.xValue),
             y: parser.evaluate(outputPlot.yValue),
-            type: "scatter",
+            type: 'scatter',
           },
         ];
       });
@@ -803,14 +766,14 @@ export default {
 
       const xmlhttp = new XMLHttpRequest();
 
-      xmlhttp.open("POST", `${this.apiLocation}/check_simulation`);
-      xmlhttp.setRequestHeader("Content-type", "application/json");
+      xmlhttp.open('POST', `${this.apiLocation}/check_simulation`);
+      xmlhttp.setRequestHeader('Content-type', 'application/json');
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4) {
           if (xmlhttp.status === 200) {
             let response = JSON.parse(xmlhttp.responseText);
 
-            this.isSimulationValid = response.status === "ok";
+            this.isSimulationValid = response.status === 'ok';
 
             if (this.isSimulationValid) {
               if (response.results !== undefined) {
@@ -850,7 +813,7 @@ export default {
       // Start the simulation (after resetting our previous simulation data, in
       // case there were sonme).
 
-      this.userMessage = "Loading simulation results...";
+      this.userMessage = 'Loading simulation results...';
       this.showUserMessage = true;
 
       this.$nextTick(() => {
@@ -858,14 +821,14 @@ export default {
 
         const xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.open("POST", `${this.apiLocation}/start_simulation`);
-        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.open('POST', `${this.apiLocation}/start_simulation`);
+        xmlhttp.setRequestHeader('Content-type', 'application/json');
         xmlhttp.onreadystatechange = () => {
           if (xmlhttp.readyState === 4) {
             if (xmlhttp.status === 200) {
               let response = JSON.parse(xmlhttp.responseText);
 
-              this.isSimulationValid = response.status === "ok";
+              this.isSimulationValid = response.status === 'ok';
 
               if (this.isSimulationValid) {
                 this.checkSimulation(response.data);
@@ -887,7 +850,7 @@ export default {
     // Try to retrieve the UI information.
 
     if (this.idType === IdType.DATASET_ID) {
-      this.userMessage = "Retrieving UI information...";
+      this.userMessage = 'Retrieving UI information...';
       this.showUserMessage = true;
 
       // Retrieve and build the simulation UI.
@@ -895,10 +858,7 @@ export default {
       this.$nextTick(() => {
         const xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.open(
-          "GET",
-          `${this.apiLocation}/simulation_ui_file/${this.id}`,
-        );
+        xmlhttp.open('GET', `${this.apiLocation}/simulation_ui_file/${this.id}`);
         xmlhttp.onreadystatechange = () => {
           if (xmlhttp.readyState === 4) {
             this.showUserMessage = false;
@@ -908,8 +868,7 @@ export default {
                 this.buildSimulationUi(JSON.parse(xmlhttp.responseText));
               });
             } else {
-              this.errorMessage =
-                "the simulation dataset could not be retrieved";
+              this.errorMessage = 'the simulation dataset could not be retrieved';
               this.errorStatus = null;
             }
           }
@@ -1214,14 +1173,14 @@ span.error {
     Inter,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     Roboto,
     Oxygen,
     Ubuntu,
     Cantarell,
-    "Fira Sans",
-    "Droid Sans",
-    "Helvetica Neue",
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
     sans-serif;
   font-size: 0.875rem;
 }
