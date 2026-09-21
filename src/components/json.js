@@ -1,6 +1,6 @@
-import { Validator } from "jsonschema";
+import { Validator } from 'jsonschema';
 
-import { OPENCOR_SOLVER_NAME } from "./common.js";
+import { OPENCOR_SOLVER_NAME } from './common.js';
 
 export function validJson(json) {
   // Check the JSON against our schema.
@@ -17,14 +17,14 @@ export function validJson(json) {
               properties: {
                 defaultValue: {
                   required: true,
-                  type: "number",
+                  type: 'number',
                 },
                 id: {
-                  type: "string",
+                  type: 'string',
                 },
                 name: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 possibleValues: {
                   items: {
@@ -32,21 +32,21 @@ export function validJson(json) {
                     properties: {
                       name: {
                         required: true,
-                        type: "string",
+                        type: 'string',
                       },
                       value: {
                         required: true,
-                        type: "number",
+                        type: 'number',
                       },
                     },
-                    type: "object",
+                    type: 'object',
                   },
                   minItems: 1,
                   required: true,
-                  type: "array",
+                  type: 'array',
                 },
                 visible: {
-                  type: "string",
+                  type: 'string',
                 },
               },
             },
@@ -55,37 +55,37 @@ export function validJson(json) {
               properties: {
                 defaultValue: {
                   required: true,
-                  type: "number",
+                  type: 'number',
                 },
                 id: {
-                  type: "string",
+                  type: 'string',
                 },
                 maximumValue: {
                   required: true,
-                  type: "number",
+                  type: 'number',
                 },
                 minimumValue: {
                   required: true,
-                  type: "number",
+                  type: 'number',
                 },
                 name: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 stepValue: {
-                  type: "number",
+                  type: 'number',
                 },
                 visible: {
-                  type: "string",
+                  type: 'string',
                 },
               },
             },
           ],
-          type: "object",
+          type: 'object',
         },
         minItems: 1,
         required: true,
-        type: "array",
+        type: 'array',
       },
       output: {
         additionalProperties: false,
@@ -97,18 +97,18 @@ export function validJson(json) {
               properties: {
                 id: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 name: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
               },
-              type: "object",
+              type: 'object',
             },
             minItems: 1,
             required: true,
-            type: "array",
+            type: 'array',
           },
           plots: {
             items: {
@@ -116,31 +116,31 @@ export function validJson(json) {
               properties: {
                 xAxisTitle: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 xValue: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 yAxisTitle: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 yValue: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
               },
-              type: "object",
+              type: 'object',
             },
             maxItems: 9,
             minItems: 1,
             required: true,
-            type: "array",
+            type: 'array',
           },
         },
         required: true,
-        type: "object",
+        type: 'object',
       },
       parameters: {
         items: {
@@ -148,16 +148,16 @@ export function validJson(json) {
           properties: {
             name: {
               required: true,
-              type: "string",
+              type: 'string',
             },
             value: {
               required: true,
-              type: "string",
+              type: 'string',
             },
           },
-          type: "object",
+          type: 'object',
         },
-        type: "array",
+        type: 'array',
       },
       simulation: {
         additionalProperties: false,
@@ -166,60 +166,60 @@ export function validJson(json) {
             additionalProperties: false,
             properties: {
               endingPoint: {
-                type: "number",
+                type: 'number',
               },
               pointInterval: {
-                type: "number",
+                type: 'number',
               },
               resource: {
                 required: true,
-                type: "string",
+                type: 'string',
               },
             },
-            type: "object",
+            type: 'object',
           },
           solvers: {
             items: {
               additionalProperties: false,
               properties: {
                 if: {
-                  type: "string",
+                  type: 'string',
                 },
                 input: {
                   additionalProperties: false,
                   properties: {
                     name: {
                       required: true,
-                      type: "string",
+                      type: 'string',
                     },
                     value: {
                       required: true,
-                      type: "string",
+                      type: 'string',
                     },
                   },
-                  type: "object",
+                  type: 'object',
                 },
                 name: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
                 version: {
                   required: true,
-                  type: "string",
+                  type: 'string',
                 },
               },
-              type: "object",
+              type: 'object',
             },
             minItems: 1,
             required: true,
-            type: "array",
+            type: 'array',
           },
         },
         required: true,
-        type: "object",
+        type: 'object',
       },
     },
-    type: "object",
+    type: 'object',
   };
 
   const result = validator.validate(json, schema, { nestedErrors: true });
@@ -235,8 +235,8 @@ export function validJson(json) {
   const inputIdUsed = {};
   const inputValid = json.input.every((input) => {
     if (input.id !== undefined) {
-      if (input.id === "") {
-        console.warn("SimulationVuer: JSON: the input id must not be empty.");
+      if (input.id === '') {
+        console.warn('SimulationVuer: JSON: the input id must not be empty.');
 
         return false;
       }
@@ -252,8 +252,8 @@ export function validJson(json) {
       inputIdUsed[input.id] = true;
     }
 
-    if (input.name === "") {
-      console.warn("SimulationVuer: JSON: the input name must not be empty.");
+    if (input.name === '') {
+      console.warn('SimulationVuer: JSON: the input name must not be empty.');
 
       return false;
     }
@@ -261,10 +261,8 @@ export function validJson(json) {
     if (input.possibleValues !== undefined) {
       if (
         !input.possibleValues.every((possibleValue) => {
-          if (possibleValue.name === "") {
-            console.warn(
-              "SimulationVuer: JSON: an input possible value must not be empty.",
-            );
+          if (possibleValue.name === '') {
+            console.warn('SimulationVuer: JSON: an input possible value must not be empty.');
 
             return false;
           }
@@ -300,7 +298,7 @@ export function validJson(json) {
 
       if (!values.includes(input.defaultValue)) {
         console.warn(
-          `SimulationVuer: JSON: the input default value (${input.defaultValue}) must be one of the possible values (${values.join(", ")}).`,
+          `SimulationVuer: JSON: the input default value (${input.defaultValue}) must be one of the possible values (${values.join(', ')}).`,
         );
 
         return false;
@@ -316,10 +314,7 @@ export function validJson(json) {
         return false;
       }
 
-      if (
-        input.defaultValue < input.minimumValue ||
-        input.defaultValue > input.maximumValue
-      ) {
+      if (input.defaultValue < input.minimumValue || input.defaultValue > input.maximumValue) {
         console.warn(
           `SimulationVuer: JSON: the input default value (${input.defaultValue}) must be greater or equal than the minimum value (${input.minimumValue}) and lower or equal than the maximum value (${input.maximumValue}).`,
         );
@@ -357,10 +352,8 @@ export function validJson(json) {
     }
 
     if (input.visible !== undefined) {
-      if (input.visible === "") {
-        console.warn(
-          "SimulationVuer: JSON: the input visible must not be empty.",
-        );
+      if (input.visible === '') {
+        console.warn('SimulationVuer: JSON: the input visible must not be empty.');
 
         return false;
       }
@@ -378,10 +371,8 @@ export function validJson(json) {
   const outputIdUsed = {};
   const outputDataValid = json.output.data.every((outputData) => {
     if (outputData.id !== undefined) {
-      if (outputData.id === "") {
-        console.warn(
-          "SimulationVuer: JSON: the output data id must not be empty.",
-        );
+      if (outputData.id === '') {
+        console.warn('SimulationVuer: JSON: the output data id must not be empty.');
 
         return false;
       }
@@ -397,10 +388,8 @@ export function validJson(json) {
       outputIdUsed[outputData.id] = true;
     }
 
-    if (outputData.name === "") {
-      console.warn(
-        "SimulationVuer: JSON: the output data name must not be empty.",
-      );
+    if (outputData.name === '') {
+      console.warn('SimulationVuer: JSON: the output data name must not be empty.');
 
       return false;
     }
@@ -413,34 +402,26 @@ export function validJson(json) {
   }
 
   const outputPlotsValid = json.output.plots.every((outputPlot) => {
-    if (outputPlot.xAxisTitle === "") {
-      console.warn(
-        "SimulationVuer: JSON: the output plot X axis title must not be empty.",
-      );
+    if (outputPlot.xAxisTitle === '') {
+      console.warn('SimulationVuer: JSON: the output plot X axis title must not be empty.');
 
       return false;
     }
 
-    if (outputPlot.xValue === "") {
-      console.warn(
-        "SimulationVuer: JSON: the output plot X value must not be empty.",
-      );
+    if (outputPlot.xValue === '') {
+      console.warn('SimulationVuer: JSON: the output plot X value must not be empty.');
 
       return false;
     }
 
-    if (outputPlot.yAxisTitle === "") {
-      console.warn(
-        "SimulationVuer: JSON: the output plot Y axis title must not be empty.",
-      );
+    if (outputPlot.yAxisTitle === '') {
+      console.warn('SimulationVuer: JSON: the output plot Y axis title must not be empty.');
 
       return false;
     }
 
-    if (outputPlot.yValue === "") {
-      console.warn(
-        "SimulationVuer: JSON: the output plot Y value must not be empty.",
-      );
+    if (outputPlot.yValue === '') {
+      console.warn('SimulationVuer: JSON: the output plot Y value must not be empty.');
 
       return false;
     }
@@ -456,18 +437,14 @@ export function validJson(json) {
 
   if (json.parameters !== undefined) {
     const parametersValid = json.parameters.every((parameter) => {
-      if (parameter.name === "") {
-        console.warn(
-          "SimulationVuer: JSON: the parameter name must not be empty.",
-        );
+      if (parameter.name === '') {
+        console.warn('SimulationVuer: JSON: the parameter name must not be empty.');
 
         return false;
       }
 
-      if (parameter.value === "") {
-        console.warn(
-          "SimulationVuer: JSON: the parameter value must not be empty.",
-        );
+      if (parameter.value === '') {
+        console.warn('SimulationVuer: JSON: the parameter value must not be empty.');
 
         return false;
       }
@@ -487,48 +464,37 @@ export function validJson(json) {
   if (
     !json.simulation.solvers.every((solver) => {
       if (solver.if !== undefined) {
-        if (solver.if === "") {
-          console.warn(
-            "SimulationVuer: JSON: a simulation solver if must not be empty.",
-          );
+        if (solver.if === '') {
+          console.warn('SimulationVuer: JSON: a simulation solver if must not be empty.');
 
           return false;
         }
       }
 
       if (solver.input !== undefined) {
-        if (solver.input.name === "") {
-          console.warn(
-            "SimulationVuer: JSON: a simulation solver input name must not be empty.",
-          );
+        if (solver.input.name === '') {
+          console.warn('SimulationVuer: JSON: a simulation solver input name must not be empty.');
 
           return false;
         }
 
-        if (solver.input.value === "") {
-          console.warn(
-            "SimulationVuer: JSON: a simulation solver input value must not be empty.",
-          );
+        if (solver.input.value === '') {
+          console.warn('SimulationVuer: JSON: a simulation solver input value must not be empty.');
 
           return false;
         }
       }
 
-      if (solver.name === "") {
-        console.warn(
-          "SimulationVuer: JSON: a simulation solver name must not be empty.",
-        );
+      if (solver.name === '') {
+        console.warn('SimulationVuer: JSON: a simulation solver name must not be empty.');
 
         return false;
       }
 
-      needOpencorSettings =
-        needOpencorSettings || solver.name === OPENCOR_SOLVER_NAME;
+      needOpencorSettings = needOpencorSettings || solver.name === OPENCOR_SOLVER_NAME;
 
-      if (solver.version === "") {
-        console.warn(
-          "SimulationVuer: JSON: a simulation solver version must not be empty.",
-        );
+      if (solver.version === '') {
+        console.warn('SimulationVuer: JSON: a simulation solver version must not be empty.');
 
         return false;
       }
@@ -541,17 +507,15 @@ export function validJson(json) {
 
   if (needOpencorSettings && json.simulation.opencor === undefined) {
     console.warn(
-      "SimulationVuer: JSON: the simulation solver for OpenCOR is specified so simulation OpenCOR settings must also be specified.",
+      'SimulationVuer: JSON: the simulation solver for OpenCOR is specified so simulation OpenCOR settings must also be specified.',
     );
 
     return false;
   }
 
   if (json.simulation.opencor !== undefined) {
-    if (json.simulation.opencor.resource === "") {
-      console.warn(
-        "SimulationVuer: JSON: the simulation OpenCOR resource must not be empty.",
-      );
+    if (json.simulation.opencor.resource === '') {
+      console.warn('SimulationVuer: JSON: the simulation OpenCOR resource must not be empty.');
 
       return false;
     }
@@ -575,14 +539,14 @@ export function validJson(json) {
         }
       } else {
         console.warn(
-          "SimulationVuer: JSON: a simulation OpenCOR ending point is specified so a simulation OpenCOR point interval must also be specified.",
+          'SimulationVuer: JSON: a simulation OpenCOR ending point is specified so a simulation OpenCOR point interval must also be specified.',
         );
 
         return false;
       }
     } else if (json.simulation.opencor.pointInterval !== undefined) {
       console.warn(
-        "SimulationVuer: JSON: a simulation OpenCOR point interval is specified so a simulation OpenCOR ending point must also be specified.",
+        'SimulationVuer: JSON: a simulation OpenCOR point interval is specified so a simulation OpenCOR ending point must also be specified.',
       );
 
       return false;

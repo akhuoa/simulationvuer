@@ -43,12 +43,12 @@
 </template>
 
 <script>
-import { ElInputNumber, ElOption, ElSelect, ElSlider } from "element-plus";
+import { ElInputNumber, ElOption, ElSelect, ElSlider } from 'element-plus';
 
-import { updateUi } from "./common.js";
+import { updateUi } from './common.js';
 
 export default {
-  name: "SimulationVuerInput",
+  name: 'SimulationVuerInput',
   components: {
     ElInputNumber,
     ElOption,
@@ -80,7 +80,7 @@ export default {
   data: function () {
     return {
       isDiscrete: this.possibleValues !== undefined,
-      labelClasses: `default ${this.possibleValues !== undefined ? "discrete" : "scalar"}`,
+      labelClasses: `default ${this.possibleValues !== undefined ? 'discrete' : 'scalar'}`,
       visible: true,
       vModel: this.defaultValue,
     };

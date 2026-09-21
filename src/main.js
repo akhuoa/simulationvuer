@@ -1,11 +1,11 @@
-import ElementPlus from "element-plus";
-import { createApp } from "vue";
-import * as VueRouter from "vue-router";
+import ElementPlus from 'element-plus';
+import { createApp } from 'vue';
+import * as VueRouter from 'vue-router';
 
-import App from "./App.vue";
-import "./assets/fonts.scss";
+import App from './App.vue';
+import './assets/fonts.scss';
 
-const routes = [{ path: "/", component: App }];
+const routes = [{ path: '/', component: App }];
 const router = VueRouter.createRouter({
   // Provide the history implementation to use. We are using the hash history for simplicity here.
   history: VueRouter.createWebHashHistory(),
@@ -15,4 +15,4 @@ const app = createApp(App);
 
 app.use(router);
 app.use(ElementPlus);
-app.mount("#app");
+app.mount('#app');

@@ -1,8 +1,8 @@
-import { create, all } from "mathjs";
+import { create, all } from 'mathjs';
 
 const math = create(all, {});
 
-export const OPENCOR_SOLVER_NAME = "simcore/services/comp/opencor";
+export const OPENCOR_SOLVER_NAME = 'simcore/services/comp/opencor';
 
 export function evaluateValue(parent, value) {
   let index = -1;
@@ -27,9 +27,7 @@ export function updateUi(parent) {
       ++index;
 
       parent.$refs.simInput[index].visible =
-        input.visible === undefined
-          ? true
-          : evaluateValue(parent, input.visible);
+        input.visible === undefined ? true : evaluateValue(parent, input.visible);
     });
   });
 }
@@ -38,16 +36,10 @@ export function finaliseUi(parent) {
   // Finalise our UI, but only if we haven't already done so, we are mounted,
   // and we have some valid simulation UI information.
 
-  if (
-    !parent.hasFinalisedUi &&
-    parent.isMounted &&
-    parent.hasValidSimulationUiInfo
-  ) {
+  if (!parent.hasFinalisedUi && parent.isMounted && parent.hasValidSimulationUiInfo) {
     // Configure the PlotVuer's.
 
-    parent.$refs.output.classList.add(
-      `x${parent.simulationUiInfo.output.plots.length}`,
-    );
+    parent.$refs.output.classList.add(`x${parent.simulationUiInfo.output.plots.length}`);
 
     // Initialise the simulation results.
 
@@ -58,7 +50,7 @@ export function finaliseUi(parent) {
         {
           x: [],
           y: [],
-          type: "scatter",
+          type: 'scatter',
         },
       ];
     });

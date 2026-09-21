@@ -18,7 +18,7 @@ npm install @abi-software/simulationvuer
 To include the package in your script:
 
 ```javascript
-import { SimulationVuer } from "@abi-software/simulationvuer";
+import { SimulationVuer } from '@abi-software/simulationvuer';
 ```
 
 To register the package as a Vue component:
