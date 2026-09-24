@@ -65,7 +65,7 @@ function transformData(data = []) {
       prop.describe = [prop.description.replaceAll('\n', ' ')];
     }
 
-    if (prop.type) {
+    if (prop.type?.name) {
       // Handle multiple types separated by '|'
       // Convert to array to avoid markdown table issues
       if (prop.type.name.indexOf('|') !== -1) {
