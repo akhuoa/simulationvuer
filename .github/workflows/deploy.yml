@@ -39,6 +39,11 @@ jobs:
           mkdir -p site/app
           cp -r ./docs/.vitepress/dist/* ./site
           cp -r ./dist/* ./site/app
+      - name: Make the app cross-origin isolated
+        # GitHub Pages can't send the COOP/COEP headers that libOpenCOR needs,
+        # so load the docs' service worker registration script
+        # (see docs/public/coi-register.js), whose scope also covers the app.
+        run: sed -i 's#<head>#<head>\n    <script src="../coi-register.js"></script>#' site/app/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -10,38 +10,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const versionNumber = process.env.npm_package_version;
 const base = '/simulationvuer/';
 
-// Register the cross-origin isolation service worker (see docs/public/coi-serviceworker.js) when the host doesn't send
-// the COOP/COEP headers (e.g., GitHub Pages), and reload once so that the page is served through it.
-// Note: the reload is only done once per session to avoid a reload loop if isolation still can't be achieved.
-
-const coiServiceWorkerScript = `
-if (!window.crossOriginIsolated && window.isSecureContext && 'serviceWorker' in navigator) {
-  const reload = () => {
-    try {
-      if (sessionStorage.getItem('coiReloaded')) return;
-      sessionStorage.setItem('coiReloaded', '1');
-    } catch {}
-    location.reload();
-  };
-
-  navigator.serviceWorker.register('${base}coi-serviceworker.js').then((registration) => {
-    if (navigator.serviceWorker.controller) return;
-    if (registration.active) reload();
-    else navigator.serviceWorker.addEventListener('controllerchange', reload);
-  });
-} else {
-  try {
-    sessionStorage.removeItem('coiReloaded');
-  } catch {}
-}
-`;
-
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'SimulationVuer',
   description: 'API documentation for SimulationVuer',
   base,
-  head: [['script', {}, coiServiceWorkerScript]],
+  // Make the pages cross-origin isolated on hosts that can't send the COOP/COEP headers (e.g., GitHub Pages).
+  head: [['script', { src: `${base}coi-register.js` }]],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

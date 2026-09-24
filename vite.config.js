@@ -88,6 +88,12 @@ export default defineConfig(({ command, mode }) => {
       'process.env.HTTP_PROXY': 8081,
       global: 'globalThis',
     };
+  } else if (mode === 'app') {
+    // Some dependencies (e.g., has-hover, used by Plotly.js through PlotVuer) reference Node's `global`,
+    // which doesn't exist in browsers. (In lib mode, it's up to the consumer's bundler.)
+    config.define = {
+      global: 'globalThis',
+    };
   }
 
   return config;
