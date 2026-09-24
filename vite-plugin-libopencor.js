@@ -22,7 +22,6 @@ const libopencorDir = path.resolve(__dirname, 'node_modules/@opencor/opencor/dis
 // The base and outDir come from the resolved config, so the same plugin works for both the app/library (base "/",
 // outDir "dist") and the VitePress docs (base "/simulationvuer/", outDir "docs/.vitepress/dist").
 
-
 export default function libopencor() {
   let resolvedConfig;
 
