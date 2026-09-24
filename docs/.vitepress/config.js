@@ -1,14 +1,22 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitepress';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
+import libopencor from '../../vite-plugin-libopencor.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const versionNumber = process.env.npm_package_version;
+const base = '/simulationvuer/';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'SimulationVuer',
   description: 'API documentation for SimulationVuer',
-  base: '/simulationvuer/',
+  base,
+  // Make the pages cross-origin isolated on hosts that can't send the COOP/COEP headers (e.g., GitHub Pages).
+  head: [['script', { src: `${base}coi-register.js` }]],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -55,6 +63,26 @@ export default defineConfig({
   },
   markdown: { attrs: { disable: true } },
   vite: {
+    // Load the .env files (e.g., VITE_API_LOCATION for the demos) from the project root, like the app does, rather than
+    // from VitePress' root (i.e., docs).
+
+    envDir: path.resolve(__dirname, '../..'),
+
+    // Some dependencies (e.g., has-hover, used by Plotly.js through PlotVuer) reference Node's `global`,
+    // which doesn't exist in browsers.
+    // Note: VitePress runs on Vite 5, whose `define` doesn't reach pre-bundled dependencies in dev,
+    // so it is also passed to esbuild through `optimizeDeps`.
+
+    define: {
+      global: 'globalThis',
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: 'globalThis',
+        },
+      },
+    },
     css: {
       preprocessorOptions: {
         scss: {
@@ -74,6 +102,17 @@ export default defineConfig({
           }),
         ],
       }),
+      libopencor(),
+      {
+        name: 'cross-origin-isolation',
+        configureServer(server) {
+          server.middlewares.use((_req, res, next) => {
+            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+            res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+            next();
+          });
+        },
+      },
     ],
   },
 });
