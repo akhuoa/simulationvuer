@@ -296,10 +296,6 @@ export default {
   color: #8300bf;
 }
 
-.first-resource > .el-radio-button__inner {
-  border-left: 1px solid #8300bf !important;
-}
-
 .not-first-resource > .el-radio-button__inner {
   border-left: 0 !important;
 }
